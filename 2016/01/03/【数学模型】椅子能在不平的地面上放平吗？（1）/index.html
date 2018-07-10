@@ -1,0 +1,994 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="数学,数学建模," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="近期对数学爆发出了浓厚的兴趣，再加上准备参加2016年的数学建模美赛，于是开始接触数学建模，想通过这一系列的博客记录自己学习的历程，于是将本系列博客命名为【数学模型】，同我所看的数学建模书名。第一篇文章是一个非常简单的数学模型，但是我觉得挺有意思的，而且很贴近生活，题目叫做《椅子能在不平的地面上放平吗？》">
+<meta name="keywords" content="数学,数学建模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【数学模型】椅子能在不平的地面上放平吗？（1）">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="近期对数学爆发出了浓厚的兴趣，再加上准备参加2016年的数学建模美赛，于是开始接触数学建模，想通过这一系列的博客记录自己学习的历程，于是将本系列博客命名为【数学模型】，同我所看的数学建模书名。第一篇文章是一个非常简单的数学模型，但是我觉得挺有意思的，而且很贴近生活，题目叫做《椅子能在不平的地面上放平吗？》">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/6bdc846c251cd8c52ac0e33453fdd184.png">
+<meta property="og:updated_time" content="2016-01-06T13:00:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【数学模型】椅子能在不平的地面上放平吗？（1）">
+<meta name="twitter:description" content="近期对数学爆发出了浓厚的兴趣，再加上准备参加2016年的数学建模美赛，于是开始接触数学建模，想通过这一系列的博客记录自己学习的历程，于是将本系列博客命名为【数学模型】，同我所看的数学建模书名。第一篇文章是一个非常简单的数学模型，但是我觉得挺有意思的，而且很贴近生活，题目叫做《椅子能在不平的地面上放平吗？》">
+<meta name="twitter:image" content="http://lyhpic-img.stor.sinaapp.com/original/6bdc846c251cd8c52ac0e33453fdd184.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/"/>
+
+
+
+
+
+  <title> 【数学模型】椅子能在不平的地面上放平吗？（1） | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【数学模型】椅子能在不平的地面上放平吗？（1）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-03T14:28:54+08:00">
+                Jan 3 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学模型/" itemprop="url" rel="index">
+                    <span itemprop="name">数学模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/" class="leancloud_visitors" data-flag-title="【数学模型】椅子能在不平的地面上放平吗？（1）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>近期对数学爆发出了浓厚的兴趣，再加上准备参加2016年的数学建模美赛，于是开始接触数学建模，想通过这一系列的博客记录自己学习的历程，于是将本系列博客命名为【数学模型】，同我所看的数学建模书名。第一篇文章是一个非常简单的数学模型，但是我觉得挺有意思的，而且很贴近生活，题目叫做《椅子能在不平的地面上放平吗？》</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="模型假设"><a href="#模型假设" class="headerlink" title="模型假设"></a>模型假设</h1><p>为了简化该问题，抛开一些非主干的问题，我们需要对问题做一些假设：</p>
+<ol>
+<li>假设椅子的四条腿一样长，椅子腿与地面接触处抽象为一个点</li>
+<li>椅子腿的四个点所构成的平面图形为正方形</li>
+<li>地面高度是连续变化的，可以看做一个连续曲面</li>
+<li>地面是相对椅子平坦的，在任何时候椅子至少要能有三条腿着地（地面不会出现深沟或者凸峰）</li>
+</ol>
+<p>#建立模型</p>
+<p>首先，我们需要用数学语言来描述<strong>椅子的位置</strong>，因为我们假定椅子为正方形，我们可以通过以下图形来表示椅子的位置</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/6bdc846c251cd8c52ac0e33453fdd184.png" alt="image"></p>
+<p>如图，<strong>我们用椅子腿对角线 AC 与 x 轴的夹角 θ 来表示椅子的位置</strong></p>
+<p>其次，我们需要用数学语言来描述<strong>椅子腿距地面的距离</strong>，由于正方形的中心对称性，我们只需要设两个距离函数：</p>
+<ul>
+<li>A,C 两脚距离地面的距离和 f(θ)</li>
+<li>B,D 两脚距离地面的距离和 g(θ)</li>
+</ul>
+<p>我们看到这两个函数都是关于椅子位置（θ）的函数，并且根据我们之前的假设3，我们可以知道这两个函数都是连续函数。</p>
+<p>根据假设4（在任何时候椅子至少要能有三条腿着地），我们就可以得到，<strong>对于任意的 夹角 θ ，f(x) 与 g(x) 至少有一个为0</strong>，我们假设 <code>g(x) = 0</code>， <code>f(x) &gt; 0</code>,由于正方形的中心对称性，当椅子转动90度后，于是 <code>f(π/2) = 0</code>， <code>g(π/2) &gt; 0</code></p>
+<p>因此我们就把问题抽象为了一个数学命题，用数学语言描述如下：</p>
+<p><strong>已知 f(x) 和 g(x) 是关于 θ 的连续函数，对于任意的 θ ，<code>f(x) * g(x) = 0</code> ,且 <code>g(0) = f(π/2) = 0</code>, <code>f(0) &gt; 0</code> , <code>g(π/2) &gt; 0</code> 。证明：存在一个角度θ0，使得<code>f(θ0) = g(θ0) = 0</code></strong></p>
+<h1 id="模型求解"><a href="#模型求解" class="headerlink" title="模型求解"></a>模型求解</h1><p>对于以上抽象出的问题就已经很简单了，只要我们证明出了以上命题就可以得到最后问题的答案。</p>
+<p>我们试着证明一下上面的命题，其实根据命题我们就知道根据很简单的微积分中<strong>连续函数的基本性质</strong>就可以证明出来</p>
+<blockquote>
+<p>证明: 令<code>h(θ) = f(θ) - g(θ)</code>,则 <code>h(0) &gt; 0</code> <code>h(π/2) &lt; 0</code>,由于 f(x) 和 g(x) 的连续性可知 h(x) 同样也是连续函数。根据连续函数基本性质，我们可以得到必存在 <code>θ0（0 &lt; θ0 &lt; π/2）</code>使<code>h(θ0) = 0</code>,即<code>f(θ0) = g(θ0)</code>,最后，因为<code>f(x) * g(x) = 0</code>,得到<code>f(θ0) = g(θ0) = 0</code></p>
+</blockquote>
+<p>最终我们得到的结论是，在我们的假设的条件下，椅子能在不平的地面上放平。</p>
+<p>#延伸</p>
+<p>在我们的假设中我们提到了，假设椅子腿的四个点所构成的平面图形为正方形，如果为长方形呢？还能不能证明出来呢？这个问题留给读者们思考一下，下篇文章我会用比较短的篇幅对变化后的问题做一下求解。</p>
+<p>#参考资料</p>
+<ul>
+<li><a href="http://www.amazon.cn/%E6%99%AE%E9%80%9A%E9%AB%98%E7%AD%89%E6%95%99%E8%82%B2-%E5%9B%BD%E5%AE%B6%E7%BA%A7%E8%A7%84%E5%88%92%E6%95%99%E6%9D%90-%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B/dp/B004QTO7VE/ref=sr_1_1?ie=UTF8&amp;qid=1451802140&amp;sr=8-1&amp;keywords=%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B" target="_blank" rel="noopener">数学模型(第4版) - 姜启源 叶金星（编著）</a></li>
+<li><a href="http://www.amazon.cn/%E5%BE%AE%E7%A7%AF%E5%88%861/dp/B005EV50SW/ref=sr_1_1?ie=UTF8&amp;qid=1451802426&amp;sr=8-1&amp;keywords=%E5%A4%A7%E5%AD%A6%E6%95%B0%E5%AD%A6%E6%95%99%E7%A8%8B%3A%E5%BE%AE%E7%A7%AF%E5%88%861" target="_blank" rel="noopener">大学数学教程:微积分1 - 高等教育出版社</a></li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://www.luoyuanhang.com" target="_blank" rel="noopener">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/数学/" rel="tag"># 数学</a>
+          
+            <a href="/tags/数学建模/" rel="tag"># 数学建模</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/12/26/【从头开始写操作系统系列】页表以及相关的描述符详解/" rel="next" title="【从头开始写操作系统系列】页表以及相关的描述符详解">
+                <i class="fa fa-chevron-left"></i> 【从头开始写操作系统系列】页表以及相关的描述符详解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/06/【数学模型】商人们怎样过河？/" rel="prev" title="【数学模型】商人们怎样过河？">
+                【数学模型】商人们怎样过河？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#模型假设"><span class="nav-number">1.</span> <span class="nav-text">模型假设</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型求解"><span class="nav-number">2.</span> <span class="nav-text">模型求解</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

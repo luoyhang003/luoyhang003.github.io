@@ -1,0 +1,1032 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Python," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="在上一篇文章中，我们提到了部分 Python 中字符串 string 的内建函数，这篇文章我们将继续介绍其他函数。">
+<meta name="keywords" content="技术,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 字符串 String 内建函数大全(2)">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/03/07/Python-字符串-String-内建函数大全-2/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="在上一篇文章中，我们提到了部分 Python 中字符串 string 的内建函数，这篇文章我们将继续介绍其他函数。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-03-07T13:59:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 字符串 String 内建函数大全(2)">
+<meta name="twitter:description" content="在上一篇文章中，我们提到了部分 Python 中字符串 string 的内建函数，这篇文章我们将继续介绍其他函数。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/03/07/Python-字符串-String-内建函数大全-2/"/>
+
+
+
+
+
+  <title> Python 字符串 String 内建函数大全(2) | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/03/07/Python-字符串-String-内建函数大全-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Python 字符串 String 内建函数大全(2)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-07T21:57:03+08:00">
+                Mar 7 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/03/07/Python-字符串-String-内建函数大全-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/03/07/Python-字符串-String-内建函数大全-2/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/03/07/Python-字符串-String-内建函数大全-2/" class="leancloud_visitors" data-flag-title="Python 字符串 String 内建函数大全(2)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>在<a href="http://blog.luoyuanhang.com/2016/03/02/Python-%E5%AD%97%E7%AC%A6%E4%B8%B2-String-%E5%86%85%E5%BB%BA%E5%87%BD%E6%95%B0%E5%A4%A7%E5%85%A8-1/">上一篇文章</a>中，我们提到了部分 Python 中字符串 string 的内建函数，这篇文章我们将继续介绍其他函数。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="lower-函数"><a href="#lower-函数" class="headerlink" title="lower() 函数"></a>lower() 函数</h2><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>将字符串中的字母转换为小写</p>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><p><code>str.lower()</code></p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>字符串</p>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"HELLO WORLD!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.lower()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello world!</span><br></pre></td></tr></table></figure>
+<h2 id="lstrip-函数"><a href="#lstrip-函数" class="headerlink" title="lstrip() 函数"></a>lstrip() 函数</h2><h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><p>把字符串左边的特定字符全部截取掉，默认字符为空格</p>
+<h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><p><code>str.lstrip([char])</code></p>
+<h3 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>chars: </strong>被截取掉的字符</li>
+</ul>
+<h3 id="返回值-1"><a href="#返回值-1" class="headerlink" title="返回值"></a>返回值</h3><p>返回截取后的字符串</p>
+<h3 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"     HELLO WORLD!"</span></span><br><span class="line"><span class="keyword">print</span> str.lstrip()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"!!!!!!Hello world!"</span></span><br><span class="line"><span class="keyword">print</span> str.lstrip(<span class="string">'!'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HELLO WORLD!</span><br><span class="line">Hello world!</span><br></pre></td></tr></table></figure>
+<h2 id="maketrans-函数"><a href="#maketrans-函数" class="headerlink" title="maketrans() 函数"></a>maketrans() 函数</h2><h3 id="功能-2"><a href="#功能-2" class="headerlink" title="功能"></a>功能</h3><p>将字符串中的一部分字符替换成另一部分</p>
+<h3 id="用法-2"><a href="#用法-2" class="headerlink" title="用法"></a>用法</h3><p><code>str.maketrans(intab, outtab)</code></p>
+<h3 id="参数-2"><a href="#参数-2" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>intab: </strong>被替换的字符</li>
+<li><strong>outtab: </strong>替换的字符</li>
+</ul>
+<h3 id="返回值-2"><a href="#返回值-2" class="headerlink" title="返回值"></a>返回值</h3><p>返回替换规则</p>
+<h3 id="示例代码-2"><a href="#示例代码-2" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> string <span class="keyword">import</span> maketrans</span><br><span class="line"></span><br><span class="line">str = <span class="string">"abcdefghijk"</span></span><br><span class="line">intab = <span class="string">"acrgik"</span></span><br><span class="line">outtab = <span class="string">"123456"</span></span><br><span class="line"></span><br><span class="line">trans = maketrans(intab, outtab)</span><br><span class="line"><span class="keyword">print</span> str.translate(trans)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-2"><a href="#运行结果-2" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">1b2def4h5j6</span><br></pre></td></tr></table></figure>
+<h2 id="max-str-函数"><a href="#max-str-函数" class="headerlink" title="max(str) 函数"></a>max(str) 函数</h2><h3 id="功能-3"><a href="#功能-3" class="headerlink" title="功能"></a>功能</h3><p>返回字符串中最大的字符</p>
+<h3 id="用法-3"><a href="#用法-3" class="headerlink" title="用法"></a>用法</h3><p><code>max(str)</code></p>
+<h3 id="参数-3"><a href="#参数-3" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-3"><a href="#返回值-3" class="headerlink" title="返回值"></a>返回值</h3><p>返回字符串中最大的字符</p>
+<h3 id="示例代码-3"><a href="#示例代码-3" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"abcdefghijk"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"MAX character: "</span> + max(str)</span><br><span class="line"></span><br><span class="line">str = <span class="string">"123abc"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"MAX character: "</span> + max(str)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-3"><a href="#运行结果-3" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MAX character: k</span><br><span class="line">MAX character: c</span><br></pre></td></tr></table></figure>
+<h2 id="min-函数"><a href="#min-函数" class="headerlink" title="min 函数"></a>min 函数</h2><h3 id="功能-4"><a href="#功能-4" class="headerlink" title="功能"></a>功能</h3><p>返回字符串中最小的字符</p>
+<h3 id="用法-4"><a href="#用法-4" class="headerlink" title="用法"></a>用法</h3><p><code>min(str)</code></p>
+<h3 id="参数-4"><a href="#参数-4" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-4"><a href="#返回值-4" class="headerlink" title="返回值"></a>返回值</h3><p>返回字符串中最大的字符</p>
+<h3 id="示例代码-4"><a href="#示例代码-4" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"abcdefghijk"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"MIN character: "</span> + min(str)</span><br><span class="line"></span><br><span class="line">str = <span class="string">"123abc"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"MIN character: "</span> + min(str)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-4"><a href="#运行结果-4" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MIN character: a</span><br><span class="line">MIN character: 1</span><br></pre></td></tr></table></figure>
+<h2 id="replace-函数"><a href="#replace-函数" class="headerlink" title="replace() 函数"></a>replace() 函数</h2><h3 id="功能-5"><a href="#功能-5" class="headerlink" title="功能"></a>功能</h3><p>将字符串中的子字符串用某字符串来代替</p>
+<h3 id="用法-5"><a href="#用法-5" class="headerlink" title="用法"></a>用法</h3><p><code>str.replace(old, new[, max])</code></p>
+<h3 id="参数-5"><a href="#参数-5" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>old: </strong>被替换的子字符串</li>
+<li><strong>new: </strong>替换后的字符串</li>
+<li><strong>max: </strong>需要替换的个数</li>
+</ul>
+<h3 id="返回值-5"><a href="#返回值-5" class="headerlink" title="返回值"></a>返回值</h3><p>返回替换后的字符串</p>
+<h3 id="示例代码-5"><a href="#示例代码-5" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"this is a string, this is a string"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.replace(<span class="string">"is"</span>, <span class="string">"was"</span>)</span><br><span class="line"><span class="keyword">print</span> str.replace(<span class="string">"is"</span>, <span class="string">"was"</span>, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-5"><a href="#运行结果-5" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hwas was a string, thwas was a string</span><br><span class="line">thwas was a string, this is a string</span><br></pre></td></tr></table></figure>
+<h2 id="split-函数"><a href="#split-函数" class="headerlink" title="split() 函数"></a>split() 函数</h2><h3 id="功能-6"><a href="#功能-6" class="headerlink" title="功能"></a>功能</h3><p>分割字符串</p>
+<h3 id="用法-6"><a href="#用法-6" class="headerlink" title="用法"></a>用法</h3><p><code>str.split(str=&quot; &quot;, num=string.cout(str))</code></p>
+<h3 id="参数-6"><a href="#参数-6" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>str: </strong>分隔符，默认是空格</li>
+<li><strong>num: </strong>分割的次数，默认为按照分隔符分割整个字符串</li>
+</ul>
+<h3 id="返回值-6"><a href="#返回值-6" class="headerlink" title="返回值"></a>返回值</h3><p>返回分割后的 list</p>
+<h3 id="示例代码-6"><a href="#示例代码-6" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"word1 word2 word3 word4"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.split();</span><br><span class="line"><span class="keyword">print</span> str.split(<span class="string">'r'</span>)</span><br><span class="line"><span class="keyword">print</span> str.split(<span class="string">' '</span>, <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-6"><a href="#运行结果-6" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'word1'</span>, <span class="string">'word2'</span>, <span class="string">'word3'</span>, <span class="string">'word4'</span>]</span><br><span class="line">[<span class="string">'wo'</span>, <span class="string">'d1 wo'</span>, <span class="string">'d2 wo'</span>, <span class="string">'d3 wo'</span>, <span class="string">'d4'</span>]</span><br><span class="line">[<span class="string">'word1'</span>, <span class="string">'word2'</span>, <span class="string">'word3 word4'</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="splitlines-函数"><a href="#splitlines-函数" class="headerlink" title="splitlines() 函数"></a>splitlines() 函数</h2><h3 id="功能-7"><a href="#功能-7" class="headerlink" title="功能"></a>功能</h3><p>将字符串按行分割</p>
+<h3 id="用法-7"><a href="#用法-7" class="headerlink" title="用法"></a>用法</h3><p><code>str.splitlines(num=string.count(&#39;\n&#39;))</code></p>
+<h3 id="参数-7"><a href="#参数-7" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>num: </strong>该数值如果不为0，表示分割后的字符串中保留<code>\n</code></li>
+</ul>
+<h3 id="返回值-7"><a href="#返回值-7" class="headerlink" title="返回值"></a>返回值</h3><p>返回分割后的 list</p>
+<h3 id="示例代码-7"><a href="#示例代码-7" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"line1\nline2\nline3\nline4"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.splitlines();</span><br><span class="line"><span class="keyword">print</span> str.splitlines(<span class="number">0</span>);</span><br><span class="line"><span class="keyword">print</span> str.splitlines(<span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-7"><a href="#运行结果-7" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[<span class="string">'line1'</span>, <span class="string">'line2'</span>, <span class="string">'line3'</span>, <span class="string">'line4'</span>]</span><br><span class="line">[<span class="string">'line1'</span>, <span class="string">'line2'</span>, <span class="string">'line3'</span>, <span class="string">'line4'</span>]</span><br><span class="line">[<span class="string">'line1\n'</span>, <span class="string">'line2\n'</span>, <span class="string">'line3\n'</span>, <span class="string">'line4'</span>]</span><br></pre></td></tr></table></figure>
+<h2 id="startswith-函数"><a href="#startswith-函数" class="headerlink" title="startswith() 函数"></a>startswith() 函数</h2><h3 id="功能-8"><a href="#功能-8" class="headerlink" title="功能"></a>功能</h3><p>判断字符串是否是以某子字符串开头</p>
+<h3 id="用法-8"><a href="#用法-8" class="headerlink" title="用法"></a>用法</h3><p><code>str.stratswith(str, start=0, end=len(str))</code></p>
+<h3 id="参数-8"><a href="#参数-8" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>str: </strong>被检查的子字符串</li>
+<li><strong>start: </strong>检查的字符串的起始 index，默认为 str 的开始位置</li>
+<li><strong>end: </strong>检查的字符串的结束 index，默认为 str 的终止位置</li>
+</ul>
+<h3 id="返回值-8"><a href="#返回值-8" class="headerlink" title="返回值"></a>返回值</h3><p>如果字符串是否是以某子字符串开头，返回<code>True</code>；否则返回<code>False</code></p>
+<h3 id="示例代码-8"><a href="#示例代码-8" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.startswith(<span class="string">'hel'</span>)</span><br><span class="line"><span class="keyword">print</span> str.startswith(<span class="string">'hel'</span>,<span class="number">2</span>,<span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-8"><a href="#运行结果-8" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+<h2 id="strip-函数"><a href="#strip-函数" class="headerlink" title="strip() 函数"></a>strip() 函数</h2><h3 id="功能-9"><a href="#功能-9" class="headerlink" title="功能"></a>功能</h3><p>去除字符串两边的某字符</p>
+<h3 id="用法-9"><a href="#用法-9" class="headerlink" title="用法"></a>用法</h3><p><code>str.strip([char])</code></p>
+<h3 id="参数-9"><a href="#参数-9" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>char: </strong>需要去除的字符</li>
+</ul>
+<h3 id="返回值-9"><a href="#返回值-9" class="headerlink" title="返回值"></a>返回值</h3><p>返回去除之后的字符串</p>
+<h3 id="示例代码-9"><a href="#示例代码-9" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"!hello!!world!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.strip(<span class="string">'!'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-9"><a href="#运行结果-9" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello!!world</span><br></pre></td></tr></table></figure>
+<h2 id="swapcase-函数"><a href="#swapcase-函数" class="headerlink" title="swapcase() 函数"></a>swapcase() 函数</h2><h3 id="功能-10"><a href="#功能-10" class="headerlink" title="功能"></a>功能</h3><p>将字符串中的大小写字母转换</p>
+<h3 id="用法-10"><a href="#用法-10" class="headerlink" title="用法"></a>用法</h3><p><code>str.swapcase()</code></p>
+<h3 id="参数-10"><a href="#参数-10" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-10"><a href="#返回值-10" class="headerlink" title="返回值"></a>返回值</h3><p>返回转换后的字符串</p>
+<h3 id="示例代码-10"><a href="#示例代码-10" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello World!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.swapcase()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-10"><a href="#运行结果-10" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hELLO wORLD!</span><br></pre></td></tr></table></figure>
+<h2 id="upper-函数"><a href="#upper-函数" class="headerlink" title="upper() 函数"></a>upper() 函数</h2><h3 id="功能-11"><a href="#功能-11" class="headerlink" title="功能"></a>功能</h3><p>将字符串中的字母都转换成大写</p>
+<h3 id="用法-11"><a href="#用法-11" class="headerlink" title="用法"></a>用法</h3><p><code>str.upper()</code></p>
+<h3 id="参数-11"><a href="#参数-11" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-11"><a href="#返回值-11" class="headerlink" title="返回值"></a>返回值</h3><p>返回转换后的字符串</p>
+<h3 id="示例代码-11"><a href="#示例代码-11" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello World!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.upper()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-11"><a href="#运行结果-11" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HELLO WORLD!</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>至此，我们在 Python 中常见的、常用的字符串内建函数就大概都介绍过了，如果以后我又想起来一些会继续往上边添加的~</p>
+</blockquote>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/03/02/Python-字符串-String-内建函数大全-1/" rel="next" title="Python 字符串 String 内建函数大全(1)">
+                <i class="fa fa-chevron-left"></i> Python 字符串 String 内建函数大全(1)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/14/在-QT5-中使用-SQLITE/" rel="prev" title="在 QT5 中使用 SQLITE">
+                在 QT5 中使用 SQLITE <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/03/07/Python-字符串-String-内建函数大全-2/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#lower-函数"><span class="nav-number">1.</span> <span class="nav-text">lower() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">1.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法"><span class="nav-number">1.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-number">1.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值"><span class="nav-number">1.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码"><span class="nav-number">1.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果"><span class="nav-number">1.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lstrip-函数"><span class="nav-number">2.</span> <span class="nav-text">lstrip() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-1"><span class="nav-number">2.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-1"><span class="nav-number">2.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-1"><span class="nav-number">2.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-1"><span class="nav-number">2.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-1"><span class="nav-number">2.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-1"><span class="nav-number">2.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#maketrans-函数"><span class="nav-number">3.</span> <span class="nav-text">maketrans() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-2"><span class="nav-number">3.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-2"><span class="nav-number">3.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-2"><span class="nav-number">3.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-2"><span class="nav-number">3.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-2"><span class="nav-number">3.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-2"><span class="nav-number">3.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#max-str-函数"><span class="nav-number">4.</span> <span class="nav-text">max(str) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-3"><span class="nav-number">4.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-3"><span class="nav-number">4.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-3"><span class="nav-number">4.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-3"><span class="nav-number">4.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-3"><span class="nav-number">4.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-3"><span class="nav-number">4.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#min-函数"><span class="nav-number">5.</span> <span class="nav-text">min 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-4"><span class="nav-number">5.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-4"><span class="nav-number">5.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-4"><span class="nav-number">5.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-4"><span class="nav-number">5.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-4"><span class="nav-number">5.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-4"><span class="nav-number">5.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#replace-函数"><span class="nav-number">6.</span> <span class="nav-text">replace() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-5"><span class="nav-number">6.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-5"><span class="nav-number">6.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-5"><span class="nav-number">6.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-5"><span class="nav-number">6.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-5"><span class="nav-number">6.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-5"><span class="nav-number">6.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#split-函数"><span class="nav-number">7.</span> <span class="nav-text">split() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-6"><span class="nav-number">7.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-6"><span class="nav-number">7.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-6"><span class="nav-number">7.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-6"><span class="nav-number">7.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-6"><span class="nav-number">7.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-6"><span class="nav-number">7.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#splitlines-函数"><span class="nav-number">8.</span> <span class="nav-text">splitlines() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-7"><span class="nav-number">8.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-7"><span class="nav-number">8.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-7"><span class="nav-number">8.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-7"><span class="nav-number">8.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-7"><span class="nav-number">8.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-7"><span class="nav-number">8.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#startswith-函数"><span class="nav-number">9.</span> <span class="nav-text">startswith() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-8"><span class="nav-number">9.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-8"><span class="nav-number">9.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-8"><span class="nav-number">9.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-8"><span class="nav-number">9.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-8"><span class="nav-number">9.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-8"><span class="nav-number">9.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strip-函数"><span class="nav-number">10.</span> <span class="nav-text">strip() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-9"><span class="nav-number">10.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-9"><span class="nav-number">10.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-9"><span class="nav-number">10.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-9"><span class="nav-number">10.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-9"><span class="nav-number">10.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-9"><span class="nav-number">10.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#swapcase-函数"><span class="nav-number">11.</span> <span class="nav-text">swapcase() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-10"><span class="nav-number">11.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-10"><span class="nav-number">11.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-10"><span class="nav-number">11.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-10"><span class="nav-number">11.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-10"><span class="nav-number">11.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-10"><span class="nav-number">11.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#upper-函数"><span class="nav-number">12.</span> <span class="nav-text">upper() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-11"><span class="nav-number">12.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-11"><span class="nav-number">12.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-11"><span class="nav-number">12.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-11"><span class="nav-number">12.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-11"><span class="nav-number">12.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-11"><span class="nav-number">12.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

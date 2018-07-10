@@ -1,0 +1,1117 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="paper,分布式," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇博客是我阅读著名的 GFS 论文（The Google File System）所总结的笔记以及自己一些的思考。这篇论文是一篇非常经典的论文，尤其对于想要了解分布式或者刚刚开始研究分布式的人来说，是一篇非常好的读物，它里面提到了许多分布式方向的基本问题，许多分布式的研究都是围绕这些基本问题的。">
+<meta name="keywords" content="paper,分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="GFS 阅读笔记">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2017/05/15/gfs-reading-notes/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇博客是我阅读著名的 GFS 论文（The Google File System）所总结的笔记以及自己一些的思考。这篇论文是一篇非常经典的论文，尤其对于想要了解分布式或者刚刚开始研究分布式的人来说，是一篇非常好的读物，它里面提到了许多分布式方向的基本问题，许多分布式的研究都是围绕这些基本问题的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-05-15T13:19:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="GFS 阅读笔记">
+<meta name="twitter:description" content="这篇博客是我阅读著名的 GFS 论文（The Google File System）所总结的笔记以及自己一些的思考。这篇论文是一篇非常经典的论文，尤其对于想要了解分布式或者刚刚开始研究分布式的人来说，是一篇非常好的读物，它里面提到了许多分布式方向的基本问题，许多分布式的研究都是围绕这些基本问题的。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2017/05/15/gfs-reading-notes/"/>
+
+
+
+
+
+  <title> GFS 阅读笔记 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2017/05/15/gfs-reading-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                GFS 阅读笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-05-15T21:09:46+08:00">
+                May 15 2017
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/05/15/gfs-reading-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2017/05/15/gfs-reading-notes/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/05/15/gfs-reading-notes/" class="leancloud_visitors" data-flag-title="GFS 阅读笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇博客是我阅读著名的 <a href="http://nil.csail.mit.edu/6.824/2017/papers/gfs.pdf" target="_blank" rel="noopener">GFS 论文（The Google File System）</a>所总结的笔记以及自己一些的思考。这篇论文是一篇非常经典的论文，尤其对于想要了解分布式或者刚刚开始研究分布式的人来说，是一篇非常好的读物，它里面提到了许多分布式方向的基本问题，许多分布式的研究都是围绕这些基本问题的。</p>
+<a id="more"></a>
+<h1 id="分布式系统"><a href="#分布式系统" class="headerlink" title="分布式系统"></a>分布式系统</h1><p>在了解谷歌文件系统（Google File System）之前，我们必须要了解一下有关分布式系统的一些概念。</p>
+<p><strong>Q1：一致性是什么？</strong></p>
+<p>在分布式文件系统中，很重要的一部分就是数据的复制（replica），为了保证分布式文件系统的高可用性，我们常常会把文件在不同的机器上存储多份，一致性的要求就是保证这些不同机器上的复制品（replicas）能够保持一致。</p>
+<p><strong>Q2：如果只有一个应用程序，它对文件系统进行了一次写操作，这个应用程序在这次写操作之后的读操作会观测到什么呢？</strong></p>
+<p>它会正常观测到它刚刚写入的数据。</p>
+<p><strong>Q3：如果另外多个应用程序执行的读操作呢，它们会观测到什么呢？</strong></p>
+<p>对于弱一致性的模型来说，这次读操作有可能会读取到已经过期的数据；</p>
+<p>对于强一致性的模型来说，读操作读到的始终是上一次写入操作进行完成之后的数据。</p>
+<p>强一致性能保证写入操作，但是它会影响性能（强一致性协议复杂）</p>
+<p><strong>Q4：理想化的一致性模型是怎样的？</strong></p>
+<p>分布式文件系统通过在多个机器上复制文件来保证可用性，在理想化的一致性模型中，在文件系统中所进行的各种操作都要像是在一台机器上进行的操作。实现理想化一致性模型的难点在于处理高并发问题、如何处理分布式集群中的机器崩溃以及达到网络的高效利用，理想化的一致性模型还会出现裂脑问题（split-brain，如果两个存储着相同文件的机器 A，B同时崩溃，其他的机器并不知道是哪一个先崩溃的，所以就不知道该用 A 恢复 B还是用 B 恢复 A）。总之，使用理想化一致性算法会影响性能，并且它的实现非常复杂（例如：Paxos）</p>
+<p>GFS 不是采用的理想化一致性模型，但是它解决了机器崩溃恢复的问题以及能够应对高并发操作同时又能相对高效地利用网络。</p>
+<h1 id="GFS-是什么？"><a href="#GFS-是什么？" class="headerlink" title="GFS 是什么？"></a>GFS 是什么？</h1><p>GFS（Google File System ）是一个大规模分布式文件系统，具有容错的特性（机器崩溃后的处理），并且具有较高性能，能够响应众多的客户端。</p>
+<h2 id="GFS-设计背景"><a href="#GFS-设计背景" class="headerlink" title="GFS 设计背景"></a>GFS 设计背景</h2><ul>
+<li>经常会有机器崩溃（因为机器众多，难免会有机器崩溃）</li>
+<li>有些存储的文件比较大</li>
+<li>append 操作更常见（在文件后追加，而不是 overwrite 覆盖）</li>
+<li>主要包括两种读取 （read）操作：一种是大的顺序读取（单个文件读取几百 KB 甚至是几 MB）；另一种是小的随机读取（在随机位置读取几 KB）</li>
+<li>需要支持并发（例如，多个客户端同时进行 append 操作）</li>
+</ul>
+<h2 id="GFS-所需提供操作"><a href="#GFS-所需提供操作" class="headerlink" title="GFS 所需提供操作"></a>GFS 所需提供操作</h2><p>create（文件创建）、delete（文件删除）、open（打开文件）、close（关闭文件）、read（读取文件）、write（写入文件）、record append（追加文件）、snapshot（快照）。</p>
+<h1 id="GFS-架构"><a href="#GFS-架构" class="headerlink" title="GFS 架构"></a>GFS 架构</h1><p>GFS 的架构由一台 master 服务器和许多台文件服务器（chunkserver）构成，并且有若干客户端（client）与之交互。</p>
+<h2 id="GFS-特点概述"><a href="#GFS-特点概述" class="headerlink" title="GFS 特点概述"></a>GFS 特点概述</h2><ul>
+<li>文件分块（chunks），每块有一个64位标识符（chunk handle），它是在 chunk 被创建时由 master 分配的，每一个 chunk 会有3个备份，分别在不同的机器上。</li>
+<li>Master 存储所有的 metadata，包括命名空间（namespace）、访问控制信息（access control）、文件与 chunk 的映射关系（mapping）以及 chunk 的存储位置</li>
+<li>Master 管理 chunk 租约（lease）、chunk 迁移（如果 chunkserver 挂掉）、chunkserver 之间的通信（heartbeat，它也会向 chunkserver传达master 的命令，chunkserver 通过 heartbeat 向 master 报告自己的状态）</li>
+<li>Client 会和 master 以及 chunkserver 进行交互，client向 master 请求 metadata，然后向 chunkserver 进行读写操作</li>
+<li>client 与 chunkserver 都不会缓存文件数据，为的是防止数据出现不一致的状况。但是 client 会缓存 metadata 的信息（但是会出现一个问题，如果 metadata 过期怎么办呢？GFS 给出了自己的解决方案，也就是租约 lease）</li>
+</ul>
+<h2 id="单一-Master-架构"><a href="#单一-Master-架构" class="headerlink" title="单一 Master 架构"></a>单一 Master 架构</h2><p>GFS 为了简化设计，在整个系统中只有一个 master 进行管理。Master 不提供读写操作，它只会告诉 client，它所请求操作的文件在哪个 chunkserver 上，然后 client 会根据 master 提供的信息，与对应的 chunkserver 进行通信。</p>
+<p>例如：以 client 要进行读取操作为例</p>
+<ol>
+<li>client 将应用程序请求的文件名、大小转化为 chunk index，然后将文件名和 index 发送给 master</li>
+<li>master 返回文件的 chunk handle 和所有该文件备份的位置</li>
+<li>client 将这两个 master 发送给它的信息缓存起来作为 value，文件名和 chunk index 作为 key</li>
+<li>client 向三个备份之一的 chunkserver 发送读请求（选择最近的机器），请求中包含 chunk index 和它要读取的文件的 Byte 范围</li>
+<li>如果 client 缓存的信息没有过期（如何知道是否过期会在后面的文章进行介绍），client 就不用在与 master 进行通信了，以后可以直接与 chunkserver 进行通信</li>
+</ol>
+<h2 id="chunk-大小"><a href="#chunk-大小" class="headerlink" title="chunk 大小"></a>chunk 大小</h2><p>GFS 中将 chunk 的大小定为 64MB，它比一般的文件系统的块大小要大。</p>
+<p>这样做的优点有：</p>
+<ul>
+<li>减少 client 与 master 的交互</li>
+<li>client 可以在一个块上执行更多的操作，通过 TCP 长连接减少网络压力</li>
+<li>减小 metadata 的大小</li>
+</ul>
+<p>但是这样做也存在缺点：</p>
+<ul>
+<li>一个 chunk 可以存更多的小文件了，这样的话如果有一个块存储了许多小文件，client 和它进行操作的几率大大提高，这个 chunk 的压力会很大（然而在实际中，这个问题影响并不大）</li>
+<li>在批处理系统中存在很大问题（如果在一个 chunk 上有一个可执行文件，同时有许多 client 都要请求执行这个文件，它的压力会很大。解决方案是把该文件在不同的 chunkserver 上多添加几个备份，更长久的方案是应该允许 client 去读取其他 client 的文件）</li>
+</ul>
+<h2 id="metadata"><a href="#metadata" class="headerlink" title="metadata"></a>metadata</h2><p>GFS 的 metadata 存储着 3 种类型的信息：</p>
+<ul>
+<li>文件名以及 chunk 的名称</li>
+<li>文件与 chunk 的映射关系</li>
+<li>各个备份（replicas）的位置</li>
+</ul>
+<p>Metadata 通常存储于内存中，前两种信息有时会存于磁盘中，它们有时会作为操作记录（operation log）备份的一部分存储于磁盘，备份于远程机器。</p>
+<p>把 metadata 存储于内存有许多优点，查看 metadata 信息时很方便，速度快，有利于 chunk 的垃圾回收（garbage collection）、再备份（re-replication）以及 chunk 迁移（为的是负载均衡）。</p>
+<p>但是如果如果Metadata都存放于内存的话会不会受限于内存的大小呢？</p>
+<p>实际上不会的，因为每一条 metadata 的大小非常小，namespace 信息也很小，并且使用了前缀压缩（prefix compression）进行存储。并且升级内存的花费实际上也很小。</p>
+<h2 id="chunk-位置"><a href="#chunk-位置" class="headerlink" title="chunk 位置"></a>chunk 位置</h2><p>chunk 的位置信息在 master 中不是一成不变的，master 会通过定期的 heartbeat 进行更新，这样做能够减小开销，这样做就不用 master 与 chunkserver 时刻保持同步通信（包括 chunkserver 的加入、退出、改名、宕机、重启等）。chunkserver 上有一个 final word，它表示了哪个 chunk 在它的磁盘上，哪个 chunk 不在。</p>
+<h2 id="操作记录（operation-log）"><a href="#操作记录（operation-log）" class="headerlink" title="操作记录（operation log）"></a>操作记录（operation log）</h2><p>operation log 中包括了 metadata 变更的历史记录</p>
+<ul>
+<li>它是 metadata 的持久化记录，备份于磁盘上</li>
+<li>它表示了并发操作的时间线</li>
+<li>用于 Master 恢复</li>
+</ul>
+<h1 id="一致性模型"><a href="#一致性模型" class="headerlink" title="一致性模型"></a>一致性模型</h1><p>GFS 采用的一致性模型并不是强一致性模型，这是在考虑了各种问题后权衡的结果。</p>
+<p><strong>GFS 是如何保证一致性的？</strong></p>
+<p>有关文件命名空间的操作都是原子的（由 namespace lock 保证）</p>
+<p>我们先来介绍一下 GFS 保证一致性的前提和一些概念：</p>
+<ul>
+<li>如果所有客户端不论从哪一个备份中读取同一个文件，得到的结果都是相同的，那么我们就说这个文件空间是一致的（consistent）</li>
+<li><strong>defined：</strong>如果一个文件区域在经过一系列操作之后依旧是一致的，并且客户端完全知晓对它所做的所有操作，我们就称它为『defined』</li>
+<li>一个操作如果没有被其他并发的写操作影响，那么这个被操作的文件区域是 defined 的</li>
+<li>成功的并发操作也会导致文件区域 undefined，但是一定是一致的（consistent）（客户端有可能只看到了最终一致的结果，但是它并不知道过程）</li>
+<li>失败的并发操作会导致文件区域 undefined，所以一定也是不一致的（inconsistent）</li>
+<li>GFS 并不需要是因为什么导致的 undefined（不区分是哪种 undefined），它只需要知道这个区域是 undefined 还是 defined 就可以</li>
+</ul>
+<p>造成数据改变的操作可能是写入（write）或者追加（record append）：</p>
+<ul>
+<li>write：往应用程序指定的 offset 进行写入</li>
+<li>record append：往并发操作进行过的 offset 处进行写入，这个 offset 是由 GFS 决定的（至于如何决定的后面会有介绍），这个 offset 会作为 defined 区域的起始位置发送给 client。</li>
+<li>“regular” append：对应于 record append 的一个概念，普通的 append 操作通常 offset 指的是文件的末尾，但是在分布式的环境中，offset 就没有这么简单了</li>
+</ul>
+<p><strong>重要问题</strong></p>
+<ol>
+<li>GFS 通过在所有的备份（replicas）上应用顺序相同的操作来保证一个文件区域的 defined（具体细节后面会讨论）</li>
+<li>GFS 会使用 chunk version（版本号）来检测 replicas 是否过期，过期的 replicas 既不会被读取也不会被写入</li>
+<li>GFS 通过握手（handshakes）来检测已经宕机的 chunkserver</li>
+<li>GFS 会通过校验和（checksuming）来检测文件的完整性</li>
+</ol>
+<h1 id="系统间的交互"><a href="#系统间的交互" class="headerlink" title="系统间的交互"></a>系统间的交互</h1><p>这一部分我们来谈谈系统中各个部分之间的交互（master 和 chunkserver、client 和 master、chunkserver 等），GFS 设计的目标是尽可能地让 master 更少的涉及到各种操作中。</p>
+<h2 id="租约（lease）和修改的顺序（mutation-order）"><a href="#租约（lease）和修改的顺序（mutation-order）" class="headerlink" title="租约（lease）和修改的顺序（mutation order）"></a>租约（lease）和修改的顺序（mutation order）</h2><p> Mutation（修改）：mutation 指的是改变了 chunk 的内容或者 metadata，每一次 mutation 都应该作用于所有的备份</p>
+<p>GFS 使用租约机制（lease）来保障 mutation 的一致性：多个备份中的一个持有 lease，这个备份被称为 primary replica（其余的备份为 secondary replicas），GFS 会把所有的 mutation 都序列化（串行化），让 primary 直行，secondary 也按相同顺序执行，primary 是由 master 选出来的。一个 lease 通常60秒会超时。</p>
+<p>现在我们以写操作的数据流程来说明租约机制是如何进行的：</p>
+<ol>
+<li>client 向 master 请求持有 lease 的 chunk（primary replica）位置和其他 replicas 的位置（如果没有 chunk 持有 lease，那么 master 会授予其中一个 replica 一个 lease）</li>
+<li>master 返回 primary 的信息和其他 replicas 的位置，然后 client 将这些信息缓存起来（只有当 primary 无法通信或者该 primary replica 没有 lease 了，client 才会向 master 再次请求）</li>
+<li>client 会将数据发送到所有的 replicas，每个 chunkserver 会把数据存在 LRU 缓存中</li>
+<li>在所有的 replicas 都收到了数据之后，client 会向 primary 发送写请求。primary 会给它所收到的所有 mutation 分配序列号（这些 mutation 有可能不是来自于同一个 client），它会在自己的机器上按序列号进行操作</li>
+<li>primary 给 secondaries 发送写请求，secondaries 会按相同的序列执行操作</li>
+<li>secondaries 告知 primary 操作执行完毕</li>
+<li>primary 向 client 应答，期间的错误也会发送给 client，client 错误处理程序（error handler）会重试失败的 mutation</li>
+</ol>
+<p>其他问题：</p>
+<ul>
+<li>如果一次写操作要写的数据比较大，可能会跨越多个 chunk，GFS client 会把它分为几次小的操作，GFS 支持的最大的操作大小是 chunk 的1/4的大小</li>
+<li><strong>但是如果像上述这么做会出现 undefined 但是 consistent 的区域，这是为什么呢？</strong>GFS 的 record append 操作仅能保证数据在一个原子单位中被写了一次，并不能保证对所有的 replicas 操作的位置都是相同的，比如每次写入的 offset 相同，但是 chunk 有可能不一样</li>
+</ul>
+<h2 id="数据流"><a href="#数据流" class="headerlink" title="数据流"></a>数据流</h2><p>GFS 对其数据流的设计目标如下：</p>
+<ul>
+<li>要充分利用网络带宽</li>
+<li>避免网络瓶颈和高延迟</li>
+<li>减少数据流动延迟</li>
+</ul>
+<p>设计方案如下：</p>
+<ul>
+<li>数据以链（chain）的形式 在 chunkserver 之间线性流动（每个机器都在用自己的全部带宽与另外一个机器通信，而不是同时让多个机器分享带宽）</li>
+<li>每个机器会把数据发送到离自己最近的还没有收到数据的机器（GFS 中可以通过机器 IP 地址进行计算）</li>
+<li>通过 TCP 连接将数据传输流水线化（pipelining），pipelining 之所以能够有效果是因为 GFS 的网络是全双工的交换网络</li>
+</ul>
+<h1 id="Snapshot-快照"><a href="#Snapshot-快照" class="headerlink" title="Snapshot 快照"></a>Snapshot 快照</h1><p>GFS 通过 snapshot 来立即创建一个文件或者目录树的备份，它可以用于备份文件或者创建 checkpoint（用于恢复），同时 GFS 把写时复制技术（copy-on-write）引入到了快照操作中，原理与 Linux 进程中的写时复制基本相同。</p>
+<p>当 master 收到 snapshot 操作请求后：</p>
+<ol>
+<li>废除所有的 lease，准备 snapshot（相当于暂停了所有写操作）</li>
+<li>master 记录所有操作，并且将记录写入磁盘</li>
+<li>master 将源文件和目录树的 metadata 进行复制，这样之前的记录就和当前的内存中所保存的状态对应起来了，新建的 snapshot 和源文件指向的会是同一个 chunk</li>
+</ol>
+<h1 id="Master-职责"><a href="#Master-职责" class="headerlink" title="Master 职责"></a>Master 职责</h1><ul>
+<li>执行所有有关于 namespace 的操作</li>
+<li>管理整个系统的 chunk replicas：<ul>
+<li>做出 chunk replicas 的放置决定</li>
+<li>创建 chunk/replicas</li>
+<li>协调各种操作，保证 chunk 被完全复制</li>
+<li>负载均衡</li>
+<li>回收闲置空间</li>
+</ul>
+</li>
+</ul>
+<h2 id="管理-namespace"><a href="#管理-namespace" class="headerlink" title="管理 namespace"></a>管理 namespace</h2><p>在进行快照操作时，lease 会被废除，无法进行写操作，但是 GFS 希望其他 Master 操作不受影响，GFS 采取的方法是使用<strong>namespace 锁</strong>。</p>
+<p>GFS 的namespace 是一个查找表（lookup table），并且采用了前缀压缩的方式存储在内存中，它是一个树结构，namespace 树中的每一个节点（文件名或者目录名）都有一个读/写锁。</p>
+<p>在 Master 对文件或者目录进行操作之前它首先需要获取一个锁，比如要对 /d1/d2/…/dn/leaf 进行操作，需要获得 /d1, /d1/d2, /d1/d2/…/dn的读锁，需要 /d1/d2/…/dn/leaf 的读锁或者写锁（根据不同的操作，锁也不同）</p>
+<p><strong>例如，当/home/user 被快照备份至/save/user 时，如果此时要创建/home/user/foo 会发生什么呢？</strong></p>
+<p>快照操作获得了/home, /save 的读锁和/home/user, /save/user 的写锁。创建/home/user/foo需要/home, /home/user的读锁和/home/user/foo 的写锁。因为两个操作在 /home/user的锁上产生了冲突，所以操作会依次执行，在完成 snapshot 操作之后，释放了/home/user 的写锁， /home/user/foo才会被创建。</p>
+<h2 id="放置-replicas"><a href="#放置-replicas" class="headerlink" title="放置 replicas"></a>放置 replicas</h2><p>如何安置replicas 的目标是：</p>
+<ul>
+<li>最大化数据可靠性和可用性</li>
+<li>最大化网络带宽的利用</li>
+</ul>
+<p><strong>这里的最大化不仅仅是机器间的问题，还要考虑机架间的问题</strong></p>
+<p>在以下3种情况下，Master 会进行创建 replicas 的操作：</p>
+<ul>
+<li>创建了新的 chunk</li>
+<li>需要重新备份</li>
+<li>负载均衡</li>
+</ul>
+<p><strong>如何选择将 replicas放置到哪台机器上呢？</strong></p>
+<ol>
+<li>优先选择磁盘利用率低的 chunkserver</li>
+<li>GFS 会限制每个 chunkserver『最近』创建的次数。换句话说，如果一个 chunkserver 近期创建 replicas 的操作比较频繁，就不会优先选择它（因为创建就意味着以后会进行读取，为了防止突然间大量的读取出现在同一台机器上）</li>
+<li>保证可用性，尽可能跨机架进行创建操作</li>
+</ol>
+<p>当可用的备份低于要求时（GFS 要求为3份），master 会对 chunk 进行重新备份，在以下情况有可能需要重新备份：</p>
+<ul>
+<li>chunkserver 不可用了</li>
+<li>备份损坏了</li>
+<li>硬盘挂掉了</li>
+<li>所要求的最低备份数量提高了</li>
+</ul>
+<p>当有多个 chunk 需要备份时，GFS 如何决定先备份哪个呢？策略如下：</p>
+<ul>
+<li>优先选择可用备份少的</li>
+<li>优先备份最近没有 delete 文件的</li>
+<li>优先备份阻塞了 client 操作的</li>
+</ul>
+<p>当 master 决定了备份哪个之后，会把当前可用的 chunk 直接克隆到目标位置（遵循replicas 放置规则）</p>
+<h2 id="垃圾回收"><a href="#垃圾回收" class="headerlink" title="垃圾回收"></a>垃圾回收</h2><p>文件 delete 之后，GFS 并不会立即对空间进行回收，而是等待垃圾回收机制会空间进行释放。</p>
+<p>当文件被删除之后，Master 会想其他操作一样，把删除操作记录下来，但是不进行空间的回收，而是将这块空间命名为 hidden（并且包含被删除时的时间戳），Master 会定期进行扫描，把隐藏了一定时间的文件空间进行回收（这个时间是可以进行配置的），在此期间可以对这块空间的文件进行恢复（直接通过重命名回原来的名称就可以）。</p>
+<p>除此之外，垃圾回收机制还会扫描孤儿 chunk（所有的文件都没有用到的非空 chunk），然后对这块 chunk 的 metadata 进行清除。具体的做法是，在 master 于 chunkserver 的 heartbeat 信息中会携带关于 chunk 的信息，master 会把 metadata 中不存在的 chunk 发送给 chunkserver，chunkserver 会把它拥有的 chunk 发送给 master。</p>
+<h2 id="过期-replica-检测"><a href="#过期-replica-检测" class="headerlink" title="过期 replica 检测"></a>过期 replica 检测</h2><p>chunkserver 宕机或者是 mutation 的丢失会导致 replica 的过期，GFS 是如何对 replicas 进行检测，判断它们是否是最新的呢？</p>
+<p>GFS 对于每一个 chunk 都会有一个版本号，这个版本号由 master 进行管理，通过版本号可以对过期的 replica 进行甄别。当 master 授予 lease 的时候，会增加版本号并且通知所有未过期的 replicas，master 和 replicas 都会记录下最新的版本号（这些操作需要在客户端进行写入操作之前完成）。如果这时，有一个 replica 不可用了，它的版本号就不会再增加了，在 chunkserver 重启或者重新向 master报告它的版本号时，master 就会知道这个 replica 已经过期了，并且会在垃圾回收时将它进行回收。如果 master 的版本号落后了呢，它会更新自己的版本号。</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper/" rel="tag"># paper</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/19/mapreduce-notes/" rel="next" title="MapReduce 阅读笔记">
+                <i class="fa fa-chevron-left"></i> MapReduce 阅读笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/20/ftvm-notes/" rel="prev" title="容错虚拟机分布式系统的设计">
+                容错虚拟机分布式系统的设计 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2017/05/15/gfs-reading-notes/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#分布式系统"><span class="nav-number">1.</span> <span class="nav-text">分布式系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GFS-是什么？"><span class="nav-number">2.</span> <span class="nav-text">GFS 是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GFS-设计背景"><span class="nav-number">2.1.</span> <span class="nav-text">GFS 设计背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GFS-所需提供操作"><span class="nav-number">2.2.</span> <span class="nav-text">GFS 所需提供操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GFS-架构"><span class="nav-number">3.</span> <span class="nav-text">GFS 架构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#GFS-特点概述"><span class="nav-number">3.1.</span> <span class="nav-text">GFS 特点概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单一-Master-架构"><span class="nav-number">3.2.</span> <span class="nav-text">单一 Master 架构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chunk-大小"><span class="nav-number">3.3.</span> <span class="nav-text">chunk 大小</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#metadata"><span class="nav-number">3.4.</span> <span class="nav-text">metadata</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#chunk-位置"><span class="nav-number">3.5.</span> <span class="nav-text">chunk 位置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作记录（operation-log）"><span class="nav-number">3.6.</span> <span class="nav-text">操作记录（operation log）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一致性模型"><span class="nav-number">4.</span> <span class="nav-text">一致性模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#系统间的交互"><span class="nav-number">5.</span> <span class="nav-text">系统间的交互</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#租约（lease）和修改的顺序（mutation-order）"><span class="nav-number">5.1.</span> <span class="nav-text">租约（lease）和修改的顺序（mutation order）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据流"><span class="nav-number">5.2.</span> <span class="nav-text">数据流</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Snapshot-快照"><span class="nav-number">6.</span> <span class="nav-text">Snapshot 快照</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Master-职责"><span class="nav-number">7.</span> <span class="nav-text">Master 职责</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#管理-namespace"><span class="nav-number">7.1.</span> <span class="nav-text">管理 namespace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#放置-replicas"><span class="nav-number">7.2.</span> <span class="nav-text">放置 replicas</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#垃圾回收"><span class="nav-number">7.3.</span> <span class="nav-text">垃圾回收</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#过期-replica-检测"><span class="nav-number">7.4.</span> <span class="nav-text">过期 replica 检测</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

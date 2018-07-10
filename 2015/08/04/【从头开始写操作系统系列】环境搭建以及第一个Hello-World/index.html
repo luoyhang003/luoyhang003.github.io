@@ -1,0 +1,1097 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,操作系统,从头开始写操作系统," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="笔者在动手写此操作系统时是一名大学本科大二的学生，可能文章中会有好多地方我没有解释清楚，可能也会有许多地方出现错误，我恳请各位读者能提出质疑和纠正我的错误，谢谢！">
+<meta name="keywords" content="技术,操作系统,从头开始写操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【从头开始写操作系统系列】环境搭建以及第一个Hello World">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="笔者在动手写此操作系统时是一名大学本科大二的学生，可能文章中会有好多地方我没有解释清楚，可能也会有许多地方出现错误，我恳请各位读者能提出质疑和纠正我的错误，谢谢！">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eupv68j66pj20k50ddaay.jpg">
+<meta property="og:updated_time" content="2016-01-06T12:58:42.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【从头开始写操作系统系列】环境搭建以及第一个Hello World">
+<meta name="twitter:description" content="笔者在动手写此操作系统时是一名大学本科大二的学生，可能文章中会有好多地方我没有解释清楚，可能也会有许多地方出现错误，我恳请各位读者能提出质疑和纠正我的错误，谢谢！">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eupv68j66pj20k50ddaay.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/"/>
+
+
+
+
+
+  <title> 【从头开始写操作系统系列】环境搭建以及第一个Hello World | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【从头开始写操作系统系列】环境搭建以及第一个Hello World
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-08-04T00:10:38+08:00">
+                Aug 4 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/从头开始写操作系统系列/" itemprop="url" rel="index">
+                    <span itemprop="name">从头开始写操作系统系列</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/" class="leancloud_visitors" data-flag-title="【从头开始写操作系统系列】环境搭建以及第一个Hello World">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  笔者在动手写此操作系统时是一名大学本科大二的学生，可能文章中会有好多地方我没有解释清楚，可能也会有许多地方出现错误，我恳请各位读者能提出质疑和纠正我的错误，谢谢！
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>#写在最前</p>
+<blockquote>
+<p>笔者在动手写此操作系统时是一名大学本科大二的学生，可能文章中会有好多地方我没有解释清楚，可能也会有许多地方出现错误，我恳请各位读者能提出质疑和纠正我的错误，谢谢！</p>
+</blockquote>
+<p>参考书籍：</p>
+<ul>
+<li>《30天自制操作系统》川合秀实</li>
+<li>《ORANGE’S：一个操作系统的实现》</li>
+</ul>
+<p>##开发环境</p>
+<p>笔者采用以下开发环境</p>
+<ul>
+<li>Apple Macbook Air</li>
+<li>Ubuntu 12.04 LTS(32 bit)</li>
+</ul>
+<p>##读者准备</p>
+<blockquote>
+<p>毕竟是动手写一个操作系统，对读者的要求也会相应要求高一些，对计算机编程0基础的读者还是不建议直接看这个系列的文章。希望读者能有 汇编语言、C 语言的基础，对操作系统最好有了解（推荐书籍《操作系统概念》），另外由于开发是在 Ubuntu 的环境中进行的，读者最好对 Linux 的命令、操作等比较熟悉。</p>
+</blockquote>
+<p>#环境搭建</p>
+<p>##安装Bochs 等</p>
+<p>Bochs是一个x86硬件平台的开源模拟器。它可以模拟各种硬件的配置。Bochs模拟的是整个PC平台，包括I/O设备、内存和BIOS。更为有趣的是，甚至可以不使用PC硬件来运行Bochs。事实上，它可以在任何编译运行Bochs的平台上模拟x86硬件。通过改变配置，可以指定使用的CPU(386、486或者586)，以及内存大小等。一句话，Bochs是电脑里的“PC”。根据需要，Bochs还可以模拟多台PC，此外，它甚至还有自己的电源按钮。</p>
+<p>我们所写的操作系统就是模拟在 Bochs 来运行和调试的。</p>
+<p>我们使用以下的命令来安装 bochs 等一些工具</p>
+<p><code>sudo apt-get install vgabios bochs bochs-x bximage bochs-sdl</code></p>
+<p>#第一个 Hello World</p>
+<p>##创建软盘镜像</p>
+<ul>
+<li>使用bximage 命令</li>
+<li>按照以下来进行配置</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">========================================================================</span><br><span class="line">                                bximage</span><br><span class="line">                  Disk Image Creation Tool for Bochs</span><br><span class="line">        $Id: bximage.c,v 1.34 2009/04/14 09:45:22 sshwarts Exp $</span><br><span class="line">========================================================================</span><br><span class="line"></span><br><span class="line">Do you want to create a floppy disk image or a hard disk image?</span><br><span class="line">Please type hd or fd. [hd] fd</span><br><span class="line"></span><br><span class="line">Choose the size of floppy disk image to create, in megabytes.</span><br><span class="line">Please type 0.16, 0.18, 0.32, 0.36, 0.72, 1.2, 1.44, 1.68, 1.72, or 2.88.</span><br><span class="line"> [1.44] 1.44</span><br><span class="line">I will create a floppy image with</span><br><span class="line">  cyl=80</span><br><span class="line">  heads=2</span><br><span class="line">  sectors per track=18</span><br><span class="line">  total sectors=2880</span><br><span class="line">  total bytes=1474560</span><br><span class="line"></span><br><span class="line">What should I name the image?</span><br><span class="line">[a.img] helloworld.img</span><br><span class="line"></span><br><span class="line">Writing: [] Done.</span><br><span class="line"></span><br><span class="line">I wrote 1474560 bytes to helloworld.img.</span><br><span class="line"></span><br><span class="line">The following line should appear in your bochsrc:</span><br><span class="line">  floppya: image=&quot;helloworld.img&quot;, status=inserted</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最终我们得到了一个名叫『helloworld.img』的文件，它就是我们创建的软盘镜像</li>
+</ul>
+<p>##操作系统源码</p>
+<ul>
+<li>hello.asm</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">	org	07c00h</span><br><span class="line">	mov	ax, cs</span><br><span class="line">	mov	ds, ax</span><br><span class="line">	mov	es, ax</span><br><span class="line">	call	DispStr	</span><br><span class="line">	jmp	$</span><br><span class="line">DispStr:</span><br><span class="line">	mov	ax, Str</span><br><span class="line">	mov	bp, ax</span><br><span class="line">	mov	cx, 13</span><br><span class="line">	mov	ax, 01301h</span><br><span class="line">	mov	bx, 000ch</span><br><span class="line">	mov	dl, 0</span><br><span class="line">	int	10h</span><br><span class="line">	ret</span><br><span class="line">Str:		db	&quot;Hello, world!&quot;</span><br><span class="line">times 	510-($-$$)	db	0	</span><br><span class="line">dw 	0xaa55</span><br></pre></td></tr></table></figure>
+<ul>
+<li>下面我们来逐行分析这段汇编代码</li>
+</ul>
+<p><code>org 07c00h</code> 指定程序的起始地址,告诉编译器程序从这里开始</p>
+<blockquote>
+<p>org是Origin的缩写：起始地址源。在汇编语言源程序的开始通常都用一条org伪指令来实现规定程序的起始地址。</p>
+</blockquote>
+<p><code>mov ax, cs</code> 将 cs（代码段寄存器）中的值赋值给 ax 寄存器</p>
+<p><code>mov ds, ax</code> 将 ax 中的值赋值给 ds（ 一个段寄存器）</p>
+<p><code>mov es, ax</code> 将 ax 中的值赋值给 es（）</p>
+<p><code>call DispStr</code> 跳转执行到 DispStr</p>
+<p><code>jump $</code> 死循环</p>
+<p><code>mov ax, Str</code> 将 Str 的首地址放入 ax</p>
+<p><code>mov bp, ax</code> 将 ax 的值赋给 bp（栈底指针）</p>
+<p><code>mov cx, 13</code> 将13放入 ax 寄存器</p>
+<p><code>mov ax, 01301h</code> ax 寄存器高位AH=13，低位 AL=01h</p>
+<p><code>mov bx, 000ch</code> 将000ch 放入 bx 寄存器</p>
+<p><code>mov dl, 0</code> 将光标设置为0行0列</p>
+<p><code>int 10h</code> 调用10h 中断</p>
+<ul>
+<li>int 10h 中断功能介绍</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>AH</th>
+<th>功能</th>
+<th>调用参数</th>
+<th>返回参数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>置光标类型</td>
+<td>(CH）0―3 = 光标开始行<br>（CL）0―3 = 光标结束行</td>
+<td>无</td>
+</tr>
+<tr>
+<td>2</td>
+<td>置光标位置</td>
+<td>BH = 页号<br>DH = 行<br>DL = 列</td>
+<td>无</td>
+</tr>
+<tr>
+<td>3</td>
+<td>读光标位置</td>
+<td>BH = 页号</td>
+<td>CH = 光标开始行<br>CL = 光标结束行<br>DH = 行<br>DL = 列</td>
+</tr>
+<tr>
+<td>4</td>
+<td>读光笔位置</td>
+<td></td>
+<td>AH=0 光笔未触发<br>AH=1 光笔触发<br>CH=象素行<br>BX=象素列<br>DH=字符行<br>DL=字符列</td>
+</tr>
+<tr>
+<td>5</td>
+<td>显示页</td>
+<td>AL = 显示页号</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>屏幕初始化或上卷</td>
+<td>AL = 上卷行数<br>AL =0全屏幕为空白<br>BH = 卷入行属性<br>CH = 左上角行号<br>CL = 左上角列号<br>DH = 右下角行号<br>DL = 右下角列号</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>屏幕初始化或下卷</td>
+<td>AL = 上卷行数<br>AL =0全屏幕为空白<br>BH = 卷入行属性<br>CH = 左上角行号<br>CL = 左上角列号<br>DH = 右下角行号<br>DL = 右下角列号</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>读光标位置的属性和字符</td>
+<td>BH = 显示页</td>
+<td>AH = 属性<br>AL = 字符</td>
+</tr>
+<tr>
+<td>9</td>
+<td>在光标位置显示字符及其属性</td>
+<td>BH = 显示页<br>AL = 字符<br>BL = 属性<br>CX = 字符重复次数</td>
+<td></td>
+</tr>
+<tr>
+<td>A</td>
+<td>在光标位置只显示字符</td>
+<td>BH = 显示页<br>AL = 字符<br>CX = 字符重复次数</td>
+<td></td>
+</tr>
+<tr>
+<td>E</td>
+<td>显示字符(光标前移)</td>
+<td>AL = 字符<br>BL = 前景色</td>
+<td></td>
+</tr>
+<tr>
+<td>13</td>
+<td>显示字符串</td>
+<td>ES:BP = 串地址<br>CX = 串长度<br>DH， DL = 起始行列<br>BH = 页号<br>AL = 0，BL = 属性<br>串：Char，char，……，char<br>AL = 1，BL = 属性<br>串：Char，char，……，char<br>AL = 2<br>串：Char，attr，……，char，attr<br>AL = 3<br>串：Char，attr，……，char，attr</td>
+</tr>
+</tbody>
+</table>
+<p><code>times     510-($-$$)    db    0</code> 将剩余的位置都填充为0</p>
+<p><code>dw 0xaa55</code> 结束标志</p>
+<p>##制作操作系统镜像</p>
+<ul>
+<li>编译源码</li>
+</ul>
+<p><code>nasm hello.asm -o hello.bin</code></p>
+<ul>
+<li>写入软盘镜像扇区</li>
+</ul>
+<p><code>dd if=hello.bin of=helloworld.img bs=512 count=1 conv=notrunc</code></p>
+<p>#运行 HelloWorld</p>
+<p>##编写 bochs 配置文件 - bochsrc</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">###############################################################</span><br><span class="line"># Configuration file for Bochs</span><br><span class="line">###############################################################</span><br><span class="line"></span><br><span class="line"># how much memory the emulated machine will have</span><br><span class="line">megs: 32</span><br><span class="line"></span><br><span class="line"># filename of ROM images</span><br><span class="line">romimage: file=/usr/share/bochs/BIOS-bochs-latest</span><br><span class="line">vgaromimage: file=/usr/share/vgabios/vgabios.bin</span><br><span class="line"></span><br><span class="line"># what disk images will be used</span><br><span class="line">floppya: 1_44=helloworld.img, status=inserted</span><br><span class="line"></span><br><span class="line"># choose the boot disk.</span><br><span class="line">boot: floppy</span><br><span class="line"></span><br><span class="line"># where do we send log messages?</span><br><span class="line"># log: bochsout.txt</span><br><span class="line"></span><br><span class="line"># disable the mouse</span><br><span class="line">mouse: enabled=0</span><br><span class="line"></span><br><span class="line"># enable key mapping, using US layout as default.</span><br><span class="line">keyboard_mapping: enabled=1, map=/usr/share/bochs/keymaps/x11-pc-us.map</span><br><span class="line"></span><br><span class="line">display_library: sdl</span><br></pre></td></tr></table></figure>
+<p>##运行bochs</p>
+<p><code>bochs -f bochsrc</code></p>
+<p>运行结果如下图：</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eupv68j66pj20k50ddaay.jpg" alt="image"></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+            <a href="/tags/从头开始写操作系统/" rel="tag"># 从头开始写操作系统</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/07/27/分析Linux内核创建一个新进程的过程/" rel="next" title="分析Linux内核创建一个新进程的过程">
+                <i class="fa fa-chevron-left"></i> 分析Linux内核创建一个新进程的过程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/04/【从头开始写操作系统系列】使用-bochs-调试操作系统/" rel="prev" title="【从头开始写操作系统系列】使用 bochs 调试操作系统">
+                【从头开始写操作系统系列】使用 bochs 调试操作系统 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

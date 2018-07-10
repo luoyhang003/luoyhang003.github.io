@@ -1,0 +1,999 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Blockchain,Bitcoin," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章给出了Fastcoin多节点环境的搭建文档，FastCoin是一个由@harrywu修改BitCoin源代码产生的一个简单的山寨币。该山寨币在原有BitCoin源码基础上，对BitCoin相关网络参数、创世块信息、工作量机制等进行了修改，从而构建出了一个简单的山寨币系统，该系统加快了原有的挖矿速度，能够更方便的进行区块链开发的相关测试。">
+<meta name="keywords" content="技术,Blockchain,Bitcoin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多节点FastCoin山寨币的搭建">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2018/04/08/fastcoin-multinodes/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章给出了Fastcoin多节点环境的搭建文档，FastCoin是一个由@harrywu修改BitCoin源代码产生的一个简单的山寨币。该山寨币在原有BitCoin源码基础上，对BitCoin相关网络参数、创世块信息、工作量机制等进行了修改，从而构建出了一个简单的山寨币系统，该系统加快了原有的挖矿速度，能够更方便的进行区块链开发的相关测试。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-10T02:41:11.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多节点FastCoin山寨币的搭建">
+<meta name="twitter:description" content="这篇文章给出了Fastcoin多节点环境的搭建文档，FastCoin是一个由@harrywu修改BitCoin源代码产生的一个简单的山寨币。该山寨币在原有BitCoin源码基础上，对BitCoin相关网络参数、创世块信息、工作量机制等进行了修改，从而构建出了一个简单的山寨币系统，该系统加快了原有的挖矿速度，能够更方便的进行区块链开发的相关测试。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2018/04/08/fastcoin-multinodes/"/>
+
+
+
+
+
+  <title> 多节点FastCoin山寨币的搭建 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2018/04/08/fastcoin-multinodes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                多节点FastCoin山寨币的搭建
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-08T22:10:28+08:00">
+                Apr 8 2018
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/08/fastcoin-multinodes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2018/04/08/fastcoin-multinodes/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/08/fastcoin-multinodes/" class="leancloud_visitors" data-flag-title="多节点FastCoin山寨币的搭建">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章给出了Fastcoin多节点环境的搭建文档，FastCoin是一个由<a href="https://github.com/imharrywu/fastcoin" target="_blank" rel="noopener">@harrywu</a>修改<a href="https://github.com/bitcoin/bitcoin" target="_blank" rel="noopener">BitCoin源代码</a>产生的一个简单的山寨币。该山寨币在原有BitCoin源码基础上，对BitCoin相关网络参数、创世块信息、工作量机制等进行了修改，从而构建出了一个简单的山寨币系统，该系统加快了原有的挖矿速度，能够更方便的进行区块链开发的相关测试。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="1-FastCoin简介"><a href="#1-FastCoin简介" class="headerlink" title="1 FastCoin简介"></a>1 FastCoin简介</h1><p>FastCoin是一个由<a href="https://github.com/imharrywu/fastcoin" target="_blank" rel="noopener">@harrywu</a>修改<a href="https://github.com/bitcoin/bitcoin" target="_blank" rel="noopener">BitCoin源代码</a>产生的一个简单的<a href="https://blog.csdn.net/hacode/article/details/40422535" target="_blank" rel="noopener">山寨币</a>。该山寨币在原有BitCoin源码基础上，对BitCoin相关网络参数、创世块信息、工作量机制等进行了修改，从而构建出了一个简单的山寨币系统，该系统加快了原有的挖矿速度，能够更方便的进行区块链开发的相关测试。</p>
+<h1 id="2-系统环境"><a href="#2-系统环境" class="headerlink" title="2 系统环境"></a>2 系统环境</h1><p>该文档的采用了两个节点进行测试，两个节点的系统环境如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">OS: Ubuntu</span><br><span class="line">Linux Kernel: Linux 4.4.0</span><br><span class="line">Memory: 1G</span><br><span class="line">gcc Version: 5.4.0</span><br><span class="line">g++ Version: 5.4.0</span><br></pre></td></tr></table></figure>
+<h1 id="3-安装准备"><a href="#3-安装准备" class="headerlink" title="3 安装准备"></a>3 安装准备</h1><p>该文档采用两个节点对FastCoin山寨币进行搭建，两个节点做同样的配置。</p>
+<h2 id="3-1-获取FastCoin源码"><a href="#3-1-获取FastCoin源码" class="headerlink" title="3.1 获取FastCoin源码"></a>3.1 获取FastCoin源码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/imharrywu/fastcoin.git</span><br></pre></td></tr></table></figure>
+<h2 id="3-2-安装项目构建依赖"><a href="#3-2-安装项目构建依赖" class="headerlink" title="3.2 安装项目构建依赖"></a>3.2 安装项目构建依赖</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install build-essential libtool autotools-dev autoconf pkg-config libssl-dev</span><br></pre></td></tr></table></figure>
+<h2 id="3-3-安装Berkeley-DB-4-8"><a href="#3-3-安装Berkeley-DB-4-8" class="headerlink" title="3.3 安装Berkeley DB 4.8"></a>3.3 安装Berkeley DB 4.8</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> fastcoin/</span><br><span class="line">BITCOIN_ROOT=$(<span class="built_in">pwd</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 选择 Berkeley DB安装路径，此处为fastcoin子目录下</span></span><br><span class="line">BDB_PREFIX=<span class="string">"<span class="variable">$&#123;BITCOIN_ROOT&#125;</span>/db4"</span></span><br><span class="line">mkdir -p <span class="variable">$BDB_PREFIX</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取源码</span></span><br><span class="line">wget <span class="string">'http://download.oracle.com/berkeley-db/db-4.8.30.NC.tar.gz'</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 校验</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">'12edc0df75bf9abd7f82f821795bcee50f42cb2e5f76a6a281b85732798364ef  db-4.8.30.NC.tar.gz'</span> | sha256sum -c</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出结应该为： -&gt; db-4.8.30.NC.tar.gz: OK</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar -xzvf db-4.8.30.NC.tar.gz</span><br><span class="line"></span><br><span class="line"><span class="comment"># 构建安装</span></span><br><span class="line"><span class="built_in">cd</span> db-4.8.30.NC/build_unix/</span><br><span class="line">../dist/configure --<span class="built_in">enable</span>-cxx --<span class="built_in">disable</span>-shared --with-pic --prefix=<span class="variable">$BDB_PREFIX</span></span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<h2 id="3-4-安装Boost"><a href="#3-4-安装Boost" class="headerlink" title="3.4 安装Boost"></a>3.4 安装Boost</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libboost-all-dev</span><br></pre></td></tr></table></figure>
+<h2 id="3-5-安装miniupnp"><a href="#3-5-安装miniupnp" class="headerlink" title="3.5 安装miniupnp"></a>3.5 安装miniupnp</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">wget http://miniupnp.tuxfamily.org/files/download.php?file=miniupnpc-1.6.20120410.tar.gz</span><br><span class="line">tar -xzvf miniupnpc-1.6.20120410.tar.gz</span><br><span class="line"><span class="built_in">cd</span> miniupnpc-1.6</span><br><span class="line">make</span><br><span class="line">sudo make install</span><br></pre></td></tr></table></figure>
+<p>也可以使用Ubuntu源进行安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libminiupnpc-dev</span><br></pre></td></tr></table></figure>
+<h1 id="4-搭建过程"><a href="#4-搭建过程" class="headerlink" title="4 搭建过程"></a>4 搭建过程</h1><h2 id="4-1-编译源码"><a href="#4-1-编译源码" class="headerlink" title="4.1 编译源码"></a>4.1 编译源码</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">./autogen.sh</span><br><span class="line">./configure --with-miniupnpc --without-gui --<span class="built_in">enable</span>-upnp-default LDFLAGS=<span class="string">"-L<span class="variable">$&#123;BDB_PREFIX&#125;</span>/lib/"</span> CPPFLAGS=<span class="string">"-I<span class="variable">$&#123;BDB_PREFIX&#125;</span>/include/"</span> --<span class="built_in">enable</span>-wallet</span><br><span class="line">make</span><br><span class="line">make install</span><br></pre></td></tr></table></figure>
+<p>编译安装之后，在<code>src</code>目录下会生成相应的二进制文件，主要用到的二进制文件有：</p>
+<ul>
+<li>bitcoind：fastcoin主程序</li>
+<li>bitcoin-cli：fastcoin RPC控制台程序</li>
+</ul>
+<p><em>如果在编译过程中遭遇如下报错信息，详见【6.1 Boost依赖库引起的报错】：</em></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/usr/include/boost/variant/get.hpp:178:5: error: invalid application of <span class="string">'sizeof'</span> to incomplete <span class="built_in">type</span> <span class="string">'boost::STATIC_ASSERTION_FAILURE&lt;false&gt;'</span></span><br><span class="line">     BOOST_STATIC_ASSERT_MSG(</span><br><span class="line">     ^</span><br><span class="line">Makefile:3654: recipe <span class="keyword">for</span> target <span class="string">'libbitcoin_server_a-rpcrawtransaction.o'</span> failed</span><br><span class="line">make[2]: *** [libbitcoin_server_a-rpcrawtransaction.o] Error 1</span><br></pre></td></tr></table></figure>
+<h2 id="4-2-相关configuration参数"><a href="#4-2-相关configuration参数" class="headerlink" title="4.2 相关configuration参数"></a>4.2 相关configuration参数</h2><ul>
+<li><code>--without-gui</code>：不使用GUI，如果需要图形化界面，详见【6.6 图形化界面钱包的构建】</li>
+<li><code>--enable-wallet:</code>启用钱包（不启用钱包<code>--disable-wallet</code>也可以进行挖矿，如果不启用钱包，则无需安装Berkeley DB）</li>
+<li><code>--enable-debug:</code>启用debug模式</li>
+<li><code>--enable-tests:</code>对测试程序进行编译</li>
+<li><code>CPPFLAGS</code>、<code>LDFLAGS</code>：指定Berkeley DB的路径</li>
+</ul>
+<h1 id="5-FastCoin测试"><a href="#5-FastCoin测试" class="headerlink" title="5 FastCoin测试"></a>5 FastCoin测试</h1><h2 id="5-1-FastCoin配置文件"><a href="#5-1-FastCoin配置文件" class="headerlink" title="5.1 FastCoin配置文件"></a>5.1 FastCoin配置文件</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi ~/.fastcoin/fastcoin.conf</span><br></pre></td></tr></table></figure>
+<p>在<code>fastcoin.conf</code>文件中添加如下配置信息：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 用户名</span></span><br><span class="line">rpcuser=user</span><br><span class="line"><span class="comment"># 密码</span></span><br><span class="line">rpcpassword=password</span><br><span class="line"></span><br><span class="line">daemon=1</span><br><span class="line">txindex=1</span><br><span class="line">server=1</span><br></pre></td></tr></table></figure>
+<h2 id="5-2-启动bitcoind"><a href="#5-2-启动bitcoind" class="headerlink" title="5.2 启动bitcoind"></a>5.2 启动bitcoind</h2><p>在其中一个节点中执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> fastcoin/src</span><br><span class="line">./bincoind -gen=1 -reindex -checkpoints=0</span><br></pre></td></tr></table></figure>
+<p>另一个节点执行：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./bincoind -gen=1 -reindex -checkpoints=0 -addnode=<span class="string">"另一个节点的IP，例：192.169.1.233"</span></span><br></pre></td></tr></table></figure>
+<h2 id="5-3-bitcoind相关启动参数"><a href="#5-3-bitcoind相关启动参数" class="headerlink" title="5.3 bitcoind相关启动参数"></a>5.3 bitcoind相关启动参数</h2><ul>
+<li><code>-rpcuser=</code>：指定用户名</li>
+<li><code>-rpcpassword=</code>：指定密码</li>
+<li><code>-daemon=</code>：bitcoind作为daemon进程在后台运行</li>
+<li><code>-gen=</code>：生成山寨币（挖矿）</li>
+<li><code>-addnode=</code>：添加节点</li>
+<li><code>-reindex</code>：bitcoind启动时从当前<code>blk000??.dat</code>文件中的index重建区块链</li>
+<li><code>-server</code>：启用RPC服务器</li>
+</ul>
+<h2 id="5-4-bitcoin-cli"><a href="#5-4-bitcoin-cli" class="headerlink" title="5.4 bitcoin-cli"></a>5.4 bitcoin-cli</h2><p>使用<code>./bitcoin-cli &lt;parameters&gt;</code>可以查看当前区块链、网络、钱包等信息。</p>
+<p>相关参数有：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br></pre></td><td class="code"><pre><span class="line">== Blockchain ==</span><br><span class="line">getbestblockhash</span><br><span class="line">getblock &quot;hash&quot; ( verbose )</span><br><span class="line">getblockchaininfo</span><br><span class="line">getblockcount</span><br><span class="line">getblockhash index</span><br><span class="line">getchaintips</span><br><span class="line">getdifficulty</span><br><span class="line">getmempoolinfo</span><br><span class="line">getrawmempool ( verbose )</span><br><span class="line">gettxout &quot;txid&quot; n ( includemempool )</span><br><span class="line">gettxoutsetinfo</span><br><span class="line">verifychain ( checklevel numblocks )</span><br><span class="line"></span><br><span class="line">== Control ==</span><br><span class="line">getinfo</span><br><span class="line">help ( &quot;command&quot; )</span><br><span class="line">stop</span><br><span class="line"></span><br><span class="line">== Generating ==</span><br><span class="line">getgenerate</span><br><span class="line">setgenerate generate ( genproclimit )</span><br><span class="line"></span><br><span class="line">== Mining ==</span><br><span class="line">getblocktemplate ( &quot;jsonrequestobject&quot; )</span><br><span class="line">getmininginfo</span><br><span class="line">getnetworkhashps ( blocks height )</span><br><span class="line">prioritisetransaction &lt;txid&gt; &lt;priority delta&gt; &lt;fee delta&gt;</span><br><span class="line">submitblock &quot;hexdata&quot; ( &quot;jsonparametersobject&quot; )</span><br><span class="line"></span><br><span class="line">== Network ==</span><br><span class="line">addnode &quot;node&quot; &quot;add|remove|onetry&quot;</span><br><span class="line">getaddednodeinfo dns ( &quot;node&quot; )</span><br><span class="line">getconnectioncount</span><br><span class="line">getnettotals</span><br><span class="line">getnetworkinfo</span><br><span class="line">getpeerinfo</span><br><span class="line">ping</span><br><span class="line"></span><br><span class="line">== Rawtransactions ==</span><br><span class="line">createrawtransaction [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n&#125;,...] &#123;&quot;address&quot;:amount,...&#125;</span><br><span class="line">decoderawtransaction &quot;hexstring&quot;</span><br><span class="line">decodescript &quot;hex&quot;</span><br><span class="line">getrawtransaction &quot;txid&quot; ( verbose )</span><br><span class="line">sendrawtransaction &quot;hexstring&quot; ( allowhighfees )</span><br><span class="line">signrawtransaction &quot;hexstring&quot; ( [&#123;&quot;txid&quot;:&quot;id&quot;,&quot;vout&quot;:n,&quot;scriptPubKey&quot;:&quot;hex&quot;,&quot;redeemScript&quot;:&quot;hex&quot;&#125;,...] [&quot;privatekey1&quot;,...] sighashtype )</span><br><span class="line"></span><br><span class="line">== Util ==</span><br><span class="line">createmultisig nrequired [&quot;key&quot;,...]</span><br><span class="line">estimatefee nblocks</span><br><span class="line">estimatepriority nblocks</span><br><span class="line">validateaddress &quot;fastcoinaddress&quot;</span><br><span class="line">verifymessage &quot;fastcoinaddress&quot; &quot;signature&quot; &quot;message&quot;</span><br><span class="line"></span><br><span class="line">== Wallet ==</span><br><span class="line">addmultisigaddress nrequired [&quot;key&quot;,...] ( &quot;account&quot; )</span><br><span class="line">backupwallet &quot;destination&quot;</span><br><span class="line">dumpprivkey &quot;fastcoinaddress&quot;</span><br><span class="line">dumpwallet &quot;filename&quot;</span><br><span class="line">encryptwallet &quot;passphrase&quot;</span><br><span class="line">getaccount &quot;fastcoinaddress&quot;</span><br><span class="line">getaccountaddress &quot;account&quot;</span><br><span class="line">getaddressesbyaccount &quot;account&quot;</span><br><span class="line">getbalance ( &quot;account&quot; minconf includeWatchonly )</span><br><span class="line">getnewaddress ( &quot;account&quot; )</span><br><span class="line">getrawchangeaddress</span><br><span class="line">getreceivedbyaccount &quot;account&quot; ( minconf )</span><br><span class="line">getreceivedbyaddress &quot;fastcoinaddress&quot; ( minconf )</span><br><span class="line">gettransaction &quot;txid&quot; ( includeWatchonly )</span><br><span class="line">getunconfirmedbalance</span><br><span class="line">getwalletinfo</span><br><span class="line">importaddress &quot;address&quot; ( &quot;label&quot; rescan )</span><br><span class="line">importprivkey &quot;fastcoinprivkey&quot; ( &quot;label&quot; rescan )</span><br><span class="line">importwallet &quot;filename&quot;</span><br><span class="line">keypoolrefill ( newsize )</span><br><span class="line">listaccounts ( minconf includeWatchonly)</span><br><span class="line">listaddressgroupings</span><br><span class="line">listlockunspent</span><br><span class="line">listreceivedbyaccount ( minconf includeempty includeWatchonly)</span><br><span class="line">listreceivedbyaddress ( minconf includeempty includeWatchonly)</span><br><span class="line">listsinceblock ( &quot;blockhash&quot; target-confirmations includeWatchonly)</span><br><span class="line">listtransactions ( &quot;account&quot; count from includeWatchonly)</span><br><span class="line">listunspent ( minconf maxconf  [&quot;address&quot;,...] )</span><br><span class="line">lockunspent unlock [&#123;&quot;txid&quot;:&quot;txid&quot;,&quot;vout&quot;:n&#125;,...]</span><br><span class="line">move &quot;fromaccount&quot; &quot;toaccount&quot; amount ( minconf &quot;comment&quot; )</span><br><span class="line">sendfrom &quot;fromaccount&quot; &quot;tofastcoinaddress&quot; amount ( minconf &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">sendmany &quot;fromaccount&quot; &#123;&quot;address&quot;:amount,...&#125; ( minconf &quot;comment&quot; )</span><br><span class="line">sendtoaddress &quot;fastcoinaddress&quot; amount ( &quot;comment&quot; &quot;comment-to&quot; )</span><br><span class="line">setaccount &quot;fastcoinaddress&quot; &quot;account&quot;</span><br><span class="line">settxfee amount</span><br><span class="line">signmessage &quot;fastcoinaddress&quot; &quot;message&quot;</span><br></pre></td></tr></table></figure>
+<p>具体的RPC调用可以参考<a href="http://chainquery.com/bitcoin-api" target="_blank" rel="noopener">BitCoin RPC API文档</a>。</p>
+<h1 id="6-注意事项"><a href="#6-注意事项" class="headerlink" title="6 注意事项"></a>6 注意事项</h1><h2 id="6-1-Boost依赖库引起的报错"><a href="#6-1-Boost依赖库引起的报错" class="headerlink" title="6.1 Boost依赖库引起的报错"></a>6.1 Boost依赖库引起的报错</h2><p>如果在编译FastCoin源码过程中遭遇如下报错信息，则需要我们对FastCoin源码进行修改：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">/usr/include/boost/variant/get.hpp:178:5: error: invalid application of <span class="string">'sizeof'</span> to incomplete <span class="built_in">type</span> <span class="string">'boost::STATIC_ASSERTION_FAILURE&lt;false&gt;'</span></span><br><span class="line">     BOOST_STATIC_ASSERT_MSG(</span><br><span class="line">     ^</span><br><span class="line">Makefile:3654: recipe <span class="keyword">for</span> target <span class="string">'libbitcoin_server_a-rpcrawtransaction.o'</span> failed</span><br><span class="line">make[2]: *** [libbitcoin_server_a-rpcrawtransaction.o] Error 1</span><br></pre></td></tr></table></figure>
+<p>将<code>src/rpcrawtransaction.c</code>文件中的第288行：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> CScriptID&amp; hash = boost::get&lt;<span class="keyword">const</span> CScriptID&amp;&gt;(address);</span><br></pre></td></tr></table></figure>
+<p>修改为：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> CScriptID&amp; hash = boost::get&lt;CScriptID&gt;(address);</span><br></pre></td></tr></table></figure>
+<h2 id="6-2-Berkeley-DB安装问题"><a href="#6-2-Berkeley-DB安装问题" class="headerlink" title="6.2 Berkeley DB安装问题"></a>6.2 Berkeley DB安装问题</h2><p>如果不想对Berkeley DB的源码进行编译安装，还可以直接采用Debian源进行安装：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo add-apt-repository ppa:bitcoin/bitcoin</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install libdb4.8-dev libdb4.8++-dev</span><br></pre></td></tr></table></figure>
+<h2 id="6-3-nTXConfirmTarget参数"><a href="#6-3-nTXConfirmTarget参数" class="headerlink" title="6.3 nTXConfirmTarget参数"></a>6.3 nTXConfirmTarget参数</h2><p>该参数是确认目标值，用于计算矿工费用，默认值为1，适用于双节点的系统，如需对该参数进行修改。可以在执行<code>./bitcoind</code>时添加参数<code>-txconfirmtarget=number</code>进行配置。</p>
+<h2 id="6-4-txindex参数问题"><a href="#6-4-txindex参数问题" class="headerlink" title="6.4 txindex参数问题"></a>6.4 txindex参数问题</h2><p>如果在<code>~/.fastcoin/fastcoin.conf</code>配置文件中添加了<code>txindex</code>参数，则需要在启动<code>bitcoind</code>时添加启动参数<code>—reindex</code>。</p>
+<h2 id="6-5-图形化界面钱包的构建"><a href="#6-5-图形化界面钱包的构建" class="headerlink" title="6.5 图形化界面钱包的构建"></a>6.5 图形化界面钱包的构建</h2><p>如需使用图形化界面的钱包，需要安装QT并且在<code>./congfiguration</code>时不使用<code>--without-gui</code>选项，FastCoin默认使用QT4：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libqt4-dev libprotobuf-dev protobuf-compiler</span><br></pre></td></tr></table></figure>
+<p>如需使用QT5，需要采用<code>--with-gui=qt5</code>选项，并安装QT5：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libqt5gui5 libqt5core5a libqt5dbus5 qttools5-dev qttools5-dev-tools libprotobuf-dev protobuf-compiler</span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Blockchain/" rel="tag"># Blockchain</a>
+          
+            <a href="/tags/Bitcoin/" rel="tag"># Bitcoin</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/05/20/ftvm-notes/" rel="next" title="容错虚拟机分布式系统的设计">
+                <i class="fa fa-chevron-left"></i> 容错虚拟机分布式系统的设计
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/17/eth-basis-accounts-address-pubkey-prikey/" rel="prev" title="【Ethereum基础】：账户、地址、私钥和公钥">
+                【Ethereum基础】：账户、地址、私钥和公钥 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2018/04/08/fastcoin-multinodes/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-FastCoin简介"><span class="nav-number">1.</span> <span class="nav-text">1 FastCoin简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-系统环境"><span class="nav-number">2.</span> <span class="nav-text">2 系统环境</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-安装准备"><span class="nav-number">3.</span> <span class="nav-text">3 安装准备</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-获取FastCoin源码"><span class="nav-number">3.1.</span> <span class="nav-text">3.1 获取FastCoin源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-安装项目构建依赖"><span class="nav-number">3.2.</span> <span class="nav-text">3.2 安装项目构建依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-安装Berkeley-DB-4-8"><span class="nav-number">3.3.</span> <span class="nav-text">3.3 安装Berkeley DB 4.8</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-安装Boost"><span class="nav-number">3.4.</span> <span class="nav-text">3.4 安装Boost</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-安装miniupnp"><span class="nav-number">3.5.</span> <span class="nav-text">3.5 安装miniupnp</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-搭建过程"><span class="nav-number">4.</span> <span class="nav-text">4 搭建过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-编译源码"><span class="nav-number">4.1.</span> <span class="nav-text">4.1 编译源码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-相关configuration参数"><span class="nav-number">4.2.</span> <span class="nav-text">4.2 相关configuration参数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-FastCoin测试"><span class="nav-number">5.</span> <span class="nav-text">5 FastCoin测试</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-FastCoin配置文件"><span class="nav-number">5.1.</span> <span class="nav-text">5.1 FastCoin配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-启动bitcoind"><span class="nav-number">5.2.</span> <span class="nav-text">5.2 启动bitcoind</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-bitcoind相关启动参数"><span class="nav-number">5.3.</span> <span class="nav-text">5.3 bitcoind相关启动参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-bitcoin-cli"><span class="nav-number">5.4.</span> <span class="nav-text">5.4 bitcoin-cli</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-注意事项"><span class="nav-number">6.</span> <span class="nav-text">6 注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-Boost依赖库引起的报错"><span class="nav-number">6.1.</span> <span class="nav-text">6.1 Boost依赖库引起的报错</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-Berkeley-DB安装问题"><span class="nav-number">6.2.</span> <span class="nav-text">6.2 Berkeley DB安装问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-nTXConfirmTarget参数"><span class="nav-number">6.3.</span> <span class="nav-text">6.3 nTXConfirmTarget参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-4-txindex参数问题"><span class="nav-number">6.4.</span> <span class="nav-text">6.4 txindex参数问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-5-图形化界面钱包的构建"><span class="nav-number">6.5.</span> <span class="nav-text">6.5 图形化界面钱包的构建</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

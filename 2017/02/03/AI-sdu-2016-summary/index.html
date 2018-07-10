@@ -1,0 +1,1015 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="AI,笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="本篇博客为山东大学人工智能课程（2016-2017）的复习提要，希望对大家的考试复习有所帮助。">
+<meta name="keywords" content="AI,笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="山东大学人工智能课程复习提要（2017）">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2017/02/03/AI-sdu-2016-summary/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="本篇博客为山东大学人工智能课程（2016-2017）的复习提要，希望对大家的考试复习有所帮助。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-03T06:41:29.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="山东大学人工智能课程复习提要（2017）">
+<meta name="twitter:description" content="本篇博客为山东大学人工智能课程（2016-2017）的复习提要，希望对大家的考试复习有所帮助。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2017/02/03/AI-sdu-2016-summary/"/>
+
+
+
+
+
+  <title> 山东大学人工智能课程复习提要（2017） | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2017/02/03/AI-sdu-2016-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                山东大学人工智能课程复习提要（2017）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-02-03T14:40:14+08:00">
+                Feb 3 2017
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/02/03/AI-sdu-2016-summary/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2017/02/03/AI-sdu-2016-summary/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/02/03/AI-sdu-2016-summary/" class="leancloud_visitors" data-flag-title="山东大学人工智能课程复习提要（2017）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本篇博客为山东大学人工智能课程（2016-2017）的复习提要，希望对大家的考试复习有所帮助。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="填空部分"><a href="#填空部分" class="headerlink" title="填空部分"></a>填空部分</h2><ol>
+<li>构成产生式系统的基本元素有<u>综合数据库</u>、<u>规则库</u>、<u>控制系统</u>，控制策略按执行规则的方式分类，分为<u>正向</u>、<u>逆向</u>、<u>双向</u>三类。</li>
+<li>归结过程中控制策略的作用是给出控制策略，以使仅对选择合适的子句间方可做归结，避免<u>多余的、不必要的归结式出现</u>。常见的控制策略有<u>线性归结策略</u>、<u>支持集策略</u>、<u>单元归结策略</u>、<u>输入归结</u>策略。</li>
+<li>公式 G 和公式的子句集并不等值，但他们在<u>不可满足</u>的意义下是一致的。</li>
+<li>与或图的启发式搜索算法 <u>AO*算法</u>的两个过程分别是<u>分解（将复杂的大问题分解为一组简单的小问题）</u>和<u>变换（将较难问题变换为较容易的等价的或等效的问题）</u></li>
+<li>人工智能的研究途径主要有两种不同的观点，一种观点称为<u>符号主义</u>，认为人类智能基本单元是<u>符号</u>。另一种观点称为<u>连接主义</u>，认为职能的基本单元是<u>神经元</u>。</li>
+<li>集合{P(a, x, f(g(y)), P(z, f(z), f(u)))} 的 mgu（最一般合一置换）为 <u>{z/a, f(x)/x, u/g(y)}</u>。</li>
+<li>语义网络是对知识的<u>有向图</u>表示方法，一个最简单的语义网络是一个形如<u>节点</u>、<u>弧</u>、<u>节点</u>的三元组，语义网络可以描述事物间多种复杂的语义关系，常用 ISA、AKO 弧表示节点间具有<u>类属</u>的分类关系。语义网络下的推理是通过<u>匹配、继承</u>实现的。</li>
+<li>当前人工智能研究的热点之一就是机器学习。常见的机器学习方法课分为<u>决策树学习</u>、<u>神经网络</u>、<u>蚁群算法</u>、<u>粒子群算法</u>和<u>遗传算法</u>等。一个机器学习系统应该有<u>环境</u>、<u>知识库</u>、<u>学习环节</u>和<u>执行环节</u>四个基本部分组成。</li>
+<li>常用的知识表示法有<u>逻辑表示法</u>、<u>语义网络</u>、<u>框架理论</u>、<u>过程表示</u>、<u>脚本表示</u>等。</li>
+<li>有两个算法 A*算法 A1 和 A2，若 A1比 A2有较多的启发信息，则 h1(n) <u>大于</u> h2(n)</li>
+<li>关于 A 算法与 A*算法，若规定 h(n)&gt;=0,并且定义启发函数：f*(n) = g*(n)+h*(n) 表示初始状态 S0 经点 n 到目标状态 Sg最优路径的费用。其中 g*(n) 为 S0 到 n 的最小费用，h*(n) 为到 Sg 的实际最小费用。若另 <u>h(n)==0</u> ，则 A算法相当于<u>宽度优先搜索</u>。若另 <u>g(n)==h(n)==0</u> ，则相当于<u>随机算法</u>。若另 <u>g(n)==0</u> ，则相当于<u>最佳优先算法</u>。特别是当要求 <u>h(n)&lt;=h*(n)</u>，就称这种 A 算法为 A* 算法。</li>
+<li>群智能是指无智能或简单智能的主题通过任何形式的聚集协同二表现出智能行为的特点。群智能潜在的两大特点是<u>并行性</u>和<u>分布式</u>。其典型算法有<u>蚁群算法</u>和<u>粒子群算法</u>。已知的群智能理论的研究和应用证明群智能算法是一种能够有效解决大<u>多数优化问题</u>的新方法。</li>
+<li>蚁群算法是模拟自然界中蚂蚁寻找从巢穴到食物的最佳路径的行为而设计的，蚂蚁在遇到食物返回的路上会分泌<u>信息素</u>，信息素会随着时间慢慢挥发，且关键路径上的信息素相对浓度<u>高</u>，蚁群算法已被广泛应用于许多优化问题中，其中有<u>聚类问题</u>、<u>路由算法设计</u>、<u>图着色</u>、<u>车辆调度</u>、<u>机器人路径规划</u>。</li>
+<li>粒子群优化算法是模拟<u>鸟群</u>或<u>蜂群</u>或<u>个体之间的协作和信息共享</u>的觅食行为而设计的，其基本思想是通过群体中<u>广泛应用于各类优化问题上</u>和在<u>军事领域中的应用</u>来寻找最优解。粒子群优化算法的应用领域有<u>对巡航导弹的飞行高度进行优化</u>、<u>车辆路径问题的应用</u>、<u>邮政投递</u>、<u>火车及汽车的调度</u>、<u>港口装卸集装箱</u>。</li>
+<li>遗传算法是以达尔文的自然选择学说为基础发展起来的。遗传算法的三种基本操作是<u>复制、交叉、变异</u>；在遗传算法中，衡量个体优劣的尺度是<u>适应度</u>，它决定某些个体是繁殖或是消亡，同时也是驱动遗传算法的动力。</li>
+<li>蚁群算法是模拟自然界中蚂蚁寻找从巢穴到食物的最佳路径的行为而设计的，依据蚁群算法的基本原理，蚁群算法中的行为因子有<u>觅食规则</u>、<u>移动规则</u>、<u>避障规则</u>、<u>信息素规则</u>、<u>范围</u>、<u>环境</u>等。</li>
+<li>近年有学者提出的人工鱼群算法（Artificial Fish Swarm Algorith - AFSA）是模仿自然界中鱼群的行为而提出来的解决问题的算法，从模拟鱼群的<u>聚集行为</u>、<u>觅食行为</u>、<u>跟随行为</u>和<u>移动行为</u>等方面来模拟自然界中的鱼群行为。</li>
+<li>遗传算法将『优胜劣汰，适者生存』的<u>生物进化原理</u>引入优化参数形成的编码串群体中，按所选择的<u>适应度函数</u>并通过遗传中的<u>复制</u>、<u>交叉</u>以及<u>变异</u>对个体进行<u>筛选</u>，<u>适应度高</u>的个体被保留下来，组成新的群体，新的群体既继承了上一代的信息，又优于上一代。</li>
+<li>决策树是一种知识概念表示方法，能表示与或规则；是一种<u>图形表示的监督学习方法</u>。而人工神经网络（ANNs）是<u>非图形符号表示法</u>，又是一种函数表示法；即从大量的数据中<u>学习值为实数、离散值或向量的函数</u>。人工神经网络对于训练数据中『错误』数据的<u>错误健壮性很好</u>。人工神经网络的训练学习过程中有一个称为『学习速率 n』的常数，n取值过大会<u>引起漂移</u>，n 取值过小会<u>收敛速度太慢，学习效率不高</u>。大量的数据中抽取规则函数，错误健壮性很好。</li>
+<li>多层神经网络的学习过程中有一种是反向传播算法（Back Propagation-BP）， 其基本思想是利用<u>输出单元的误差再计算上一层单元的误差，以次向上传播</u>以次向上传播，俗称反向传播。又称<u>逆推学习算法</u>。</li>
+<li>归纳学习需要的预先假定，称为归纳偏置，归纳学习算法隐含了归纳偏置， 候选消除算法的归纳偏置是<u>目标概念可以在假设空间中找到</u>，所以又称<u>限定偏置</u>。ID3是一种典型的决策树学习方法，ID3的归纳偏置有两点，分别是<u>搜索完整的假设空间</u>，<u>优先选择较小的树</u>。Find-S 算法<u>寻找极大特殊假设</u>使用一般到特殊序，在偏序结构的一个分支上 执行<u>一般到特殊搜索</u>搜索，寻找一个与样例一致的<u>最特殊</u>假设。</li>
+<li>自然语言处理是研究用机器处理人类语言的理论和技术,又叫<u>自然语言理解</u>, 它研究能实现人与计算机之间用自然语言进行有效通信的各种理论和方法, 自然语言处理研究面临的两大困难是<u>歧义病构</u>和<u>音歧义</u>,其中歧义分为<u>分词歧义</u>、<u>短语歧义</u>、<u>词义歧义</u>、 <u>语用歧义</u>四个方面。</li>
+<li>在证据理论(Evident Theory)中引入了信任函数(BeL)，它满足了<u>概率论弱公理</u>。在概率论中，当先验概率很难获得，但又要被迫给出时，用证据理论能区分<u>不确定性</u>和<u>不知道</u>的差别。因而它比概率论更 适合于<u>专家系统推理方法</u>。概率论是证据理论的一个特例，有时也称<u>证据理论</u>为广义概率论。</li>
+<li>贝叶斯网是一个在弧的连接关系上加入<u>连接强度</u> 的因果关系网络。由两个部分组成，其一是 DAG，即 <u>有向无环图</u>  ;其二是 CPT， 即 <u>概率分配表</u> 。贝叶斯网络通常使用三种推理是 <u>因果推理</u> 、 <u>诊断推理</u> 、  <u>辩解推理</u>  。</li>
+<li>在确定性推理模型中的可信度因子 CF(H,E) <u>证据 e 得到的假设 h 的确定性因子</u>  的取值范围为<u>[-1,+1]</u>  ;主观 Bayes 方法中规定规 则的静态强度 LS,LN 的值应 <u>[0,∞)</u>。</li>
+</ol>
+<h2 id="简答部分"><a href="#简答部分" class="headerlink" title="简答部分"></a>简答部分</h2><ol>
+<li><p>人工智能方法与传统程序的不同有哪些？</p>
+<p>答：<strong>传统方法解决问题利用已有知识 , 问题可以方便的结构化数据结构 , 数学形式表达， 数学公式、算法。利用知识特别是依赖人类经验的启发知识是人工智能方法与传统数学方法的根本不同之处，基于此，人工智能可以解决众多的难以数学表达的非结构化 的实际问题 , 人工智能首先研究的是以符号表示的知识 , 而不是数值为研究对象 , 其次采用的是启发式推理的方法而不是常规的算法 , 控制结构和领域知识是分离的，同时还允许出现相对正确的答案。</strong></p>
+</li>
+<li><p>在与或图的问题求解过程中，哪几类节点称为能解节点?</p>
+<p>答：<strong>终节点是能解节点；若非终节点有”或”子节点时，当且仅当其子节点至少有一能解时，该非终节点才能解；若非终节点有”与”子节点时，当且仅当其子节点均能解时，该非终节点才能解。</strong></p>
+</li>
+<li><p>宽度优先搜索和深度优先搜索有何不同?在何种情况下宽度优先搜索优于深度优先搜索?在何种情况下深度优先搜索优于宽度优先搜索?两种搜索策略是否都是完备的?</p>
+<p>答：<strong>宽度优先搜索就是逐层穷举搜索。深度优先搜索就是分支优先搜索待搜索问题的解存在且关键路径较短时宽 度优先搜索优于深度优先搜索;待搜索问题的解存在且关键路径较长，而深度优先搜索过程中优先发展的正好是解所在的路径时深度优先搜索优于宽度优先搜索。宽度优先搜索是完备的 。</strong></p>
+</li>
+<li><p>举例解释语义网络(Semantic Network)与知识图谱(Knowledge graph)的区别与联系。</p>
+<p>答：<strong>知识图谱是通过将数学、图形学、可视化技术、信息科学等的理论与方法与计量学的引文分析、共现分析等方法结合，并利用可视化的图谱形象地展示知识体系的方法。 它把复杂的知识领域通过数据挖掘、信息处理、知识计量和图形绘制而显示出来，揭示知识领域的动态发展规律， 为学科研究供切实的、有价值的参考。 据不完全统计，Google 知识图谱到目前为止包含了 5 亿个实体和 35 亿条事实(形如实体-关系-实体， 和实体-属性值)。</strong></p>
+<p><strong>语义网络 特点 (1) 结构性好: 语义网络是一种结构化的知识表示方法，它能够把事物的属性和事物间的各种语义关系显示地表示出来; (2)联想性: 语义网络作为人类联想记忆模型提出来，强调的就是事物之间的语义关系。 (3)自然性: 语义网络实际上是一个带有标示的有向图，可直观的把事物的属性及事物间的语义联系表示出来，便于理解。 利用语义网络表示知识的问题有:自然语言理解，问答系统， 专家系统等。 缺点:推理规则不十分明显，表达范围有限，一旦结点个数太多，网络结构复杂。</strong></p>
+</li>
+<li><p>举例说明大型应用软件系统开发过程中采用的软件技术(体系)架构是如何体现框架理论知识表示思想的。</p>
+<p>答：<strong>软件开发过程中框架理论的使用软件框架(架构)特点: 为某一特定目的实现一个基本的、可执行的 构架 ；包含了应用程序从启动到运行的主要流程；流程中那些无法确定的步骤留给用户来实现；程序运行时框架系统自动调用用户实现的功能组件；系统的行为是主动的。</strong></p>
+<p><strong>软件开发过程中框架理论的使用：人们将相同类型问题的解决途径进行抽象， 抽取成一个应用框架 Framework；提供了一套明确机制；让开发人员很容易的扩展和控制整个 Framework 开发上的结构。</strong></p>
+<p><strong>软件开发过程中框架理论的使用：</strong></p>
+<p><strong>系统级框架： MFC 框架、 .NET 中的应用框架、 JavaAWT</strong></p>
+<p><strong>中间件框架： Spring 框架、 Struts 框架、 Hibernate 框架、 EXTjs 框架</strong></p>
+<p><strong>企业应用框架为不同行业的应用开发专用的企业级框架系统 ：JBOSS, eBOSS, websphere等</strong></p>
+<p><strong>软件开发过程中框架理论的使用：</strong></p>
+<p><strong>Struts 框架: Struts 对 Model，View 和 Controller 都提供了对应的组件;</strong></p>
+<p><strong>Mode 槽:ActionForm 和 JavaBean 组成;</strong></p>
+<p><strong>View 槽: JSP(或 HTML、PHP……)实现;</strong></p>
+<p><strong>Controller 槽:核心控制器，业务逻辑控制器。</strong></p>
+</li>
+<li><p>简要说明粒子群优化算法与遗传算法的共性和差异。</p>
+<p><strong>共性：( 1 )都属于仿生算法;( 2 )都属于全局优化方法;( 3 )都属于随机搜索算法;( 4 )都隐含并行性;( 5 )根据个体的适配信息进行搜索，因此不受函数约束条件的限制， 如连续性、可导性等;( 6 )对高维复杂问题，往往会遇到早熟收敛和收敛性能差的缺点，都无法保证收敛到最优点。</strong></p>
+<p><strong>差异：(1) PSO 有记忆，所有粒子都保存较优解的知识，而 GA ，以前的知识随着种群的改变被改变; (2) PSO 中的粒子是一种单向共享信息机制。而 GA 中的染色体之间相互共享信息，使得整个种群都向最优区域移动; (3) GA 需要编码和遗传操作，而 PSO 没有交叉和变异操作，粒子只是通过内部速度进行更新，因此原理更简单、参数更少、实现更容易。</strong></p>
+</li>
+<li><p>影响算法 A 启发能力的重要因素有哪些。</p>
+<p><strong>( 1 )路径的耗散值; ( 2 )求解路径时所扩展的节点数; ( 3 )计算 h 所需的工作量。</strong></p>
+<p><strong>因此选择 h 函数时，应综合考虑这些因素以便使启发能力最大</strong></p>
+</li>
+<li><p>决策树学习法与神经网络学习法的区别。</p>
+<p><strong>决策树是知识一种图形符号表示，能表示与或规则;形象直观地图形符号</strong></p>
+<p><strong>神经网络学习是非图形符号表示法，是一种函数表示法;从大量的数据中抽取规则函数</strong></p>
+</li>
+<li><p>为什么说遗传算法是一种“智能式搜索”，又是一种“渐进式优化搜索”。</p>
+<p><strong>遗传算法的搜索策略，既不是盲目式的乱搜索，也不是穷举式的全面搜索， 它是有指导的搜索。指导遗传算法执行搜索的依据是适应度，也就是它的目标函数。利用适应度，使遗传算法逐步逼近目标值。</strong></p>
+<p><strong>渐进式优化 : 遗传算法利用复制、交换、突变等操作，使新一代的结果优越于旧一代，通过不断迭代，逐渐得出最优的结果，它是一种反复迭代的过程</strong></p>
+</li>
+<li><p>简述α-β过程的剪枝规则。</p>
+<p><strong>后辈节点的值≤祖先节点的值时，α剪枝</strong></p>
+<p><strong>后辈节点的值≥祖先节点的值时，β剪枝</strong></p>
+</li>
+<li><p>简述关于群智能理论(算法)研究存在那些问题。</p>
+<p><strong>数学理论基础相对薄弱，涉及的各种参数设置没有确切的理论依据带有随机性，每次的求解不一定一样，当处理突发事件时，系统的反映可能是不可预测的，这在一定程度上增加了其应用风险。</strong></p>
+</li>
+</ol>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/AI/" rel="tag"># AI</a>
+          
+            <a href="/tags/笔记/" rel="tag"># 笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/02/run-go-on-raspberry-3/" rel="next" title="在 Raspberry3 上搭建 Go 环境">
+                <i class="fa fa-chevron-left"></i> 在 Raspberry3 上搭建 Go 环境
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/26/thread-pool-in-java-1/" rel="prev" title="【从0到1学习Java线程池】Java线程池的简介以及使用">
+                【从0到1学习Java线程池】Java线程池的简介以及使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2017/02/03/AI-sdu-2016-summary/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#填空部分"><span class="nav-number">1.</span> <span class="nav-text">填空部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#简答部分"><span class="nav-number">2.</span> <span class="nav-text">简答部分</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

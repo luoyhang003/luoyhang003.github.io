@@ -1,0 +1,1053 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Python,数学,数学建模," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇博文中，同样是一个很简单的数学问题，但是解决起来比上一个的问题要复杂一些。在这次模型求解中，我会使用两种方法，一种是纯粹的数学方法，另一种是通过计算机程序来计算，通过计算机求解我们可以求解一些规模更大的问题。由于这篇文章篇幅我预计会比较长，为了不混淆，上一篇文章《椅子能在不平的地面上放平吗？》中的延伸问题我会再写一篇文章单独解答。">
+<meta name="keywords" content="Python,数学,数学建模">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【数学模型】商人们怎样过河？">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/01/06/【数学模型】商人们怎样过河？/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇博文中，同样是一个很简单的数学问题，但是解决起来比上一个的问题要复杂一些。在这次模型求解中，我会使用两种方法，一种是纯粹的数学方法，另一种是通过计算机程序来计算，通过计算机求解我们可以求解一些规模更大的问题。由于这篇文章篇幅我预计会比较长，为了不混淆，上一篇文章《椅子能在不平的地面上放平吗？》中的延伸问题我会再写一篇文章单独解答。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/37ff9b80306094a255d36f7a874f6d71.png">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/c9bb1cf38e0ddfd26bc34e24b8c746a6.png">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/ee3ce37255fa062370eb8a6a6e2a2707.PNG">
+<meta property="og:updated_time" content="2016-01-17T10:14:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【数学模型】商人们怎样过河？">
+<meta name="twitter:description" content="这篇博文中，同样是一个很简单的数学问题，但是解决起来比上一个的问题要复杂一些。在这次模型求解中，我会使用两种方法，一种是纯粹的数学方法，另一种是通过计算机程序来计算，通过计算机求解我们可以求解一些规模更大的问题。由于这篇文章篇幅我预计会比较长，为了不混淆，上一篇文章《椅子能在不平的地面上放平吗？》中的延伸问题我会再写一篇文章单独解答。">
+<meta name="twitter:image" content="http://lyhpic-img.stor.sinaapp.com/original/37ff9b80306094a255d36f7a874f6d71.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/01/06/【数学模型】商人们怎样过河？/"/>
+
+
+
+
+
+  <title> 【数学模型】商人们怎样过河？ | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/01/06/【数学模型】商人们怎样过河？/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【数学模型】商人们怎样过河？
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-06T13:22:50+08:00">
+                Jan 6 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学模型/" itemprop="url" rel="index">
+                    <span itemprop="name">数学模型</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/06/【数学模型】商人们怎样过河？/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/01/06/【数学模型】商人们怎样过河？/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/01/06/【数学模型】商人们怎样过河？/" class="leancloud_visitors" data-flag-title="【数学模型】商人们怎样过河？">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇博文中，同样是一个很简单的数学问题，但是解决起来比<a href="http://blog.luoyuanhang.com/2016/01/03/%E3%80%90%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B%E3%80%91%E6%A4%85%E5%AD%90%E8%83%BD%E5%9C%A8%E4%B8%8D%E5%B9%B3%E7%9A%84%E5%9C%B0%E9%9D%A2%E4%B8%8A%E6%94%BE%E5%B9%B3%E5%90%97%EF%BC%9F%EF%BC%881%EF%BC%89/">上一个的问题</a>要复杂一些。在这次模型求解中，我会使用两种方法，一种是纯粹的数学方法，另一种是通过计算机程序来计算，通过计算机求解我们可以求解一些规模更大的问题。由于这篇文章篇幅我预计会比较长，为了不混淆，上一篇文章<a href="http://blog.luoyuanhang.com/2016/01/03/%E3%80%90%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B%E3%80%91%E6%A4%85%E5%AD%90%E8%83%BD%E5%9C%A8%E4%B8%8D%E5%B9%B3%E7%9A%84%E5%9C%B0%E9%9D%A2%E4%B8%8A%E6%94%BE%E5%B9%B3%E5%90%97%EF%BC%9F%EF%BC%881%EF%BC%89/">《椅子能在不平的地面上放平吗？》</a>中的延伸问题我会再写一篇文章单独解答。</p>
+</blockquote>
+<a id="more"></a>
+<p>#问题引出</p>
+<blockquote>
+<p><strong>问题： 三名商人各带一个随从过河，一只小船只能容纳两个人，随从们约定，只要在河的任何一岸，一旦随从人数多于商人人数就杀人越货，但是商人们知道了他们的约定，并且如何过河的大权掌握在商人们手中，商人们该采取怎样的策略才能安全过河呢？</strong></p>
+</blockquote>
+<p>这次的问题是一个很经常遇到的过河问题，其实对于该类问题，我们经过逻辑思考就可以得到答案。但是通过数学模型的建立，我们可以得到一个通用的解答，并且通过计算机的计算我们可以大大扩大问题的规模。</p>
+<p>#问题分析</p>
+<p>因为这个问题已经理想化了，所以我们无需对模型进行假设，该问题可以看作一个<strong>多步决策问题</strong>。</p>
+<p>每一步，船由此岸划到彼岸或者由彼岸划回此岸，都要对船上的人员进行<strong>决策（此次渡河船上可以有几名商人和几名随从）</strong>，在<strong>保证安全（两岸的随从都不比商人多）</strong>的前提下，在有限次的决策中使得所有人都到对岸去。</p>
+<p>因此，我们要做的就是要确定每一步的决策，达到渡河的目标。</p>
+<p>#建立模型</p>
+<p>记第 k 次过河前此岸的商人数为 x<sub>k</sub> , 随从数为 y<sub>k</sub> , k = 1, 2, 3…, x<sub>k</sub> ,y<sub>k</sub> = 0, 1, 2, 3</p>
+<p><strong>定义状态：</strong> 将二维向量  s<sub>k</sub> = ( x<sub>k</sub> ,  y<sub>k</sub> ) 定义为状态</p>
+<p>将安全渡河状态下的状态集合定义为<strong>允许状态集合</strong>， 记为</p>
+<p><strong><div align="center"> S = {(x,y) | x=0,y=0,1,2,3; x=y=1; x=y=2; x=3,y=0,1,2,3}  </div></strong></p>
+<p>记第 k 次渡河船上的商人数为 u<sub>k</sub> ， 随从数为 v<sub>k</sub></p>
+<p><strong>定义决策：</strong> 将二维向量 d<sub>k</sub> = (u<sub>k</sub> , v<sub>k</sub>) 定义为决策</p>
+<p><strong>允许决策集合</strong> 记作</p>
+<p><strong><div align="center"> D = {(u,v) | 1 &le; u+v &le; 2, u,v = 0,1,2} </div></strong></p>
+<p>因为小船容量为2，所以船上人员不能超过2，而且至少要有一个人划船，由此得到上式。</p>
+<p>由我们定义的状态 s<sub>k</sub> 和决策 d<sub>k</sub> ，我们可以发现它们之间是存在联系的：</p>
+<ul>
+<li><p>k 为奇数是表示船由此岸划向彼岸，k 为偶数时表示船由彼岸划回此岸</p>
+</li>
+<li><p>状态 s<sub>k</sub> 是随着决策 d<sub>k</sub> 变化的，规律为：</p>
+</li>
+</ul>
+<p><strong><div align="center"> s<sub>k+1</sub> = s<sub>k</sub> + (-1)<sup>k</sup>d<sub>k</sub> </div></strong></p>
+<p>我们把上式称为<strong>状态转移律</strong>，因此渡河方案可以抽象为如下的<strong>多步决策模型</strong>：</p>
+<p><strong>求决策 d<sub>k</sub> &isin; D(k = 1,2,…,n) , 使状态 s<sub>k</sub> &isin; S 按照转移率，初始状态 s<sub>1</sub> = (3,3) 经有限步 n 到达状态 s<sub>n+1</sub> = (0,0)</strong></p>
+<p>到这里，整个数学模型就已经非常清晰了，接下来要做的就是求解模型得出结果。</p>
+<p>#求解模型</p>
+<blockquote>
+<p>在这个模型的求解中，我将会使用两种方法，一种是<strong>数学图解法</strong>，用于解决和当前题目一样的规模比较小的问题，优点是比较简便，但是对于规模比较大的问题就无能为力了，比如说有50个商人携带50个随从过河，第二种方法是通过<strong>计算机编程</strong>，使用程序来解决该问题，即使问题规模增大，我们也可以利用计算机强大的计算能力来解决。</p>
+</blockquote>
+<h2 id="数学图解法"><a href="#数学图解法" class="headerlink" title="数学图解法"></a>数学图解法</h2><p>我们首先在 xOy 平面坐标系中画出如下方格，方格中的点表示状态 s = (x,y)</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/37ff9b80306094a255d36f7a874f6d71.png" alt="image"></p>
+<p>起始状态（下图绿色点） s<sub>1</sub> = (3,3) , 终止状态（下图红色点） s<sub>n+1</sub> = (0,0)</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/c9bb1cf38e0ddfd26bc34e24b8c746a6.png" alt="image"></p>
+<p><strong>允许决策 d<sub>k</sub> 表示的是在方格中的移动</strong>，根据允许决策 d<sub>k</sub> 的定义，它每次的移动范围为1~2格，并且 k 为奇数时向左或下方或左下方移动，k 位偶数时向右或上方或右上方移动。</p>
+<p><strong>于是，这个问题就变成了，根据允许决策 d<sub>k</sub> ，在方格中在状态（方格点）之间移动，找到一条路径，使得能从起始状态（上图绿色点） s<sub>1</sub> = (3,3) ,到达终止状态（上图图红色点） s<sub>n+1</sub> = (0,0)</strong></p>
+<p>在下图中，我们给出了一种方案，我们可以很清楚的看到该方案绝对不是最佳方案（渡河次数最少），它只是给出了一种方案，而且我们看来是一种极其不优化的方案，但是可以很清楚地看出图解法是如何工作的。</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/ee3ce37255fa062370eb8a6a6e2a2707.PNG" alt="image"></p>
+<p>根据上图，我们得出的方案如下：</p>
+<ul>
+<li>d1：两个随从划到对岸</li>
+<li>d2：一个随从划回来</li>
+<li>d3：两个随从划到对岸</li>
+<li>d4：一个随从划回来</li>
+<li>d5：两个商人划到对岸</li>
+<li>d6：一个商人和一个随从划回来</li>
+<li>d7：两个商人划到对岸</li>
+<li>d8：一个随从划回来</li>
+<li>d9：两个随从划到对岸</li>
+<li>d10：一个商人划回来</li>
+<li>d11：一个商人和随从划到对岸</li>
+</ul>
+<p>最终商人们安全渡河</p>
+<p>##程序求解</p>
+<p>我们看到上面介绍的图解法对于小规模问题很直观也很简单，但是无法应对大规模的问题，于是我们采用编程的方法来再次解决上述问题，这次我使用的编程语言为<strong>Python</strong>.</p>
+<p>###创建允许状态集合</p>
+<p>对于允许状态集合，我们要去使用算法对其进行计算，所谓允许状态无非就是，河岸两边的商人们都是安全的：</p>
+<ul>
+<li>一种情况是：两岸的商人人数都比随从人数多（对于随从和商人人数相同的情况就是河的任一岸，商人人数等于随从人数）</li>
+<li>另一情况为：所有商人都在河的任何一岸，此时另一岸没有任何商人，对于随从的人数在河的任一岸的数量不论是多少，此时都是安全的</li>
+</ul>
+<p>按照以上方法编程如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''创建允许状态集合'''</span>    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">allowset</span><span class="params">(self)</span>:</span></span><br><span class="line">    allowset = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(self.merchants + <span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(self.servants + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">                allowset.append([i,j])</span><br><span class="line">            <span class="keyword">elif</span> i == self.merchants:</span><br><span class="line">                allowset.append([i,j])</span><br><span class="line">            <span class="keyword">elif</span> (i &gt;= j <span class="keyword">and</span> ((self.merchants-i) &gt;= (self.servants-j))):</span><br><span class="line">                allowset.append([i,j])</span><br><span class="line">    <span class="keyword">return</span> allowset</span><br></pre></td></tr></table></figure>
+<p>###创建允许决策集合</p>
+<p>对于创建允许决策集合，它和船的容量是相关的，只要每次渡河的商人数量和随从数量小于等于船的容量即可，代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">'''创建允许决策集合'''</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">allowaction</span><span class="params">(self)</span>:</span></span><br><span class="line">    allowactionset = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(self.capacity + <span class="number">1</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> range(self.capacity + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">if</span> (i+j) &lt;= self.capacity <span class="keyword">and</span> (i + j) != <span class="number">0</span>:</span><br><span class="line">                allowactionset.append([i,j])</span><br><span class="line">    <span class="keyword">return</span> allowactionset</span><br></pre></td></tr></table></figure>
+<p>###如何渡河</p>
+<p>对于如何渡河问题我采取的是一种随机的方法，对于当前安全状态，随机选择一种决策进行试探，如果采取该决策可以到达安全状态，则采用，如此循环，直到到达目的地。如果采取该策略不能到达安全状态，则再次随机选择一种策略。</p>
+<p>代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">solve</span><span class="params">(self,allowactionset,allowstate)</span>:</span></span><br><span class="line">    count = <span class="number">1</span>;</span><br><span class="line">    current = (self.merchants,self.servants)</span><br><span class="line">    <span class="keyword">while</span> current != [<span class="number">0</span>,<span class="number">0</span>]:</span><br><span class="line">        move = allowactionset[random.randint(<span class="number">0</span>,len(allowactionset)<span class="number">-1</span>)]</span><br><span class="line">        temp = [current[<span class="number">0</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">0</span>],current[<span class="number">1</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">1</span>]]</span><br><span class="line">        <span class="keyword">if</span>(temp <span class="keyword">in</span> allowstate):</span><br><span class="line">            current = [current[<span class="number">0</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">0</span>],current[<span class="number">1</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">1</span>]]</span><br><span class="line">            <span class="keyword">if</span>(count % <span class="number">2</span> == <span class="number">1</span>):</span><br><span class="line">                <span class="keyword">print</span> <span class="string">"[%d]个商人，[%d] 个随从从此岸划到对岸"</span> %(move[<span class="number">0</span>],move[<span class="number">1</span>])</span><br><span class="line">            <span class="keyword">elif</span>(count % <span class="number">2</span> == <span class="number">0</span>):</span><br><span class="line">                <span class="keyword">print</span> <span class="string">"[%d]个商人，[%d] 个随从从对岸划回此岸"</span> %(move[<span class="number">0</span>],move[<span class="number">1</span>]) </span><br><span class="line">        count = count + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<p>###完整代码<br>有了以上算法之后，我们就可以使用计算机来解决一些较大规模的问题了，完整代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># -*- coding: utf-8 -*-</span></span><br><span class="line"><span class="comment"># Copyright (c) 2015 Jason Luo @ SDU</span></span><br><span class="line"></span><br><span class="line"><span class="string">"""解决商人安全过河问题"""</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Boat</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, merchants, servants, capacity)</span>:</span></span><br><span class="line">        self.merchants = merchants</span><br><span class="line">        self.servants = servants</span><br><span class="line">        self.capacity = capacity</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">print</span> <span class="string">"Initialize: [%d] merchants and [%d] servants"</span> %(merchants, servants)</span><br><span class="line">        </span><br><span class="line">    <span class="string">'''创建允许状态集合'''</span>    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">allowset</span><span class="params">(self)</span>:</span></span><br><span class="line">        allowset = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(self.merchants + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(self.servants + <span class="number">1</span>):</span><br><span class="line">                <span class="keyword">if</span> i == <span class="number">0</span>:</span><br><span class="line">                    allowset.append([i,j])</span><br><span class="line">                <span class="keyword">elif</span> i == self.merchants:</span><br><span class="line">                    allowset.append([i,j])</span><br><span class="line">                <span class="keyword">elif</span> (i &gt;= j <span class="keyword">and</span> ((self.merchants-i) &gt;= (self.servants-j))):</span><br><span class="line">                    allowset.append([i,j])</span><br><span class="line">        <span class="keyword">return</span> allowset</span><br><span class="line"></span><br><span class="line">    <span class="string">'''创建允许决策集合'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">allowaction</span><span class="params">(self)</span>:</span></span><br><span class="line">        allowactionset = []</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> range(self.capacity + <span class="number">1</span>):</span><br><span class="line">            <span class="keyword">for</span> j <span class="keyword">in</span> range(self.capacity + <span class="number">1</span>):</span><br><span class="line">                <span class="keyword">if</span> (i+j) &lt;= self.capacity <span class="keyword">and</span> (i + j) != <span class="number">0</span>:</span><br><span class="line">                    allowactionset.append([i,j])</span><br><span class="line">        <span class="keyword">return</span> allowactionset</span><br><span class="line"></span><br><span class="line">    <span class="string">'''渡河'''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">solve</span><span class="params">(self,allowactionset,allowstate)</span>:</span></span><br><span class="line">        count = <span class="number">1</span>;</span><br><span class="line">        current = (self.merchants,self.servants)</span><br><span class="line">        <span class="keyword">while</span> current != [<span class="number">0</span>,<span class="number">0</span>]:</span><br><span class="line">            move = allowactionset[random.randint(<span class="number">0</span>,len(allowactionset)<span class="number">-1</span>)]</span><br><span class="line">            temp = [current[<span class="number">0</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">0</span>],current[<span class="number">1</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">1</span>]]</span><br><span class="line">            <span class="keyword">if</span>(temp <span class="keyword">in</span> allowstate):</span><br><span class="line">                current = [current[<span class="number">0</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">0</span>],current[<span class="number">1</span>]+((<span class="number">-1</span>)**count)*move[<span class="number">1</span>]]</span><br><span class="line">                <span class="keyword">if</span>(count % <span class="number">2</span> == <span class="number">1</span>):</span><br><span class="line">                    <span class="keyword">print</span> <span class="string">"[%d]个商人，[%d] 个随从从此岸划到对岸"</span> %(move[<span class="number">0</span>],move[<span class="number">1</span>])</span><br><span class="line">                <span class="keyword">elif</span>(count % <span class="number">2</span> == <span class="number">0</span>):</span><br><span class="line">                    <span class="keyword">print</span> <span class="string">"[%d]个商人，[%d] 个随从从对岸划回此岸"</span> %(move[<span class="number">0</span>],move[<span class="number">1</span>])</span><br><span class="line"> </span><br><span class="line">            count = count + <span class="number">1</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="string">'''主方法'''</span>            </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    boat = Boat(<span class="number">3</span>,<span class="number">3</span>,<span class="number">2</span>)</span><br><span class="line">    allowstate = boat.allowset()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"允许状态集合为："</span></span><br><span class="line">    <span class="keyword">print</span> allowstate</span><br><span class="line"></span><br><span class="line">    actionset = boat.allowaction()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">"允许决策集合为："</span></span><br><span class="line">    <span class="keyword">print</span> actionset</span><br><span class="line"></span><br><span class="line">    boat.solve(actionset,allowstate)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>###运行结果</p>
+<p>为了缩短运行结果的篇幅，我们同样采取小规模问题来验证算法的正确性，这里还是采用原问题规模，运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Initialize: [3] merchants and [3] servants</span><br><span class="line">允许状态集合为：</span><br><span class="line">[[0, 0], [0, 1], [0, 2], [0, 3], [1, 1], [2, 2], [3, 0], [3, 1], [3, 2], [3, 3]]</span><br><span class="line">允许决策集合为：</span><br><span class="line">[[0, 1], [0, 2], [1, 0], [1, 1], [2, 0]]</span><br><span class="line">[1]个商人，[1] 个随从从此岸划到对岸</span><br><span class="line">[2]个商人，[0] 个随从从此岸划到对岸</span><br><span class="line">[2]个商人，[0] 个随从从对岸划回此岸</span><br><span class="line">[2]个商人，[0] 个随从从此岸划到对岸</span><br><span class="line">[0]个商人，[2] 个随从从此岸划到对岸</span><br></pre></td></tr></table></figure>
+<p>###算法评价</p>
+<p>该算法可以解决问题，但是有很多的不足，首先，由此算法得到的结果是随机的，它只是一个可行解，并不是最优解，并且其中很可能存在重复的步骤，对于一些超大规模的问题，它会产生许多重复的计算，其中会存在许多重复与环，还有许多可以改进的方法。这里我提出一种改进方法的思路，留待思考：我们可以借助图论中的深度优先算法来改进该问题从而得到最优解。如果不一定需要最优解的话，我们还可以在该算法上应用一个队列的数据结构，记录曾经在当前状态采取的策略，从而避免采取重复决策。</p>
+<p>#参考资料</p>
+<ul>
+<li><p><a href="http://www.amazon.cn/%E6%99%AE%E9%80%9A%E9%AB%98%E7%AD%89%E6%95%99%E8%82%B2-%E5%9B%BD%E5%AE%B6%E7%BA%A7%E8%A7%84%E5%88%92%E6%95%99%E6%9D%90-%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B/dp/B004QTO7VE/ref=sr_1_1?ie=UTF8&amp;qid=1451802140&amp;sr=8-1&amp;keywords=%E6%95%B0%E5%AD%A6%E6%A8%A1%E5%9E%8B" target="_blank" rel="noopener">数学模型(第4版) - 姜启源 叶金星（编著）</a></p>
+</li>
+<li><p><a href="http://www.amazon.cn/Python-Cookbook-%E5%A4%A7%E5%8D%AB%C2%B7%E6%AF%94%E6%96%AF%E5%88%A9/dp/B00WKR1OKG/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1452057641&amp;sr=1-1&amp;keywords=python+cookbook" target="_blank" rel="noopener">Python Cookbook(第3版)</a></p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://www.luoyuanhang.com" target="_blank" rel="noopener">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+            <a href="/tags/数学/" rel="tag"># 数学</a>
+          
+            <a href="/tags/数学建模/" rel="tag"># 数学建模</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/03/【数学模型】椅子能在不平的地面上放平吗？（1）/" rel="next" title="【数学模型】椅子能在不平的地面上放平吗？（1）">
+                <i class="fa fa-chevron-left"></i> 【数学模型】椅子能在不平的地面上放平吗？（1）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/17/程序的语法/" rel="prev" title="程序的语法">
+                程序的语法 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/01/06/【数学模型】商人们怎样过河？/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数学图解法"><span class="nav-number">1.</span> <span class="nav-text">数学图解法</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

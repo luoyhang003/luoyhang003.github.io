@@ -1,0 +1,1002 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,读书笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 III 篇，本文主要讲了以下问题：系统调用的概念、系统调用的实现原理与过程以及如何在 Linux 中增加一个系统调用。">
+<meta name="keywords" content="技术,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读薄《Linux 内核设计与实现》(3) -  系统调用">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/06/25/lkd-thin-03/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 III 篇，本文主要讲了以下问题：系统调用的概念、系统调用的实现原理与过程以及如何在 Linux 中增加一个系统调用。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-06-30T14:10:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读薄《Linux 内核设计与实现》(3) -  系统调用">
+<meta name="twitter:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 III 篇，本文主要讲了以下问题：系统调用的概念、系统调用的实现原理与过程以及如何在 Linux 中增加一个系统调用。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/06/25/lkd-thin-03/"/>
+
+
+
+
+
+  <title> 读薄《Linux 内核设计与实现》(3) -  系统调用 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/06/25/lkd-thin-03/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                读薄《Linux 内核设计与实现》(3) -  系统调用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-25T10:29:29+08:00">
+                Jun 25 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/06/25/lkd-thin-03/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/06/25/lkd-thin-03/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/06/25/lkd-thin-03/" class="leancloud_visitors" data-flag-title="读薄《Linux 内核设计与实现》(3) -  系统调用">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是<a href="http://blog.luoyuanhang.com/2016/06/07/lkd-thin-00/">《读薄「Linux 内核设计与实现」》系列文章</a>的第 III 篇，本文主要讲了以下问题：系统调用的概念、系统调用的实现原理与过程以及如何在 Linux 中增加一个系统调用。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="0x00-系统调用的概念"><a href="#0x00-系统调用的概念" class="headerlink" title="0x00 系统调用的概念"></a>0x00 系统调用的概念</h1><p>系统调用是为了和用户空间上的进程进行交互，内核提供的一组界面。</p>
+<ul>
+<li><p>应用程序通过这组界面访问硬件和其他操作系统资源</p>
+</li>
+<li><p>完成对硬件和资源的访问控制</p>
+</li>
+<li><p>硬件设备的抽象（提供设备的独立性）</p>
+</li>
+</ul>
+<h1 id="0x01-系统调用简介"><a href="#0x01-系统调用简介" class="headerlink" title="0x01 系统调用简介"></a>0x01 系统调用简介</h1><h2 id="I-常用系统调用"><a href="#I-常用系统调用" class="headerlink" title="I 常用系统调用"></a>I 常用系统调用</h2><ul>
+<li><p>fork(), exec(), open(), read(), write(), close(),……</p>
+</li>
+<li><p>目前 Linux 系统调用 300 多个</p>
+</li>
+</ul>
+<h2 id="II-应用程序及系统调用的层次关系"><a href="#II-应用程序及系统调用的层次关系" class="headerlink" title="II 应用程序及系统调用的层次关系"></a>II 应用程序及系统调用的层次关系</h2><p><strong>应用程序通过在用户空间实现的 API 而不是直接通过系统调用来编程</strong></p>
+<blockquote>
+<p>例：调用 printf() 函数时，应用程序、C 库和内核的关系：<br>应用程序调用 printf() -&gt; C 库中的 printf() -&gt; C 库中的 write() -&gt; 内核中的 write() 系统调用</p>
+</blockquote>
+<h1 id="0x02-Linux-系统调用实现原理"><a href="#0x02-Linux-系统调用实现原理" class="headerlink" title="0x02 Linux 系统调用实现原理"></a>0x02 Linux 系统调用实现原理</h1><h2 id="I-相关概念"><a href="#I-相关概念" class="headerlink" title="I 相关概念"></a>I 相关概念</h2><ul>
+<li><p>int 80H：软中断，通知内核的机制是靠软中断实现的，第128号中断处理程序</p>
+</li>
+<li><p>IVT（Interrupt Vector Table）：中断向量表，包括所有中断程序入口地址，它固定存放于内存中（实模式下应用）</p>
+</li>
+<li><p>IDT（Interrupt Descriptor Table）：中断描述符表，不固定内存位置，通过 IDTR 寄存器定位该表（保护模式下应用，int 80H 占据其中一项）</p>
+</li>
+<li><p>syscall table：系统调用表</p>
+</li>
+<li><p>系统调用号： 在 Linux 中，每个系统调用被赋予一个系统调用号，表示它在表中的编号</p>
+</li>
+</ul>
+<h2 id="II-系统调用的加载"><a href="#II-系统调用的加载" class="headerlink" title="II 系统调用的加载"></a>II 系统调用的加载</h2><p>操作系统在加载时做的有关系统调用的加载：</p>
+<ul>
+<li><p>int 80H 处理程序地址的加载：start_kernel()中的 trap_init()和 set_system_gate()</p>
+</li>
+<li><p>各系统调用处理程序的加载（entry.s）</p>
+</li>
+</ul>
+<h2 id="III-系统调用过程-以-x86-为例"><a href="#III-系统调用过程-以-x86-为例" class="headerlink" title="III 系统调用过程(以 x86 为例)"></a>III 系统调用过程(以 x86 为例)</h2><p><strong>首先，通过软中断陷入到 int 80h 中断中，促使系统切换到内核态去执行异常处理程序（系统调用处理程序）；之后，系统通过读取 eax 寄存器的值来获取系统调用号；之后，系统通过读取寄存器来获取传递的参数（ebx, ecx, edx, esi, edi）按照顺序存放前五个参数，如果参数为6个或以上，则将其中一个寄存器的值指向内存空间；最后，执行相应系统调用代码，完成系统调用</strong></p>
+<h2 id="IV-系统调用的参数验证"><a href="#IV-系统调用的参数验证" class="headerlink" title="IV 系统调用的参数验证"></a>IV 系统调用的参数验证</h2><p>系统调用必须仔细检查他们所有参数是否合法有效，如果用户将不合法的参数传递给内核，那么系统的安全和稳定将面临极大考验。</p>
+<ul>
+<li><p><strong>权限验证：</strong>系统调用的调用者可以使用 capable() 函数来检查是否有权能对制定的资源进行操作</p>
+</li>
+<li><p><strong>指针合法性验证：</strong>在接受一个用户空间的指针之前，内核需要验证：</p>
+<ul>
+<li>指针指向的内存区域属于用户空间</li>
+<li>指针指向的内存区域在进程的地址空间里</li>
+<li>如果是读，该内存应被标记为可读；如果是写，该内存应被标记为可写；如果是可执行，进程决不能绕过内存访问限制</li>
+</ul>
+</li>
+</ul>
+<h1 id="0x03-如何增加一个系统调用"><a href="#0x03-如何增加一个系统调用" class="headerlink" title="0x03 如何增加一个系统调用"></a>0x03 如何增加一个系统调用</h1><ul>
+<li><p>增加系统调用函数（/kernel/sys.c）</p>
+</li>
+<li><p>把系统调用函数入口添加到 sys_call_table(entry.s)</p>
+</li>
+<li><p>添加系统调用号</p>
+</li>
+</ul>
+<h1 id="0x04-系统调用的意义"><a href="#0x04-系统调用的意义" class="headerlink" title="0x04 系统调用的意义"></a>0x04 系统调用的意义</h1><ul>
+<li><p>它为用户提供了一种硬件的抽象接口</p>
+</li>
+<li><p>在保证系统稳定和安全的前提下提供服务，避免应用程序恣意横行</p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/23/lkd-thin-02/" rel="next" title="读薄「Linux 内核设计与实现」(2) - 进程管理和调度">
+                <i class="fa fa-chevron-left"></i> 读薄「Linux 内核设计与实现」(2) - 进程管理和调度
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/30/lkd-thin-04/" rel="prev" title="读薄《Linux 内核设计与实现》(4) -  中断与同步">
+                读薄《Linux 内核设计与实现》(4) -  中断与同步 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/06/25/lkd-thin-03/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-系统调用的概念"><span class="nav-number">1.</span> <span class="nav-text">0x00 系统调用的概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-系统调用简介"><span class="nav-number">2.</span> <span class="nav-text">0x01 系统调用简介</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-常用系统调用"><span class="nav-number">2.1.</span> <span class="nav-text">I 常用系统调用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-应用程序及系统调用的层次关系"><span class="nav-number">2.2.</span> <span class="nav-text">II 应用程序及系统调用的层次关系</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-Linux-系统调用实现原理"><span class="nav-number">3.</span> <span class="nav-text">0x02 Linux 系统调用实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-相关概念"><span class="nav-number">3.1.</span> <span class="nav-text">I 相关概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-系统调用的加载"><span class="nav-number">3.2.</span> <span class="nav-text">II 系统调用的加载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-系统调用过程-以-x86-为例"><span class="nav-number">3.3.</span> <span class="nav-text">III 系统调用过程(以 x86 为例)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IV-系统调用的参数验证"><span class="nav-number">3.4.</span> <span class="nav-text">IV 系统调用的参数验证</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-如何增加一个系统调用"><span class="nav-number">4.</span> <span class="nav-text">0x03 如何增加一个系统调用</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-系统调用的意义"><span class="nav-number">5.</span> <span class="nav-text">0x04 系统调用的意义</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

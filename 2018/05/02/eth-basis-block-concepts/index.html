@@ -1,0 +1,999 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="从名称上来看，区块（Block）也是区块链系统中的核心概念，区块链简单来说就是将区块联结成链，区块中保存的是打包成的各种区块信息。在以太坊中，区块中保存的是各种交易信息。一个区块中可以包含若干个交易，也可以不包含任何交易。这篇文章主要会阐释以下问题：  区块是什么？包含了哪些信息？ 区块是如何被打包的，写入到区块链的？ 一个区块的大小是多少？可以包含多少交易？ 多长时间可以产生一个区块？ 为什么有">
+<meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="以太坊区块的生成">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2018/05/02/eth-basis-block-concepts/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="从名称上来看，区块（Block）也是区块链系统中的核心概念，区块链简单来说就是将区块联结成链，区块中保存的是打包成的各种区块信息。在以太坊中，区块中保存的是各种交易信息。一个区块中可以包含若干个交易，也可以不包含任何交易。这篇文章主要会阐释以下问题：  区块是什么？包含了哪些信息？ 区块是如何被打包的，写入到区块链的？ 一个区块的大小是多少？可以包含多少交易？ 多长时间可以产生一个区块？ 为什么有">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-05-02T05:39:09.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="以太坊区块的生成">
+<meta name="twitter:description" content="从名称上来看，区块（Block）也是区块链系统中的核心概念，区块链简单来说就是将区块联结成链，区块中保存的是打包成的各种区块信息。在以太坊中，区块中保存的是各种交易信息。一个区块中可以包含若干个交易，也可以不包含任何交易。这篇文章主要会阐释以下问题：  区块是什么？包含了哪些信息？ 区块是如何被打包的，写入到区块链的？ 一个区块的大小是多少？可以包含多少交易？ 多长时间可以产生一个区块？ 为什么有">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2018/05/02/eth-basis-block-concepts/"/>
+
+
+
+
+
+  <title> 以太坊区块的生成 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2018/05/02/eth-basis-block-concepts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                以太坊区块的生成
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-05-02T11:57:02+08:00">
+                May 2 2018
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/05/02/eth-basis-block-concepts/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2018/05/02/eth-basis-block-concepts/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/05/02/eth-basis-block-concepts/" class="leancloud_visitors" data-flag-title="以太坊区块的生成">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>从名称上来看，区块（Block）也是区块链系统中的核心概念，区块链简单来说就是将区块联结成链，区块中保存的是打包成的各种区块信息。在以太坊中，区块中保存的是各种交易信息。一个区块中可以包含若干个交易，也可以不包含任何交易。这篇文章主要会阐释以下问题：</p>
+<ul>
+<li>区块是什么？包含了哪些信息？</li>
+<li>区块是如何被打包的，写入到区块链的？</li>
+<li>一个区块的大小是多少？可以包含多少交易？</li>
+<li>多长时间可以产生一个区块？</li>
+<li>为什么有的区块中没有交易？</li>
+</ul>
+<a id="more"></a>
+<h2 id="以太坊区块"><a href="#以太坊区块" class="headerlink" title="以太坊区块"></a>以太坊区块</h2><p>以太坊的区块中保存了许多信息，最主要的有该区块的区块信息以及该区块中所包含的交易的信息。<br>我们可以在<a href="https://github.com/ethereum/go-ethereum/blob/63687f04e441c97cbb39d6b0ebea346b154d2e73/core/types/block.go" target="_blank" rel="noopener">go-ethereum中的源码</a>看到区块的结构体定义：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Block represents an entire block in the Ethereum blockchain.</span></span><br><span class="line"><span class="keyword">type</span> Block <span class="keyword">struct</span> &#123;</span><br><span class="line">	header       *Header</span><br><span class="line">	uncles       []*Header</span><br><span class="line">	transactions Transactions</span><br><span class="line"></span><br><span class="line">	<span class="comment">// caches</span></span><br><span class="line">	hash atomic.Value</span><br><span class="line">	size atomic.Value</span><br><span class="line"></span><br><span class="line">	<span class="comment">// Td is used by package core to store the total difficulty</span></span><br><span class="line">	<span class="comment">// of the chain up to and including the block.</span></span><br><span class="line">	td *big.Int</span><br><span class="line"></span><br><span class="line">	<span class="comment">// These fields are used by package eth to track</span></span><br><span class="line">	<span class="comment">// inter-peer block relay.</span></span><br><span class="line">	ReceivedAt   time.Time</span><br><span class="line">	ReceivedFrom <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中有下列主要属性：</p>
+<ul>
+<li><code>header</code>：存储的是该区块的信息（结构体为Header）</li>
+<li><code>uncles</code>：存储的是该区块所包含的叔块（uncle block）的信息，关于叔块的相关内容将会在之后的文章中进行讨论</li>
+</ul>
+<p>其中Header结构体中是一个区块中所包含的信息，定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Header represents a block header in the Ethereum blockchain.</span></span><br><span class="line"><span class="keyword">type</span> Header <span class="keyword">struct</span> &#123;</span><br><span class="line">	ParentHash  common.Hash    <span class="string">`json:"parentHash"       gencodec:"required"`</span></span><br><span class="line">	UncleHash   common.Hash    <span class="string">`json:"sha3Uncles"       gencodec:"required"`</span></span><br><span class="line">	Coinbase    common.Address <span class="string">`json:"miner"            gencodec:"required"`</span></span><br><span class="line">	Root        common.Hash    <span class="string">`json:"stateRoot"        gencodec:"required"`</span></span><br><span class="line">	TxHash      common.Hash    <span class="string">`json:"transactionsRoot" gencodec:"required"`</span></span><br><span class="line">	ReceiptHash common.Hash    <span class="string">`json:"receiptsRoot"     gencodec:"required"`</span></span><br><span class="line">	Bloom       Bloom          <span class="string">`json:"logsBloom"        gencodec:"required"`</span></span><br><span class="line">	Difficulty  *big.Int       <span class="string">`json:"difficulty"       gencodec:"required"`</span></span><br><span class="line">	Number      *big.Int       <span class="string">`json:"number"           gencodec:"required"`</span></span><br><span class="line">	GasLimit    <span class="keyword">uint64</span>         <span class="string">`json:"gasLimit"         gencodec:"required"`</span></span><br><span class="line">	GasUsed     <span class="keyword">uint64</span>         <span class="string">`json:"gasUsed"          gencodec:"required"`</span></span><br><span class="line">	Time        *big.Int       <span class="string">`json:"timestamp"        gencodec:"required"`</span></span><br><span class="line">	Extra       []<span class="keyword">byte</span>         <span class="string">`json:"extraData"        gencodec:"required"`</span></span><br><span class="line">	MixDigest   common.Hash    <span class="string">`json:"mixHash"          gencodec:"required"`</span></span><br><span class="line">	Nonce       BlockNonce     <span class="string">`json:"nonce"            gencodec:"required"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码中我们可以看到一个区块中包含了如下信息：</p>
+<ul>
+<li><code>ParentHash</code>：该区块的父区块的Hash值</li>
+<li><code>UncleHash</code>：该区块的叔区块的Hash值</li>
+<li><code>Coinbase</code>：打包该区块矿工的地址，矿工费和发现区块的奖励会被发送到该地址</li>
+<li><code>Root</code>：Merkle树根节点的Hash，以太坊中的交易状态信息是以Merkle状态树的形式进行存储的，Root是该状态树的根节点的Hash值</li>
+<li><code>TxHash</code>：保存该区块中交易Merkle树的根节点的Hash值</li>
+<li><code>ReceiptHash</code>：一个区块中所包含的交易中的接收者也是以Merkle树的形式进行存储的，该值是该Merkle树根节点的Hash值</li>
+<li><code>Bloom</code>：用于索引与搜索的结构（详见Tips）</li>
+<li><code>Difficult</code>：该区块的难度</li>
+<li><code>Number</code>：所有祖先区块的数量（也就是区块高度）</li>
+<li><code>GasLimit</code>：该区块的gas上限</li>
+<li><code>GasUsed</code>：该区块使用的gas</li>
+<li><code>Time</code>：区块开始打包的时间</li>
+<li><code>Extra</code>：区块相关的附加信息</li>
+<li><code>MixDigest</code>：该哈希值与Nonce值一起能够证明在该区块上已经进行了足够的计算（用于验证该区块挖矿成功与否的Hash值）</li>
+<li><code>Nonce</code>：该哈希值与MixDigest值一起能够证明在该区块上已经进行了足够的计算（用于验证该区块挖矿成功与否的Hash值）</li>
+</ul>
+<blockquote>
+<p>Tips：<br><strong>Bloom的作用</strong><br>以太坊在设计的时候希望能够对Event能够进行快速的检索，并且在区块链上进行存储的成本是很高的，我们还希望不要有太多的重复数据（交易列表、交易产生的记录等）。Bloom就是用来解决这个问题的。在一个区块生成的时候，该区块中包含的所有的合约相关的地址以及所有交易产生的记录的索引都会被记录至Bloom中，以便之后的查找与索引。这些信息会被保存在Header结构中（Bloom字段），不保存在区块的数据段中，这样可以节省空间。当一个应用层的应用程序想要对某个合约中的数据进行检索时，它只需要在区块中的Header信息中进行查找，查看该区块中是否包含该合约相关的记录。</p>
+<p><strong>MixDigest和Nonce是如何进行验证的</strong><br>我们知道以太坊目前采用的挖矿算法是PoW（Proof of Work），简单的来说，这种方法就像是猜数字，比如说在100000个数字中有5个可行解，猜到的就算是挖到了矿，这种算法要求猜到解的难度是可以调整的，一般难度会很大，不那么容易被猜到，但是验证这个解是否正确是很容易的。Nonce值其实就是矿工猜到的解，验证过程如下：经过预处理的Header与Nonce值做一个类似SHA3的运算产生一个128B的Mix（Mix0），这个值用于计算从DAG（以太坊用于挖矿算法的伪随机数据集，目前大小大约为2GB以上）中取出哪一页的数据（大小为128B），取出的DAG的页与Mix会进行一个以太坊特定的mixing方法，会生成下一个Mix（Mix1），这个过程会重复64次，直到得到Mix64。Mix64会被处理成为32B的数据，它被称为Mix Digest。Mix Digest会与一个叫做Target Threshold的值（相当于解集）进行比较，如果Mix Digest的值小于Threshold就认为挖矿成功，如果大于，表示失败。</p>
+</blockquote>
+<h2 id="区块的打包过程"><a href="#区块的打包过程" class="headerlink" title="区块的打包过程"></a>区块的打包过程</h2><p>交易在生成之后会被以太坊节点广播至网络，交易会被放到交易池（txPool）中，由矿工对交易进行验证然后放到正在打包的区块中，当选择好了区块中所要包含的交易之后，矿工就开始了挖矿过程（PoW），当矿工在挖矿竞争中取得胜利之后，该矿工的区块数据就可以被写入到区块链中。</p>
+<p>交易池中有许多交易存在，矿工是如何从交易池中选择交易的呢？其实交易池会对各个交易进行排序，提供的矿工费（gas）高的交易会排在前面。因此，矿工会优先选择奖励高的交易打包至区块。这也就是为什么gas值高的交易会被处理的较快的原因。</p>
+<h2 id="区块的容量"><a href="#区块的容量" class="headerlink" title="区块的容量"></a>区块的容量</h2><p>以太坊的区块大小不同于比特币的区块大小，目前比特币的区块大小是1MB。因此，比特币一个区块中能够包含多少交易是取决于区块的大小以及每个交易的大小，一个区块中所有交易的总和不能超过区块的大小。但是，以太坊并没有固定的区块大小的限制，但是这样的话是如何确定一个区块中能够包含多少交易的呢？</p>
+<p>以太坊的区块中有一个gasLimit，它表示的是该区块中所能包含的交易的gas值的上限。以太坊上的每一笔交易都会消耗gas值，一个区块中所包含的所有交易的gas总和不能超过区块的gasLimit。因此，通过这种方式我们就能够控制一个区块中的交易数量。</p>
+<p>如果交易池中没有待处理的交易，那么矿工会直接进入挖矿过程，依旧会得到挖矿奖励（5 Ether），区块依旧会被打包和广播，只不过该区块中不会包含交易。</p>
+<h2 id="区块时间"><a href="#区块时间" class="headerlink" title="区块时间"></a>区块时间</h2><p>在比特币中，大约10分钟会产生一个区块。根据以太坊白皮书所写，以太坊大约12秒回产生一个区块。这个时间就是区块时间。区块时间是和挖矿难度相关的，比特币的难度调整是有对应算法的，算法会把区块时间维持在10分钟左右。以太坊也有对应的难度调整算法。</p>
+<p>我们可以在以太坊的源码中找到计算难度的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CalcDifficulty is the difficulty adjustment algorithm. It returns</span></span><br><span class="line"><span class="comment">// the difficulty that a new block should have when created at time</span></span><br><span class="line"><span class="comment">// given the parent block's time and difficulty.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">CalcDifficulty</span><span class="params">(config *params.ChainConfig, time <span class="keyword">uint64</span>, parent *types.Header)</span> *<span class="title">big</span>.<span class="title">Int</span></span> &#123;</span><br><span class="line">	next := <span class="built_in">new</span>(big.Int).Add(parent.Number, big1)</span><br><span class="line">	<span class="keyword">switch</span> &#123;</span><br><span class="line">	<span class="keyword">case</span> config.IsByzantium(next):</span><br><span class="line">		<span class="keyword">return</span> calcDifficultyByzantium(time, parent)</span><br><span class="line">	<span class="keyword">case</span> config.IsHomestead(next):</span><br><span class="line">		<span class="keyword">return</span> calcDifficultyHomestead(time, parent)</span><br><span class="line">	<span class="keyword">default</span>:</span><br><span class="line">		<span class="keyword">return</span> calcDifficultyFrontier(time, parent)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到有三个版本的代码，分别应用于不同版本的以太坊，我们先来看一下Homestead版本中的代码：<br>我们可以看到有三个版本的代码，分别应用于不同版本的以太坊，我们先来看一下Homestead版本中的代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">calcDifficultyHomestead</span><span class="params">(time <span class="keyword">uint64</span>, parent *types.Header)</span> *<span class="title">big</span>.<span class="title">Int</span></span> &#123;</span><br><span class="line">	bigTime := <span class="built_in">new</span>(big.Int).SetUint64(time)</span><br><span class="line">	bigParentTime := <span class="built_in">new</span>(big.Int).Set(parent.Time)</span><br><span class="line"></span><br><span class="line">	x := <span class="built_in">new</span>(big.Int)</span><br><span class="line">	y := <span class="built_in">new</span>(big.Int)</span><br><span class="line"></span><br><span class="line">	x.Sub(bigTime, bigParentTime)</span><br><span class="line">	x.Div(x, big10)</span><br><span class="line">	x.Sub(big1, x)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> x.Cmp(bigMinus99) &lt; <span class="number">0</span> &#123;</span><br><span class="line">		x.Set(bigMinus99)</span><br><span class="line">	&#125;</span><br><span class="line">	y.Div(parent.Difficulty, params.DifficultyBoundDivisor)</span><br><span class="line">	x.Mul(y, x)</span><br><span class="line">	x.Add(parent.Difficulty, x)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> x.Cmp(params.MinimumDifficulty) &lt; <span class="number">0</span> &#123;</span><br><span class="line">		x.Set(params.MinimumDifficulty)</span><br><span class="line">	&#125;</span><br><span class="line">	periodCount := <span class="built_in">new</span>(big.Int).Add(parent.Number, big1)</span><br><span class="line">	periodCount.Div(periodCount, expDiffPeriod)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> periodCount.Cmp(big1) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		y.Sub(periodCount, big2)</span><br><span class="line">		y.Exp(big2, y, <span class="literal">nil</span>)</span><br><span class="line">		x.Add(x, y)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从代码中我们可以看到，以太坊的难度值是基于当前区块的出块时间，对之后的难度值进行调整的。</p>
+<p>具体公式如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">diff = (parent_diff +(parent_diff / <span class="number">2048</span> * max(<span class="number">1</span> - (block_timestamp - parent_timestamp) <span class="comment">// 10, -99))) + 2^(periodCount - 2)</span></span><br></pre></td></tr></table></figure>
+<p>其中<code>2^(periodCount - 2)</code>又称”难度炸弹“，计算公式如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">2</span>^(periodCount - <span class="number">2</span>) = <span class="number">2</span>**((block_number <span class="comment">// expDiffPeriod) - 2)</span></span><br></pre></td></tr></table></figure>
+<p>目前最新的难度调整算法为Byzantium算法：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">calcDifficultyByzantium</span><span class="params">(time <span class="keyword">uint64</span>, parent *types.Header)</span> *<span class="title">big</span>.<span class="title">Int</span></span> &#123;</span><br><span class="line">	bigTime := <span class="built_in">new</span>(big.Int).SetUint64(time)</span><br><span class="line">	bigParentTime := <span class="built_in">new</span>(big.Int).Set(parent.Time)</span><br><span class="line"></span><br><span class="line">	x := <span class="built_in">new</span>(big.Int)</span><br><span class="line">	y := <span class="built_in">new</span>(big.Int)</span><br><span class="line"></span><br><span class="line">	x.Sub(bigTime, bigParentTime)</span><br><span class="line">	x.Div(x, big9)</span><br><span class="line">	<span class="keyword">if</span> parent.UncleHash == types.EmptyUncleHash &#123;</span><br><span class="line">		x.Sub(big1, x)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		x.Sub(big2, x)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> x.Cmp(bigMinus99) &lt; <span class="number">0</span> &#123;</span><br><span class="line">		x.Set(bigMinus99)</span><br><span class="line">	&#125;</span><br><span class="line">	y.Div(parent.Difficulty, params.DifficultyBoundDivisor)</span><br><span class="line">	x.Mul(y, x)</span><br><span class="line">	x.Add(parent.Difficulty, x)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> x.Cmp(params.MinimumDifficulty) &lt; <span class="number">0</span> &#123;</span><br><span class="line">		x.Set(params.MinimumDifficulty)</span><br><span class="line">	&#125;</span><br><span class="line">	fakeBlockNumber := <span class="built_in">new</span>(big.Int)</span><br><span class="line">	<span class="keyword">if</span> parent.Number.Cmp(big2999999) &gt;= <span class="number">0</span> &#123;</span><br><span class="line">		fakeBlockNumber = fakeBlockNumber.Sub(parent.Number, big2999999) <span class="comment">// Note, parent is 1 less than the actual block number</span></span><br><span class="line">	&#125;</span><br><span class="line">	periodCount := fakeBlockNumber</span><br><span class="line">	periodCount.Div(periodCount, expDiffPeriod)</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> periodCount.Cmp(big1) &gt; <span class="number">0</span> &#123;</span><br><span class="line">		y.Sub(periodCount, big2)</span><br><span class="line">		y.Exp(big2, y, <span class="literal">nil</span>)</span><br><span class="line">		x.Add(x, y)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> x</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>算法如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">diff = (parent_diff + (parent_diff / <span class="number">2048</span> * max((<span class="number">2</span> <span class="keyword">if</span> <span class="built_in">len</span>(parent.uncles) <span class="keyword">else</span> <span class="number">1</span>) - ((timestamp - parent.timestamp) <span class="comment">// 9), -99))) + 2^(periodCount - 2)</span></span><br></pre></td></tr></table></figure>
+<p>以太坊中定义了一个难度的最小值<code>MinimumDifficulty</code>，定义于<code>protocol_params.go</code>源文件中，值为<code>131072</code>，这个值是以太坊中难度的最小值，也是创世块的难度值。</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+          
+            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
+          
+            <a href="/tags/ETH/" rel="tag"># ETH</a>
+          
+            <a href="/tags/区块链/" rel="tag"># 区块链</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/20/eth-basis-transaction-life-cycle/" rel="next" title="【Ethereum基础】：交易的生命周期">
+                <i class="fa fa-chevron-left"></i> 【Ethereum基础】：交易的生命周期
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/07/10/starting-on-ethereum-smart-contract-env/" rel="prev" title="以太坊智能合约开发 - 环境搭建">
+                以太坊智能合约开发 - 环境搭建 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2018/05/02/eth-basis-block-concepts/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#以太坊区块"><span class="nav-number">1.</span> <span class="nav-text">以太坊区块</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区块的打包过程"><span class="nav-number">2.</span> <span class="nav-text">区块的打包过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区块的容量"><span class="nav-number">3.</span> <span class="nav-text">区块的容量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#区块时间"><span class="nav-number">4.</span> <span class="nav-text">区块时间</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

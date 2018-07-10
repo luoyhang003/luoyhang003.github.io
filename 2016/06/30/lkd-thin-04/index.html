@@ -1,0 +1,1167 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,读书笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 IV 篇，本文主要讲了以下问题：中断和中断处理程序的概念与实现原理、Linux 中的下半部以及内核同步方法。">
+<meta name="keywords" content="技术,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读薄《Linux 内核设计与实现》(4) -  中断与同步">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/06/30/lkd-thin-04/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 IV 篇，本文主要讲了以下问题：中断和中断处理程序的概念与实现原理、Linux 中的下半部以及内核同步方法。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-06-30T14:11:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读薄《Linux 内核设计与实现》(4) -  中断与同步">
+<meta name="twitter:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 IV 篇，本文主要讲了以下问题：中断和中断处理程序的概念与实现原理、Linux 中的下半部以及内核同步方法。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/06/30/lkd-thin-04/"/>
+
+
+
+
+
+  <title> 读薄《Linux 内核设计与实现》(4) -  中断与同步 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/06/30/lkd-thin-04/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                读薄《Linux 内核设计与实现》(4) -  中断与同步
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-30T22:10:12+08:00">
+                Jun 30 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/06/30/lkd-thin-04/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/06/30/lkd-thin-04/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/06/30/lkd-thin-04/" class="leancloud_visitors" data-flag-title="读薄《Linux 内核设计与实现》(4) -  中断与同步">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是<a href="http://blog.luoyuanhang.com/2016/06/07/lkd-thin-00/">《读薄「Linux 内核设计与实现」》系列文章</a>的第 IV 篇，本文主要讲了以下问题：中断和中断处理程序的概念与实现原理、Linux 中的下半部以及内核同步方法。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="0x00-中断和中断处理程序"><a href="#0x00-中断和中断处理程序" class="headerlink" title="0x00 中断和中断处理程序"></a>0x00 中断和中断处理程序</h1><h2 id="I-中断"><a href="#I-中断" class="headerlink" title="I 中断"></a>I 中断</h2><ul>
+<li><p>中断是一种特殊的电信号，由硬件发向处理器，处理器接收到中断时，会马上箱操作系统反映，由操作系统进行处理。中断随时可以产生，因此，内核随时可能因为新到来的中断而被打断。</p>
+</li>
+<li><p>不同的设备对应的中断不同，每个中断通过一个唯一的数字标识，这些中断值通常被称为中断请求（IRQ）线。</p>
+</li>
+</ul>
+<h2 id="II-中断处理程序"><a href="#II-中断处理程序" class="headerlink" title="II 中断处理程序"></a>II 中断处理程序</h2><ul>
+<li><p>中断处理程序又成为中断处理例程（ISR），是内核在响应中断时执行的一个函数</p>
+</li>
+<li><p>一个中断处理程序对应一个中断，一个设备可能发出多种中断</p>
+</li>
+<li><p>对于外部设备，中断处理程序是设备驱动程序的一部分</p>
+</li>
+<li><p>在 Linux 中，中断处理程序和 C 函数区别不大，但有自己的规范，主要是运行时需要在中断上下文中</p>
+</li>
+</ul>
+<h1 id="0x01-中断处理机制"><a href="#0x01-中断处理机制" class="headerlink" title="0x01 中断处理机制"></a>0x01 中断处理机制</h1><h2 id="I-注册中断处理程序"><a href="#I-注册中断处理程序" class="headerlink" title="I 注册中断处理程序"></a>I 注册中断处理程序</h2><p>驱动程序可以通过<code>request_irq()</code>函数注册一个中断处理程序(linux/interrupt.h)</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">request_irq</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> irq,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">irqhandler_t</span> handler,</span></span></span><br><span class="line"><span class="function"><span class="params">                unsigined <span class="keyword">long</span> falgs,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">const</span> <span class="keyword">char</span> *name,</span></span></span><br><span class="line"><span class="function"><span class="params">                <span class="keyword">void</span> *dev)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><p><code>irq:</code>表示要分配的中断号</p>
+</li>
+<li><p><code>handler:</code>一个指针，指向处理这个中断的实际中断处理函数</p>
+</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">typedef</span> <span class="title">irqhandler_t</span><span class="params">(*<span class="keyword">irq_handler_t</span>)</span><span class="params">(<span class="keyword">int</span>, <span class="keyword">void</span>*)</span></span>;</span><br></pre></td></tr></table></figure>
+<h2 id="II-释放中断处理程序"><a href="#II-释放中断处理程序" class="headerlink" title="II 释放中断处理程序"></a>II 释放中断处理程序</h2><p>卸载驱动程序时，需要注销响应中断处理程序，并释放中断线。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">free_irq</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">int</span> irq, <span class="keyword">void</span> *dev)</span></span>;</span><br></pre></td></tr></table></figure>
+<p><em>如果指定的中断线不是共享的，那么该函数删除处理程序的同时将禁用这条中断线；中断线是共享的，则仅仅删除 dev 对应的处理程序，而这条中断线本身只有在删除了最后一个处理程序时才会被禁用</em></p>
+<h2 id="III-中断的禁止与激活"><a href="#III-中断的禁止与激活" class="headerlink" title="III 中断的禁止与激活"></a>III 中断的禁止与激活</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">local_irq_disable();</span><br><span class="line">local_irq_enable();</span><br></pre></td></tr></table></figure>
+<h2 id="IV-上半部与下半部"><a href="#IV-上半部与下半部" class="headerlink" title="IV 上半部与下半部"></a>IV 上半部与下半部</h2><p>又想中断处理程序运行的快，又想中断处理程序完成的工作多，这两个目的显然有所抵触，所以把中断处理分为两个部分：</p>
+<ul>
+<li><p>中断处理程序是上半部，接收到一个中断，它就立刻开始执行，但只做有严格时限的工作，例如一些只有在中断被禁止的状态下才能完成的工作</p>
+</li>
+<li><p>能够被允许稍后完成的工作会推迟2到下半部去，此后，在合适的时机，下半部会被开中断执行</p>
+</li>
+</ul>
+<blockquote class="blockquote-center"><p>Q1：为什么要分上半部和下半部？ </p>
+</blockquote>
+<ul>
+<li>中断程序以异步方式执行，可能打断重要操作的执行，越快越好</li>
+<li>中断处理程序会屏蔽其他同级中断，所以执行越快越好</li>
+<li>中断处理程序往往需要对硬件操作，通常有很高的时限要求</li>
+<li>中断处理程序不在进程的上下文中运行，所以不能阻塞</li>
+</ul>
+<blockquote class="blockquote-center"><p>Q2：上半部和下半部如何分开？ </p>
+</blockquote>
+<ul>
+<li>如果一个任务对时间非常敏感，将其放到上半部；</li>
+<li>如果一个任务和硬件相关，将其放到上半部；</li>
+<li>如果一个任务要保证不被其它中断打断，将其放到上半部；</li>
+<li>其他的所有任务考虑放到下半部</li>
+</ul>
+<h1 id="0x02-下半部"><a href="#0x02-下半部" class="headerlink" title="0x02 下半部"></a>0x02 下半部</h1><p>下半部的任务就是执行与终端处理密切相关但中断处理程序本身不执行的工作。我们期望中断处理程序将尽量多的工作放到下半部执行，以快速从中断返回。</p>
+<h2 id="I-下半部实现机制"><a href="#I-下半部实现机制" class="headerlink" title="I 下半部实现机制"></a>I 下半部实现机制</h2><h3 id="a-软中断"><a href="#a-软中断" class="headerlink" title="a.软中断"></a>a.软中断</h3><p><strong>此处的软中断和系统调用使用的 int 80H 不同，是操作系统支持的一种，在编译期间静态分配</strong></p>
+<h4 id="软中断的实现"><a href="#软中断的实现" class="headerlink" title="软中断的实现"></a>软中断的实现</h4><ul>
+<li>定义于 <code>linux/interrupt.h</code> 中：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">softirq_action</span>&#123;</span></span><br><span class="line">    <span class="keyword">void</span> (*action)(struct sfotirq_action*); <span class="comment">//待执行的函数</span></span><br><span class="line">    <span class="keyword">void</span> *data; <span class="comment">//传递的参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最多可能32个软中断，定义于 <code>kernel/softirq.c</code></li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">softirq_action</span> <span class="title">softirq_vec</span>[<span class="title">NR_SOFTIRQS</span>];</span></span><br></pre></td></tr></table></figure>
+<h4 id="软中断处理程序"><a href="#软中断处理程序" class="headerlink" title="软中断处理程序"></a>软中断处理程序</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">softirq_handler</span><span class="params">(struct softirq_action*)</span></span>; <span class="comment">//传递整个结构体</span></span><br></pre></td></tr></table></figure>
+<h4 id="执行软中断"><a href="#执行软中断" class="headerlink" title="执行软中断"></a>执行软中断</h4><p>一个注册的软中断必须在被标记后才会执行下列地方，待处理的软中断会被检查和执行：</p>
+<ul>
+<li>在 ksoftirqd 内核线程中</li>
+<li>在那些显式检查和和执行待处理的软中断的代码中（如网络子系统）</li>
+</ul>
+<p><strong>不管执行的时机，软中断都要在<code>do_softirq</code> 中执行</strong></p>
+<h4 id="使用软中断"><a href="#使用软中断" class="headerlink" title="使用软中断"></a>使用软中断</h4><ul>
+<li><p>分配索引： 通过 <code>linux/interrupt.h</code> 中的一个枚举类型中声明一个新的软中断</p>
+</li>
+<li><p>注册处理程序：在运行时通过调用<code>open_softirq()</code>注册软中断处理程序，有两个参数，软中断和处理函数</p>
+</li>
+<li><p>触发软中断：<code>raise_softirq()</code>函数可以将一个软中断设置为挂起状态，让它在下次调用<code>do_softirq()</code>函数时投入运行</p>
+</li>
+</ul>
+<h3 id="b-tasklet"><a href="#b-tasklet" class="headerlink" title="b.tasklet"></a>b.tasklet</h3><p>基于软中断的实现，但它的接口更简单，锁保护要求更低</p>
+<h4 id="tasklet-的实现"><a href="#tasklet-的实现" class="headerlink" title="tasklet 的实现"></a>tasklet 的实现</h4><ul>
+<li>tasklet 结构体（linux/interrupt.h）</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">tasklet_struct</span>&#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">tasklet_struct</span> *<span class="title">next</span>;</span>    <span class="comment">//链表</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> state;    <span class="comment">//tasklet 状态</span></span><br><span class="line">    <span class="keyword">atomic_t</span> count; <span class="comment">//引用计数器</span></span><br><span class="line">    <span class="keyword">void</span> (*funx)(<span class="keyword">unsigned</span> <span class="keyword">long</span>);    <span class="comment">//taklet 处理函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> data; <span class="comment">//给处理器函数传递的参数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="调度-tasklet"><a href="#调度-tasklet" class="headerlink" title="调度 tasklet"></a>调度 tasklet</h4><p>被触发的软中断存放在2个数据结构：<code>tasklet_vec</code>,<code>task_hi_vec</code>,这两个数据结构都是由<code>task_struct</code>构成的链表，由<code>tasklet_schedule()</code>和<code>task_hi_schedule()</code>进行调度，调度步骤如下：</p>
+<p>（1）检查 tasklet 状态，如果为<code>TASK_STATE_SCHED</code>则返回<br>（2）调用<code>_tasklet_schedule()</code><br>（3）保存中断状态，禁止本地中断<br>（4）把需要调度的 tasklet 加到 <code>tasklet_vec</code>或<code>tasklet_hi_vec</code>链表头<br>（5）唤起<code>TASKLET_SOFTIRQ</code>或<code>HI_SOFTIRQ</code>软中断，下一次调用<code>do_softirq()</code>时会执行该 tasklet<br>（6）恢复中断</p>
+<ul>
+<li>软中断处理程序：<code>tasklet_action()</code>或<code>task_hi_action()</code>[<strong>tasklet 处理的核心</strong>]：<ul>
+<li>（1）禁止中断</li>
+<li>（2）将当前处理器上的该链表头设为 NULL</li>
+<li>（3）允许中断</li>
+<li>（4）循环遍历链表上所有待处理的 tasklet</li>
+<li>（5）如果是多个处理器，检查<code>TASKLET_STATE_RUN</code>判断这个 tasklet 是否在其他处理器上运行，如果是，跳到笑一个 tasklet</li>
+<li>（6）如果否，设置<code>TASKLET_STATE_RUN</code></li>
+<li>（7）检查 count 是否为0，确保 tasklet 没有被禁止；如果被禁止，跳到下一个 tasklet</li>
+<li>（8）执行 tasklet 处理程序</li>
+<li>（9）执行完毕，清除<code>TASKLET_STATE_RUN</code></li>
+<li>（10）重复执行下一个 tasklet</li>
+</ul>
+</li>
+</ul>
+<h4 id="使用-tasklet"><a href="#使用-tasklet" class="headerlink" title="使用 tasklet"></a>使用 tasklet</h4><h5 id="声明自己的-tasklet："><a href="#声明自己的-tasklet：" class="headerlink" title="声明自己的 tasklet："></a>声明自己的 tasklet：</h5><ul>
+<li>静态：linux/interrupt.h 中的2个宏：</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DECLARE_TASKLET(name,func,data);</span><br><span class="line">DECLARE_TASKLET_DIASBLED(name,func,data);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>动态：通过一个指针赋给一个动态创建的 tasklet_struct:</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tasklet_init(t, takslet_handler, dev);</span><br></pre></td></tr></table></figure>
+<p>#####编写自己的 tasklet 处理程序</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">tasklet_handler</span><span class="params">(<span class="keyword">unsigned</span> <span class="keyword">long</span> data)</span></span></span><br></pre></td></tr></table></figure>
+<p><strong>注意：不能再 tasklet 中使用信号量或者其他阻塞式函数</strong></p>
+<p>#####调度自己的 tasklet</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tasklet_schedule(&amp;my_tasklet);</span><br><span class="line">tasklet_enable(&amp;my_tasklet);</span><br><span class="line">tasklet_disable(&amp;my_tasklet);</span><br></pre></td></tr></table></figure>
+<p>#####ksoftirqd</p>
+<p>ksoftirqd 是内核线程，每个处理器都有一个，用于在空闲处理器处理软中断</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(;;)&#123;</span><br><span class="line">    <span class="keyword">if</span>(!softirq_pending(cpu))</span><br><span class="line">        schedule();</span><br><span class="line">    set_current_state(TASK_RUNNING);</span><br><span class="line">    <span class="keyword">while</span>(softirq_pending(cpu))&#123;</span><br><span class="line">        do_softirq();</span><br><span class="line">        <span class="keyword">if</span>(need_resched())</span><br><span class="line">        schedule();</span><br><span class="line">    &#125;</span><br><span class="line">    set_current_sdtate(TASK_INTERRUPTIBLE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只要有待处理的软中断，该线程就会处理</p>
+<h3 id="c-工作队列"><a href="#c-工作队列" class="headerlink" title="c.工作队列"></a>c.工作队列</h3><p>工作队列机制将下半部功能交给内核县城去执行，有线程上下文，可以睡眠</p>
+<h4 id="工作队列的实现"><a href="#工作队列的实现" class="headerlink" title="工作队列的实现"></a>工作队列的实现</h4><ul>
+<li>提供创建工作者线程的接口</li>
+<li>提供默认的工作者线程处理排到队列里的下半部工作</li>
+<li>提供吧需要推后执行的任务排到队列里的接口</li>
+</ul>
+<h4 id="处理机制"><a href="#处理机制" class="headerlink" title="处理机制"></a>处理机制</h4><ul>
+<li>线程将自己休眠，并加到等待队列（TASK_INTERRUPTIBLE）</li>
+<li>如果工作链表为空，线程调用<code>schedule()</code>，休眠</li>
+<li>如果不为空，将自己设为<code>TASK_RUNNING</code></li>
+<li>调用<code>run_workqueue()</code>执行被推后的工作</li>
+</ul>
+<p>该函数循环遍历链表上每个待处理的工作：</p>
+<ul>
+<li>当链表非空，选取下一个节点对象</li>
+<li>获取要执行的函数和参数</li>
+<li>从链表上解下该节点，将 pending 位清零</li>
+<li>调用函数</li>
+<li>重复执行</li>
+</ul>
+<h4 id="工作队列的使用"><a href="#工作队列的使用" class="headerlink" title="工作队列的使用"></a>工作队列的使用</h4><ul>
+<li>创建推后的工作：</li>
+</ul>
+<p>静态：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DECLARE_WORK(name, <span class="keyword">void</span>(*func)(<span class="keyword">void</span>*), <span class="keyword">void</span> *data);</span><br></pre></td></tr></table></figure>
+<p>动态：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INIT_WORK(struct work_struct *work, <span class="keyword">void</span>(*func)(<span class="keyword">void</span>*), <span class="keyword">void</span> *data);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>工作队列处理函数</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">work_handler</span><span class="params">(<span class="keyword">void</span> *data)</span></span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>对工作的调度</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">schedule_work(&amp;work);</span><br><span class="line">schedule_delayed_work(&amp;work, delay);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>刷新操作</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">flush_scheduled_work</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="3种下半部机制的比较"><a href="#3种下半部机制的比较" class="headerlink" title="3种下半部机制的比较"></a><strong>3种下半部机制的比较</strong></h3><table>
+<thead>
+<tr>
+<th style="text-align:center">机制</th>
+<th style="text-align:center">上下文</th>
+<th style="text-align:center">顺序执行保障</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">软中断</td>
+<td style="text-align:center">中断</td>
+<td style="text-align:center">没有</td>
+</tr>
+<tr>
+<td style="text-align:center">tasklet</td>
+<td style="text-align:center">中断</td>
+<td style="text-align:center">同类型不能同时执行</td>
+</tr>
+<tr>
+<td style="text-align:center">工作队列</td>
+<td style="text-align:center">进程</td>
+<td style="text-align:center">没有（和进程上下文一样被调度）</td>
+</tr>
+</tbody>
+</table>
+<blockquote class="blockquote-center"><p>Q：我们要选择哪种机制？ </p>
+</blockquote>
+<p><strong>如果有休眠的要求，选择工作队列；否则，最好使用 tasklet；要是必须专注性能的提高，选择软中断</strong></p>
+<h2 id="II-在下半部之间加锁"><a href="#II-在下半部之间加锁" class="headerlink" title="II 在下半部之间加锁"></a>II 在下半部之间加锁</h2><ul>
+<li><p>如果进程上下文和一个下半部共享数据，在访问这些数据之前，你需要禁止下半部的处理并得到锁的使用权</p>
+</li>
+<li><p>如果中断上下文和一个下半部共享数据，在访问数据之前，需要禁止中断并得到锁的使用权</p>
+</li>
+</ul>
+<h1 id="0x03-内核同步"><a href="#0x03-内核同步" class="headerlink" title="0x03 内核同步"></a>0x03 内核同步</h1><h2 id="I-临界区"><a href="#I-临界区" class="headerlink" title="I 临界区"></a>I 临界区</h2><p>临界区就是访问和操作共享资源的代码段，必须保证原子地执行才能保证安全</p>
+<h2 id="II-加锁"><a href="#II-加锁" class="headerlink" title="II 加锁"></a>II 加锁</h2><p>保证在临界区执行的县城只有一个</p>
+<h2 id="III-造成并发的原因"><a href="#III-造成并发的原因" class="headerlink" title="III 造成并发的原因"></a>III 造成并发的原因</h2><ul>
+<li><p>中断</p>
+</li>
+<li><p>软中断和 tasklet</p>
+</li>
+<li><p>内核抢占</p>
+</li>
+<li><p>睡眠及用户空间的同步</p>
+</li>
+<li><p>对称多处理</p>
+</li>
+</ul>
+<h2 id="IV-死锁产生条件"><a href="#IV-死锁产生条件" class="headerlink" title="IV 死锁产生条件"></a>IV 死锁产生条件</h2><ul>
+<li><p>要有一个或多个执行线程和一个或多个资源</p>
+</li>
+<li><p>每一个线程都在等待其中一个资源</p>
+</li>
+<li><p>所有的资源都被占用</p>
+</li>
+<li><p>所有县城都在互相等待，但他们永远不会释放已经占有的资源</p>
+</li>
+</ul>
+<h2 id="V-内核同步方法"><a href="#V-内核同步方法" class="headerlink" title="V 内核同步方法"></a>V 内核同步方法</h2><h3 id="原子操作"><a href="#原子操作" class="headerlink" title="原子操作"></a>原子操作</h3><ul>
+<li>原子整数操作（asm/atomic.h）</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">atomic_dec_and_test(<span class="keyword">atmoic_t</span>, *v)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>原子位操作（asm/bitops.h）</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set_bit(<span class="number">0</span>, &amp;word)</span><br></pre></td></tr></table></figure>
+<h3 id="自旋锁"><a href="#自旋锁" class="headerlink" title="自旋锁"></a>自旋锁</h3><ul>
+<li><p>自旋锁只能被一个可执行进程持有</p>
+</li>
+<li><p>若争用一个被占用的锁则进程忙等（旋转）</p>
+</li>
+<li><p>自旋锁不能长期被占用，否则效率低</p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/25/lkd-thin-03/" rel="next" title="读薄《Linux 内核设计与实现》(3) -  系统调用">
+                <i class="fa fa-chevron-left"></i> 读薄《Linux 内核设计与实现》(3) -  系统调用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/10/23/lkd-thin-05/" rel="prev" title="读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理">
+                读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/06/30/lkd-thin-04/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-中断和中断处理程序"><span class="nav-number">1.</span> <span class="nav-text">0x00 中断和中断处理程序</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-中断"><span class="nav-number">1.1.</span> <span class="nav-text">I 中断</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-中断处理程序"><span class="nav-number">1.2.</span> <span class="nav-text">II 中断处理程序</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-中断处理机制"><span class="nav-number">2.</span> <span class="nav-text">0x01 中断处理机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-注册中断处理程序"><span class="nav-number">2.1.</span> <span class="nav-text">I 注册中断处理程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-释放中断处理程序"><span class="nav-number">2.2.</span> <span class="nav-text">II 释放中断处理程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-中断的禁止与激活"><span class="nav-number">2.3.</span> <span class="nav-text">III 中断的禁止与激活</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IV-上半部与下半部"><span class="nav-number">2.4.</span> <span class="nav-text">IV 上半部与下半部</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-下半部"><span class="nav-number">3.</span> <span class="nav-text">0x02 下半部</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-下半部实现机制"><span class="nav-number">3.1.</span> <span class="nav-text">I 下半部实现机制</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-软中断"><span class="nav-number">3.1.1.</span> <span class="nav-text">a.软中断</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#软中断的实现"><span class="nav-number">3.1.1.1.</span> <span class="nav-text">软中断的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#软中断处理程序"><span class="nav-number">3.1.1.2.</span> <span class="nav-text">软中断处理程序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行软中断"><span class="nav-number">3.1.1.3.</span> <span class="nav-text">执行软中断</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用软中断"><span class="nav-number">3.1.1.4.</span> <span class="nav-text">使用软中断</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#b-tasklet"><span class="nav-number">3.1.2.</span> <span class="nav-text">b.tasklet</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#tasklet-的实现"><span class="nav-number">3.1.2.1.</span> <span class="nav-text">tasklet 的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调度-tasklet"><span class="nav-number">3.1.2.2.</span> <span class="nav-text">调度 tasklet</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#使用-tasklet"><span class="nav-number">3.1.2.3.</span> <span class="nav-text">使用 tasklet</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#声明自己的-tasklet："><span class="nav-number">3.1.2.3.1.</span> <span class="nav-text">声明自己的 tasklet：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#c-工作队列"><span class="nav-number">3.1.3.</span> <span class="nav-text">c.工作队列</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#工作队列的实现"><span class="nav-number">3.1.3.1.</span> <span class="nav-text">工作队列的实现</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理机制"><span class="nav-number">3.1.3.2.</span> <span class="nav-text">处理机制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#工作队列的使用"><span class="nav-number">3.1.3.3.</span> <span class="nav-text">工作队列的使用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3种下半部机制的比较"><span class="nav-number">3.1.4.</span> <span class="nav-text">3种下半部机制的比较</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-在下半部之间加锁"><span class="nav-number">3.2.</span> <span class="nav-text">II 在下半部之间加锁</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-内核同步"><span class="nav-number">4.</span> <span class="nav-text">0x03 内核同步</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-临界区"><span class="nav-number">4.1.</span> <span class="nav-text">I 临界区</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-加锁"><span class="nav-number">4.2.</span> <span class="nav-text">II 加锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-造成并发的原因"><span class="nav-number">4.3.</span> <span class="nav-text">III 造成并发的原因</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IV-死锁产生条件"><span class="nav-number">4.4.</span> <span class="nav-text">IV 死锁产生条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#V-内核同步方法"><span class="nav-number">4.5.</span> <span class="nav-text">V 内核同步方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#原子操作"><span class="nav-number">4.5.1.</span> <span class="nav-text">原子操作</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自旋锁"><span class="nav-number">4.5.2.</span> <span class="nav-text">自旋锁</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

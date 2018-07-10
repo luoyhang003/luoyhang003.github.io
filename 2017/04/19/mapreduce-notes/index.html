@@ -1,0 +1,1021 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="paper,分布式," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是我阅读 MapReduce 论文：《MapReduce: Simplified Data Processing on Large Clusters》的笔记，这篇笔记概述了 MapReduce 是什么，它的工作流程，一些细节问题，以及我的个人理解与思考。">
+<meta name="keywords" content="paper,分布式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MapReduce 阅读笔记">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2017/04/19/mapreduce-notes/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是我阅读 MapReduce 论文：《MapReduce: Simplified Data Processing on Large Clusters》的笔记，这篇笔记概述了 MapReduce 是什么，它的工作流程，一些细节问题，以及我的个人理解与思考。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-19T16:03:47.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MapReduce 阅读笔记">
+<meta name="twitter:description" content="这篇文章是我阅读 MapReduce 论文：《MapReduce: Simplified Data Processing on Large Clusters》的笔记，这篇笔记概述了 MapReduce 是什么，它的工作流程，一些细节问题，以及我的个人理解与思考。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2017/04/19/mapreduce-notes/"/>
+
+
+
+
+
+  <title> MapReduce 阅读笔记 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2017/04/19/mapreduce-notes/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MapReduce 阅读笔记
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-19T23:54:17+08:00">
+                Apr 19 2017
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/19/mapreduce-notes/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2017/04/19/mapreduce-notes/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2017/04/19/mapreduce-notes/" class="leancloud_visitors" data-flag-title="MapReduce 阅读笔记">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章是我阅读 <a href="https://research.google.com/archive/mapreduce-osdi04.pdf" target="_blank" rel="noopener">MapReduce 论文：《MapReduce: Simplified Data Processing on Large Clusters》</a>的笔记，这篇笔记概述了 MapReduce 是什么，它的工作流程，一些细节问题，以及我的个人理解与思考。</p>
+<a id="more"></a>
+<h1 id="MapReduce-是什么？"><a href="#MapReduce-是什么？" class="headerlink" title="MapReduce 是什么？"></a>MapReduce 是什么？</h1><p>MapReduce 是 Google设计的一种用于大规模数据集的分布式模型，它具有支持并行计算、容错、易使用等特点。它的设计目标如下：</p>
+<ul>
+<li>支持并行</li>
+<li>用于分布式</li>
+<li>能够进行错误处理（比如机器崩溃）</li>
+<li>易于使用（程序员友好）</li>
+<li>负载均衡</li>
+</ul>
+<h1 id="模型流程"><a href="#模型流程" class="headerlink" title="模型流程"></a>模型流程</h1><p>MapReduce 模型主要分为 2 个部分：<strong>Map</strong> 和 <strong>Reduce</strong>。</p>
+<p>在 Map 过程中，Map 函数会获取输入的数据，产生一个临时中间值，它是一个 K/V 对，然后MapReduce Library 会按 Key 值给键值对（K/V）分组然后传递给 Reduce 函数。而后，Reduce 接收到了这些 K/V 对，会将它们合并。</p>
+<p>以论文中的字数统计程序为例：</p>
+<p>现在我们来考虑，如果我们有许多文档，然后我们想要统计在这些文档中每个字出现的次数，现在用 MapReduce 来解决这个问题。Map 函数所做的工作，就是进行分词，产生一组形如下表的 K/V 键值对：</p>
+<table>
+<thead>
+<tr>
+<th>apple</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>apple</td>
+<td>1</td>
+</tr>
+<tr>
+<td>by</td>
+<td>1</td>
+</tr>
+<tr>
+<td>by</td>
+<td>1</td>
+</tr>
+<tr>
+<td>by</td>
+<td>1</td>
+</tr>
+<tr>
+<td>google</td>
+<td>1</td>
+</tr>
+<tr>
+<td>google</td>
+<td>1</td>
+</tr>
+<tr>
+<td>take</td>
+<td>1</td>
+</tr>
+<tr>
+<td>……</td>
+<td>……</td>
+</tr>
+</tbody>
+</table>
+<p>然后将这组键值对传递给 Reduce，由 Reduce 进行合并。</p>
+<p><strong>具体流程如下：</strong></p>
+<ol>
+<li>由用户程序中调用的 MapReduce Library 将文件分成 M 块（M 要远大于 Map Worker 的数量，每块大小16MB~64MB），此时，进入 MapReduce 过程；</li>
+<li>由 Master 给空闲的 Worker 分配任务，共有 M 个 Map 任务，R 个 Reduce 任务；</li>
+<li>Map Worker 读取文件，将文件处理为 K/V 键值对，K/V 键值对缓存于内存中（此时存在一个问题，如果断电怎么办？往下看后边有解释）；</li>
+<li>将缓存于内存的 K/V 键值对写入磁盘，分成 R 堆（分堆方法有很多种，论文中提到了使用 Hash 散列函数），然后将结果发送给 Master；</li>
+<li>Master 将这些 K/V 键值对的存储地址告知 Reduce，Reduce Worker 通过 RPC（远程过程调用）进行读取，读取完毕之后会根据 Key 值进行排序（这样，相同 Key 值的就会在一起。但是存在一个问题，如果内存不够大，排序该怎么进行？可以使用外部排序）；</li>
+<li>Reduce Worker 将已经排序的结果进行遍历，将每个 Key 值所对应的一组 Value，所组成的  <code>&lt;key, value[num]&gt;</code>传递给用户所编写的 reduce 函数进行处理；</li>
+<li>所有的 Map，Reduce 任务都完成后，告知用户程序，MapReduce 已经结束，返回用户程序。</li>
+</ol>
+<h1 id="容错处理（Fault-Tolerance）"><a href="#容错处理（Fault-Tolerance）" class="headerlink" title="容错处理（Fault-Tolerance）"></a>容错处理（Fault-Tolerance）</h1><p>MapReduce 中的容错处理是非常重要的，因为MapReduce 是运行于分布式环境中的，在分布式环境中经常会有机器出现错误，我们不能让个别机器的错误影响到整体。</p>
+<h2 id="Worker-崩溃"><a href="#Worker-崩溃" class="headerlink" title="Worker 崩溃"></a>Worker 崩溃</h2><p>Master 通过定期给 Worker 发送心跳（heartbeat）来检测 Worker 是否还在正常工作，如果 Worker 无应答或者是应答有误，我们认定它已经宕机（fail）。如果正在工作的 Worker 宕机了，那么运行在它上面的 map 任务会进行初始化（初始状态为 idle，任务还有其他2种状态，in-progress处理中，completed 已完成），重新被分配到正常的 Worker 上。</p>
+<p>如果说 Map Worker 已经完成了一些工作，我们仍然要对运行在它上面的所有任务重新进行分配，这是为什么呢？这里同时可以解决上面的那个问题。因为 Map Worker 处理后的中间结果存在于内存中，或者是 local disk 中，一旦它宕机，这些数据就获取不到了。</p>
+<p>但是对于 Reduce Worker，它完成的任务不用重做，因为它处理后的结果是保存在全局存储中的。</p>
+<p>如果，在 Map Worker A 宕机之后，它所做的任务被重新分配给了 Map Worker B，后边的 Reduce Worker 会被告知，A 已经宕机，要去 B 去读取数据。</p>
+<h2 id="Master-崩溃"><a href="#Master-崩溃" class="headerlink" title="Master 崩溃"></a>Master 崩溃</h2><p>如果说 MapReduce 的 Master 宕机了，又该如何处理呢？</p>
+<p>MapReduce 中的 Master 会定期进行 checkpoint 备份，如果 Master 宕机，会根据之前的 checkpoint 进行恢复，但是恢复期间，MapReduce 任务会中断。</p>
+<h1 id="一些细节问题"><a href="#一些细节问题" class="headerlink" title="一些细节问题"></a>一些细节问题</h1><p><strong>1. 考虑用户编写的 reduce 函数是确定的（deterministic，对于同样的输入执行的结果是一样的），如果有多个 Reduce Worker 都执行了一个 Reduce 任务该怎么办？</strong></p>
+<p>因为用户的 reduce 函数是 deterministic 的，所以即使有多个 Reduce Worker 都执行了同一个任务，但是它们执行的结果都是一样的，并不影响最后的结果。</p>
+<p><strong>2. 如果用户编写的 reduce 函数是不确定（non-deterministic）的呢？</strong></p>
+<p>正是因为 reduce 函数是 non-deterministic 的，本来每次执行的结果也不确定，所以更不会产生影响。</p>
+<p><strong>3. 我们所需要处理的输入文件是如何保存的？</strong></p>
+<p>Input 文件保存于 GFS 中，GFS 会将它们分块保存（每块16MB~64MB），GFS 会对每个文件有3个备份，备份在不同的机器上。</p>
+<p><strong>4. Master 是如何分配任务的？</strong></p>
+<p>遵循就『近』原则，将任务分配给离任务所保存的位置最『近』的 Worker，这里对『近』的定义是网络层面上的，比如说在同一个交换机下的两个机器就是距离『近』的。</p>
+<p><strong>5. MapReduce 是如何做到负载均衡的？</strong></p>
+<p>一开始将文件分块时，分为 M 块，远大于 Map Worker 的数量就有助于负载均衡。同时，这样做还有一个好处，就是当一个 Worker 宕机的时候，可以将任务迅速分配开来，分到多个 Worker 上去。如果 M 比较小，有可能当一个 Worker 宕机时，它的任务不够分配到剩下的 Worker 中，会有 Worker 闲置。</p>
+<p><strong>6. 如何解决 straggler 问题（其他 Worker 都已经完成了自己的任务，但是有一个异常慢的机器，它还有任务没完成，拖慢了整体的速度）？</strong></p>
+<p>MapReduce 有一种机制应对这种情况：MapReduce 会对未完成的任务（in-progress） 定时执行备份执行操作（即，把这些正在某些 Worker 上执行但未完成的任务再次分配给其他 Worker 去执行），不论这个任务被哪个 Worker 完成都会被标记为已完成。</p>
+<p><strong>7. 如果在 Map 任务中有一个 key 特别多，可能会拖慢整个网络的速度，该怎么办？（例如，在字数统计的例子中，the 这个词的数量特别多）</strong></p>
+<p>MapReduce 给用户提供了一个 Combiner 函数，这个函数可以将结果在发送到网络之前进行合并，例如发送键值对&lt;”by”, 3>。</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/paper/" rel="tag"># paper</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/26/leetcode-079/" rel="next" title="LeetCode 79. Word Search">
+                <i class="fa fa-chevron-left"></i> LeetCode 79. Word Search
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/05/15/gfs-reading-notes/" rel="prev" title="GFS 阅读笔记">
+                GFS 阅读笔记 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2017/04/19/mapreduce-notes/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#MapReduce-是什么？"><span class="nav-number">1.</span> <span class="nav-text">MapReduce 是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#模型流程"><span class="nav-number">2.</span> <span class="nav-text">模型流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#容错处理（Fault-Tolerance）"><span class="nav-number">3.</span> <span class="nav-text">容错处理（Fault-Tolerance）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Worker-崩溃"><span class="nav-number">3.1.</span> <span class="nav-text">Worker 崩溃</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Master-崩溃"><span class="nav-number">3.2.</span> <span class="nav-text">Master 崩溃</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#一些细节问题"><span class="nav-number">4.</span> <span class="nav-text">一些细节问题</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

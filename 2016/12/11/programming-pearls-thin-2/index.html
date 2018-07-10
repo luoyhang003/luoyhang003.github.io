@@ -1,0 +1,994 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,读书笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是[《读薄&amp;lt;编程珠玑&amp;gt;》系列博客][1]的第 贰 篇，在这篇文章中，作者提出了三个问题，并且给出了相应的解决方案，本文阐述了这三个问题以及解决方案，并且对课后习题进行了分析。">
+<meta name="keywords" content="技术,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【读薄《编程珠玑》】贰 啊哈！算法">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/12/11/programming-pearls-thin-2/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是[《读薄&amp;lt;编程珠玑&amp;gt;》系列博客][1]的第 贰 篇，在这篇文章中，作者提出了三个问题，并且给出了相应的解决方案，本文阐述了这三个问题以及解决方案，并且对课后习题进行了分析。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/4858d6a8jw1fam2l2i1pqj20b40aqq35.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fam29qsdnlj219m0qe41j.jpg">
+<meta property="og:updated_time" content="2016-12-10T16:17:39.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【读薄《编程珠玑》】贰 啊哈！算法">
+<meta name="twitter:description" content="这篇文章是[《读薄&amp;lt;编程珠玑&amp;gt;》系列博客][1]的第 贰 篇，在这篇文章中，作者提出了三个问题，并且给出了相应的解决方案，本文阐述了这三个问题以及解决方案，并且对课后习题进行了分析。">
+<meta name="twitter:image" content="http://ww3.sinaimg.cn/mw690/4858d6a8jw1fam2l2i1pqj20b40aqq35.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/12/11/programming-pearls-thin-2/"/>
+
+
+
+
+
+  <title> 【读薄《编程珠玑》】贰 啊哈！算法 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/12/11/programming-pearls-thin-2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【读薄《编程珠玑》】贰 啊哈！算法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-11T00:15:40+08:00">
+                Dec 11 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/11/programming-pearls-thin-2/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/12/11/programming-pearls-thin-2/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/12/11/programming-pearls-thin-2/" class="leancloud_visitors" data-flag-title="【读薄《编程珠玑》】贰 啊哈！算法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是[《读薄&lt;编程珠玑&gt;》系列博客][1]的第 贰 篇，在这篇文章中，作者提出了三个问题，并且给出了相应的解决方案，本文阐述了这三个问题以及解决方案，并且对课后习题进行了分析。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="问题集合"><a href="#问题集合" class="headerlink" title="问题集合"></a>问题集合</h2><ul>
+<li><p>0x00: 给定一个最多包含40亿个随机排列的32位整数的顺序文件，找出一个不在文件中的32位整数（在文件中至少缺失一个这样的数）。在具有足够内存的情况下，如何解决该问题？如果有几个外部的『临时』文件可用，但是仅有几百字节的内存，又该如何解决该问题？</p>
+</li>
+<li><p>0x01: 将一个 n 元一维向量向左旋转 i 个位置。例如，当 n=8, i=3 时，向量 abcdefg 旋转为 defgabc。简单的代码使用一个 n 元的中间向量在 n 步内完成该工作。你能否仅适用数十个额外字节的存储空间，在正比于 n 的时间内完成向量的旋转？</p>
+</li>
+<li><p>0x02: 给定一个英语字典，找出其中的所有变位词的集合。例如，『pots』、『stop』、『tops』互为变位词，因为每个单词都能通过改变其他单词中的字母顺序来获得。</p>
+</li>
+<li><p>0x03：考虑查找给定输入单词的所有变位词问题。仅给定单词和词典的情况下，如何解决该问题？如果有一些时间和空间可以在响应任何查询之前预先处理字典，又会如何？</p>
+</li>
+<li><p>0x04：给定包含 4,300,000,000 个 32 位证书的顺序文件，如何找出一个至少出现两次的整数？</p>
+</li>
+<li><p>0x05：前面涉及了两个需要经敲代码来实现的向量旋转算法。将其分别作为独立的程序实现。在每个程序中，i 和 n 的最大公约数如何出现？</p>
+</li>
+<li><p>0x06：几位读者指出，既然所有的三个旋转算法需要执行的运行时间都正比于 n，杂技算法的运行速度显然是求逆算法的两倍。杂技算法对数组中的每个元素仅存储和读取一次，而求逆算法需要两次。在实际的计算机上实验以比较两者的速度差异，特别注意内存引用位置附近的问题。</p>
+</li>
+<li><p>0x07：向量旋转算法将向量 ab 变为 ba。如何将向量 abc 变为 cba？（这对交换非相邻内存块的问题进行了建模）</p>
+</li>
+<li><p>0x08：20世纪70年代末期，贝尔实验室开发出了『用户操作的电话号码簿辅助程序』，该程序允许雇员使用标准的按键电话在公司电话号码簿中查找号码。</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/4858d6a8jw1fam2l2i1pqj20b40aqq35.jpg" alt=""></p>
+<p>要查找该系统设计者的名字 Mike Lesk，可以按『LESK*M*』(也就是『5375*6*』)，随后，系统会输出他的电话号码。这样的服务现在随处可见。该系统中出现的一个问题是，不同的名字有可能具有相同的按键编码。在 Lesk 的系统中发生这种情况时，系统会询问用户更多的信息。给定一个大的名字文件时（例如标准的大城市电话号码簿），如何定位这些『错误匹配』呢？（当 LESK 在这种规模的电话号码簿上做实验时，他发现错误匹配的概率仅仅是0.2%）如何实现一个以名字的按键编码为参数，并返回所有可能的匹配名字的函数？</p>
+</li>
+<li><p>0x09：在20世纪60年代早期，Vic Vyssotsky 与一个程序员一起工作，该程序员需要转置一个存储在磁带上的4000*4000的矩阵（每条记录的格式相同，为数十个字节）。他的同事最初提出的程序需要运行50个小时。Vyssotsky 如何将运行时间减少到半小时呢？</p>
+</li>
+<li><p>0x10：给定一个 n 元实数集合、一个实数 t 和一个整数 k，如何快速确定是否存在一个 k 元子集，其元素之和不超过 k ？</p>
+</li>
+<li><p>0x11：顺序搜索和二分搜索代表了搜索时间和预处理时间之间的折中。处理一个 n 元表格时，需要执行多少次二分搜索才能弥补对表进行排序所消耗的预处理时间？</p>
+</li>
+</ul>
+<h2 id="方案集合"><a href="#方案集合" class="headerlink" title="方案集合"></a>方案集合</h2><h3 id="0x00"><a href="#0x00" class="headerlink" title="0x00"></a>0x00</h3><p>该问题的解思想在于：<strong>二分法</strong>。</p>
+<p>首先，将40亿个数字遍历一遍，分为 2 组，第一位为 1 的一组，为 0 的一组（假设只缺少一个数字），则数量少的一组必定有缺少的数，然后对该组再次进行分组，如此进行下去直到找到该缺少的数字。</p>
+<p>如果有足够的空间使用第一章中介绍的<a href="http://blog.luoyuanhang.com/2016/05/15/I-%E4%BD%8D%E5%90%91%E9%87%8F%E7%9A%84%E5%AE%9E%E7%8E%B0%E4%B8%8E%E5%BA%94%E7%94%A8/">位向量</a>也是可以的。</p>
+<h3 id="0x01"><a href="#0x01" class="headerlink" title="0x01"></a>0x01</h3><p><strong>解法1：</strong> 思想在于向量中的元素移动后的最终位置其实是确定的，我们需要的是一个临时变量，存放着该元素移动后的位置，然后把对应的元素放到相应位置即可</p>
+<p><strong>解法2：</strong> 思想在于旋转向量的问题其实就是将该向量分为了两部分 ab，然后变成 ba 的过程。其中 a 为向量的前 i 个元素，将 ab 变为 ba 过程是这样的：首先对 a 求逆得到 a’，然后对 b 求逆得到 b’，最后对 (a’b’) 求逆，所得到的结果就是 ba，过程如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">reverse(<span class="number">0</span>, i<span class="number">-1</span>); <span class="comment">/* cbadefgh */</span></span><br><span class="line">reverse(i, n<span class="number">-1</span>); <span class="comment">/* cbahgfed */</span></span><br><span class="line">reverse(<span class="number">0</span>, n<span class="number">-1</span>); <span class="comment">/* defghabc */</span></span><br></pre></td></tr></table></figure>
+<h3 id="0x02"><a href="#0x02" class="headerlink" title="0x02"></a>0x02</h3><p>对于该问题，我们可以标识字典中的每一个词，使用基于排序的标识，按照字母表的顺序来对出现的字母进行排序，例如，”deposit” 的标识为 “deiopst”。改进后的标识，我们可以使用类似 “e1h1l1o2” 来标识 “hello”。</p>
+<h3 id="0x03"><a href="#0x03" class="headerlink" title="0x03"></a>0x03</h3><p>如果仅给单词和词典，我们需要对字典中的单词进行依次算标识，然后进行比较；</p>
+<p>如果有一些时间和空间可以预先处理字典，我们可以先计算出每个单词的标识然后建立<code>(标识, 单词)</code>对然后方便查找（或者直接排序）</p>
+<h3 id="0x04"><a href="#0x04" class="headerlink" title="0x04"></a>0x04</h3><p>思路同 0x00，先扫描一遍，把第一位是 「0」和「1」的数字放到两个文件中，数量多的一个对第二位数字再分组，以此类推，最后一定能找出一个数字。</p>
+<h3 id="0x05"><a href="#0x05" class="headerlink" title="0x05"></a>0x05</h3><p>第一个算法的实现（杂耍算法）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 求最大公约数 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">gcd</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> b==<span class="number">0</span>?a:gcd(b, a%b);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* 第一个算法 */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">a1</span><span class="params">(<span class="keyword">int</span> *start, <span class="keyword">int</span> *end, <span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> len = end - start;</span><br><span class="line">    <span class="keyword">int</span> g = gcd(len, i);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; g; index++)&#123;</span><br><span class="line">        <span class="keyword">int</span> t = *(start+index);</span><br><span class="line">        <span class="keyword">int</span> next = index;</span><br><span class="line">        <span class="keyword">while</span>((next+i)%len != index)&#123;</span><br><span class="line">            *(start+next) = *(start+(next+i)%len);</span><br><span class="line">            next = (next+i)%len;</span><br><span class="line">        &#125;</span><br><span class="line">        *(start+next) = t;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第二个算法的实现（交换算法）</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 第二个算法 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">rangeswap</span><span class="params">( <span class="keyword">int</span> *a, <span class="keyword">int</span> i, <span class="keyword">int</span> j, <span class="keyword">int</span> m)</span></span>&#123;</span><br><span class="line">    <span class="comment">//交换 a[i...i+m] 和 a[j...j+m]</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> index = <span class="number">0</span>; index &lt; m; index++)&#123;</span><br><span class="line">        <span class="keyword">int</span> temp = a[i + index];</span><br><span class="line">        a[i + index] = a[j + index];</span><br><span class="line">        a[j + index] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">a2</span><span class="params">( <span class="keyword">int</span> *a, <span class="keyword">int</span> shift )</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(shift == <span class="number">0</span> || shift == num)</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    <span class="keyword">int</span> n = shift;</span><br><span class="line">    <span class="keyword">int</span> j = num - shift;</span><br><span class="line">    <span class="keyword">int</span> i = shift;</span><br><span class="line">    <span class="keyword">while</span>(i != j )&#123;</span><br><span class="line">        <span class="keyword">if</span>(i &gt; j)&#123;</span><br><span class="line">            rangeswap(a, n-i, n, j);</span><br><span class="line">            i -= j;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span>&#123;</span><br><span class="line">            rangeswap(a, n-i, n+j-i, i);</span><br><span class="line">            j -= i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    rangeswap(a, n-i, n, i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三个算法的实现（求逆算法）</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 第三个算法 */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">reverse</span><span class="params">(<span class="keyword">int</span> m, <span class="keyword">int</span> n)</span></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> mid = (m+n)/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">int</span> temp;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = m, j=n; i &lt;= mid; i++, j--)&#123;</span><br><span class="line">        temp = a[i];</span><br><span class="line">        a[i] = a[j];</span><br><span class="line">        a[j] = temp;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">a3</span><span class="params">(<span class="keyword">int</span>* a, <span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">    reverse(<span class="number">0</span>, i<span class="number">-1</span>);</span><br><span class="line">    reverse(i, num<span class="number">-1</span>);</span><br><span class="line">    reverse(<span class="number">0</span>, num<span class="number">-1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="0x06"><a href="#0x06" class="headerlink" title="0x06"></a>0x06</h2><p>把上述三种算法分别运行，向量长度为1,000,000，旋转长度为 1 - 50，作图如下：（横坐标为旋转长度，纵坐标为运行时间，单位为毫秒）</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fam29qsdnlj219m0qe41j.jpg" alt="data"></p>
+<p>测试代码如下：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span> * argv[])</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    ofstream oFile;</span><br><span class="line"></span><br><span class="line">    oFile.open(<span class="string">"/Users/jason/data.csv"</span>, ios::out | ios::trunc);</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">50</span>; i++)&#123;</span><br><span class="line">        oFile &lt;&lt; i &lt;&lt; <span class="string">','</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    oFile &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line">    <span class="comment">/*算法一运行时间统计（向量长度1000000，旋转距离1-50）*/</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;=<span class="number">50</span>; i++)&#123;</span><br><span class="line">        init();</span><br><span class="line">        <span class="keyword">clock_t</span> start, finish;</span><br><span class="line">        <span class="keyword">double</span> totaltime;</span><br><span class="line">        start = clock();</span><br><span class="line">        a1(a, a+num, i);</span><br><span class="line">        finish = clock();</span><br><span class="line">        totaltime = (<span class="keyword">double</span>)(finish-start)/CLOCKS_PER_SEC;</span><br><span class="line">        oFile &lt;&lt; totaltime*<span class="number">1000</span> &lt;&lt; <span class="string">','</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    oFile &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">/*算法二运行时间统计（向量长度1000000，旋转距离1-50）*/</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">50</span>; i++)&#123;</span><br><span class="line">        init();</span><br><span class="line">        <span class="keyword">clock_t</span> start, finish;</span><br><span class="line">        <span class="keyword">double</span> totaltime;</span><br><span class="line">        start = clock();</span><br><span class="line">        a2(a, i);</span><br><span class="line">        finish = clock();</span><br><span class="line">        totaltime = (<span class="keyword">double</span>)(finish-start)/CLOCKS_PER_SEC;</span><br><span class="line">        oFile &lt;&lt; totaltime*<span class="number">1000</span> &lt;&lt; <span class="string">','</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    oFile &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*算法三运行时间统计（向量长度1000000，旋转距离1-50）*/</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">1</span>; i &lt;= <span class="number">50</span>; i++)&#123;</span><br><span class="line">        init();</span><br><span class="line">        <span class="keyword">clock_t</span> start, finish;</span><br><span class="line">        <span class="keyword">double</span> totaltime;</span><br><span class="line">        start = clock();</span><br><span class="line">        a3(a, i);</span><br><span class="line">        finish = clock();</span><br><span class="line">        totaltime = (<span class="keyword">double</span>)(finish-start)/CLOCKS_PER_SEC;</span><br><span class="line">        oFile &lt;&lt; totaltime*<span class="number">1000</span> &lt;&lt; <span class="string">','</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    oFile &lt;&lt; <span class="built_in">endl</span>;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    oFile.close();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="0x07"><a href="#0x07" class="headerlink" title="0x07"></a>0x07</h3><p>分别对 a, b, c 求逆，得到 a’, b’, c’，再对 (a’b’c’) 求逆，得到 cba</p>
+<h3 id="0x08"><a href="#0x08" class="headerlink" title="0x08"></a>0x08</h3><p>首先计算出所有名字的标识，例（『LESK*M*』的标识是『5375*6*』），然后对所有标识进行排序，查找时使用二分搜索2（答案中说实际中往往使用散列表或数据库系统）</p>
+<h3 id="0x09"><a href="#0x09" class="headerlink" title="0x09"></a>0x09</h3><p>（作者给的答案）</p>
+<p>为了转置矩阵，Vyssotsky 为每条记录插入列号和行号，然后调用系统的磁带排序程序先按列排序，再按行排序，最后使用另一个程序删除列号和行号</p>
+<h3 id="0x10"><a href="#0x10" class="headerlink" title="0x10"></a>0x10</h3><p>我能想到的方法是：对这个集合进行排序，然后算出前 k 位的和与 t 进行比较</p>
+<h3 id="0x11"><a href="#0x11" class="headerlink" title="0x11"></a>0x11</h3><p>TODO</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/11/07/lkd-thin-06/" rel="next" title="读薄《Linux 内核设计与实现》(6) -  虚拟文件系统">
+                <i class="fa fa-chevron-left"></i> 读薄《Linux 内核设计与实现》(6) -  虚拟文件系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/12/15/programming-pearls-thick-02/" rel="prev" title="变位词程序的实现">
+                变位词程序的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/12/11/programming-pearls-thin-2/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#问题集合"><span class="nav-number">1.</span> <span class="nav-text">问题集合</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方案集合"><span class="nav-number">2.</span> <span class="nav-text">方案集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x00"><span class="nav-number">2.1.</span> <span class="nav-text">0x00</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x01"><span class="nav-number">2.2.</span> <span class="nav-text">0x01</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x02"><span class="nav-number">2.3.</span> <span class="nav-text">0x02</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x03"><span class="nav-number">2.4.</span> <span class="nav-text">0x03</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x04"><span class="nav-number">2.5.</span> <span class="nav-text">0x04</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x05"><span class="nav-number">2.6.</span> <span class="nav-text">0x05</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x06"><span class="nav-number">3.</span> <span class="nav-text">0x06</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#0x07"><span class="nav-number">3.1.</span> <span class="nav-text">0x07</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x08"><span class="nav-number">3.2.</span> <span class="nav-text">0x08</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x09"><span class="nav-number">3.3.</span> <span class="nav-text">0x09</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x10"><span class="nav-number">3.4.</span> <span class="nav-text">0x10</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#0x11"><span class="nav-number">3.5.</span> <span class="nav-text">0x11</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

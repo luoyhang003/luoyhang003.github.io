@@ -1,0 +1,1086 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,嵌入式,开发板," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章我将会介绍一款开发板 - Intel Galileo Gen 2，并且我会带大家入门这块板子，包括搭建工作环境以及如何把它运行起来。">
+<meta name="keywords" content="技术,嵌入式,开发板">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Intel Galileo Gen 2入门">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/04/28/Intel-Galileo-Gen-2入门/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章我将会介绍一款开发板 - Intel Galileo Gen 2，并且我会带大家入门这块板子，包括搭建工作环境以及如何把它运行起来。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1erl8bgr6zyj21kw23u7wh.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erl99fsg2sj20dw0hgjse.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erlc6vub4dj21kw16oqq5.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erlcy7cinxj20dw0hgtan.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/4858d6a8jw1erld48ik58j21kw16oqpb.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erl9mxvgu5j21kw16ok3p.jpg">
+<meta property="og:image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erlcy873coj20k20cuwey.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/mw690/4858d6a8jw1erlcy7rvlsj20jt0cu0y8.jpg">
+<meta property="og:image" content="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erlcy8syxqj20jt0cuwie.jpg">
+<meta property="og:updated_time" content="2016-01-06T11:44:14.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Intel Galileo Gen 2入门">
+<meta name="twitter:description" content="这篇文章我将会介绍一款开发板 - Intel Galileo Gen 2，并且我会带大家入门这块板子，包括搭建工作环境以及如何把它运行起来。">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1erl8bgr6zyj21kw23u7wh.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/04/28/Intel-Galileo-Gen-2入门/"/>
+
+
+
+
+
+  <title> Intel Galileo Gen 2入门 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/04/28/Intel-Galileo-Gen-2入门/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Intel Galileo Gen 2入门
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-04-28T16:59:47+08:00">
+                Apr 28 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/04/28/Intel-Galileo-Gen-2入门/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/04/28/Intel-Galileo-Gen-2入门/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/04/28/Intel-Galileo-Gen-2入门/" class="leancloud_visitors" data-flag-title="Intel Galileo Gen 2入门">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  这篇文章我将会介绍一款开发板 - Intel Galileo Gen 2，并且我会带大家入门这块板子，包括搭建工作环境以及如何把它运行起来。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>#Intel Galileo Gen 2入门</p>
+<blockquote>
+<p>本文所介绍内容</p>
+</blockquote>
+<ul>
+<li>Intel Galileo Gen 2简介</li>
+<li>在Ubuntu上搭建环境</li>
+<li>使用Arduino IDE刷入Sketch</li>
+<li>在Galileo Gen 2中刷入定制版Linux系统</li>
+<li>在Galileo Gen 2中刷入Debian系统</li>
+<li>在Galileo Gen 2中编译运行OpenCV</li>
+</ul>
+<p>##Intel Galileo Gen 2简介</p>
+<p>Intel Galileo Gen 2是一款与Arduino兼容、搭载英特尔架构的开发板，相比上一代的Intel Galileo Gen相比，性能上有了很大的提升。</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/4858d6a8jw1erl8bgr6zyj21kw23u7wh.jpg" alt="image"></p>
+<p>（图为Intel Galileo Gen 2）</p>
+<p>特点：</p>
+<ul>
+<li>采用标准USB母座作为USB Host</li>
+<li>串口使用的是TTL电平规范</li>
+<li>单一IO快速电平切换</li>
+<li>可使用GUI简化Yocto开发环境定制系统</li>
+<li>直接通过连接USB调试Shell</li>
+</ul>
+<p>##第一部分：在Ubuntu上搭建环境</p>
+<p>###下载所需材料：</p>
+<ul>
+<li>Arduino IDE<br><br>32位Linux：<br><br><a href="http://downloadmirror.intel.com/24783/eng/IntelArduino-1.6.0-Linux32.txz" target="_blank" rel="noopener">http://downloadmirror.intel.com/24783/eng/IntelArduino-1.6.0-Linux32.txz</a><br><br>64位Linux:<br><br><a href="http://downloadmirror.intel.com/24783/eng/IntelArduino-1.6.0-Linux64.txz" target="_blank" rel="noopener">http://downloadmirror.intel.com/24783/eng/IntelArduino-1.6.0-Linux64.txz</a></li>
+</ul>
+<p>###安装并启动Arduino IDE：</p>
+<ul>
+<li>解压下载好的安装包</li>
+<li>打开终端，cd至该目录下</li>
+<li>./arduino (可能之前还需要，sudo chmod 777 arduino)</li>
+<li>Arduino IDE已经打开</li>
+</ul>
+<p><img src="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erl99fsg2sj20dw0hgjse.jpg" alt="image"></p>
+<p>（图为Arduino IDE）</p>
+<p>###将Intel Galileo Gen 2连接至计算机</p>
+<ul>
+<li><strong>一定要先连接电源线！！！</strong></li>
+<li>然后连接USB线</li>
+</ul>
+<p>###配置Arduino IDE</p>
+<ul>
+<li><strong>注意：Arduino IDE的使用必须有Java环境</strong></li>
+<li>打开Arduino IDE</li>
+<li>Tools &gt; Boards &gt; Intel Galileo Gen2</li>
+<li>Tools &gt; Ports &gt; 找到对应的端口（我的是tty.ACM0）</li>
+</ul>
+<p><br></p>
+<p><em>至此搭建环境的工作告一段落</em></p>
+<p><br></p>
+<p>##第二部分：使用Arduino IDE刷入Sketch</p>
+<p>###准备工作：</p>
+<ul>
+<li>将Intel Galileo Gen 2通过USB线连接至Ubuntu</li>
+<li>打开Arduio IDE</li>
+</ul>
+<p>###搭建简单调试电路</p>
+<p><img src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erlc6vub4dj21kw16oqq5.jpg" alt="image"></p>
+<p>###将Sketch刷入开发版</p>
+<ul>
+<li>打开Arduino IDE,File &gt; Demo &gt; 01.Basics &gt; Blink</li>
+<li>之后单击Vertify &gt; Upload将Sketch刷入开发版</li>
+</ul>
+<p>示例程序：</p>
+<p><img src="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erlcy7cinxj20dw0hgtan.jpg" alt="image"></p>
+<p>灯被点亮</p>
+<p><img src="http://ww1.sinaimg.cn/mw690/4858d6a8jw1erld48ik58j21kw16oqpb.jpg" alt="image"></p>
+<p><strong>我们可以看到Intel Galileo Gen 2具备有Arduino的特性</strong></p>
+<p>##第三部分：在Galileo Gen 2中刷入定制版Linux系统（Yocto）</p>
+<p>###下载系统镜像并解压至micro SD卡</p>
+<ul>
+<li>下载地址：<br><br><a href="http://downloadmirror.intel.com/24355/eng/SDCard.1.0.4.tar.bz2" target="_blank" rel="noopener">http://downloadmirror.intel.com/24355/eng/SDCard.1.0.4.tar.bz2</a></li>
+<li>解压至micro SD卡，大概300多M</li>
+</ul>
+<p>###从SD卡启动Intel Galileo Gen 2</p>
+<ul>
+<li>将micro SD卡插入板子，接上电源</li>
+<li>如果板子上的SD灯在闪就说明，正在从SD卡启动，整个过程需要不到一分钟</li>
+</ul>
+<p>###通过串口调试板子</p>
+<p>####准备材料</p>
+<ul>
+<li><p>FT232RL串口转USB<br><img src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erl9mxvgu5j21kw16ok3p.jpg" alt="image"><br>(图为FT232RL)</p>
+</li>
+<li><p>screen命令：<br>sudo apt-get install screen</p>
+</li>
+</ul>
+<p>####通过FT232连接板子和电脑</p>
+<ul>
+<li>接线</li>
+</ul>
+<p><strong>Board —— FT232RL</strong><br><br> CTS ——– CTS<br><br> TXO ——– RXD<br><br> RXI ——– TXD<br><br> RTS ——– RTS<br><br> GND ——– GND<br><br> 3.3V ——– VCC</p>
+<ul>
+<li>给板子上电</li>
+</ul>
+<p>####开始调试</p>
+<ul>
+<li>执行命令:<br><br>sudo chmod 777 /dev/tty.usb0(找到你电脑上对应的设备)<br><br>sudo screen /dev/tty.usb0 115200</li>
+<li>这是你会发现终端中，会出现系统的启动信息，启动完成之后会让你登录，<br>默认登录用户：root<br>默认登录密码：root<br></li>
+<li>至此就登录进了板子中刚刚刷入的Yocto的系统</li>
+</ul>
+<p>##第四部分：在Galileo Gen 2中刷入Debian系统</p>
+<p>###下载系统镜像并解压至micro SD卡</p>
+<ul>
+<li>下载地址：<br><br><a href="http://downloadmirror.intel.com/24355/eng/SDCard.1.0.4.tar.bz2" target="_blank" rel="noopener">http://downloadmirror.intel.com/24355/eng/SDCard.1.0.4.tar.bz2</a></li>
+<li>解压至micro SD卡</li>
+</ul>
+<p>###从SD卡启动Intel Galileo Gen 2</p>
+<ul>
+<li>将micro SD卡插入板子，接上电源</li>
+<li>如果板子上的SD灯在闪就说明，正在从SD卡启动</li>
+</ul>
+<p>###通过串口调试板子<br>调试过程同上</p>
+<p>1.Debian启动<br><img src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1erlcy873coj20k20cuwey.jpg" alt="image"></p>
+<p>2.启动过程<br><img src="http://ww1.sinaimg.cn/mw690/4858d6a8jw1erlcy7rvlsj20jt0cu0y8.jpg" alt="image"></p>
+<p>3.登录系统<br><img src="http://ww3.sinaimg.cn/mw690/4858d6a8jw1erlcy8syxqj20jt0cuwie.jpg" alt="image"></p>
+<p>##第五部分：在Galileo Gen 2中编译运行OpenCV</p>
+<p>###准备：</p>
+<ul>
+<li>将板子通过以太网口接入网线</li>
+<li>使用FT232调试开发版</li>
+<li>登录Debian系统</li>
+</ul>
+<p>###1.安装Cmake<br>OpenCV需要使用Cmake生成Makefile文件，因此需要安装Cmake</p>
+<p>####直接安装</p>
+<ul>
+<li>执行apt-get install cmake</li>
+</ul>
+<p>####下载安装包安装</p>
+<ul>
+<li>从官网下载安装包，放入SD卡</li>
+<li>tar zxvf [压缩包] -C /usr/local/</li>
+<li>sudo vi /home/emouse/.bashrc 设置环境变量，在文件后添加export PATH=$PATH:/usr/local/[文件夹名]/bin</li>
+</ul>
+<p>####查看版本，检查是否安装成功</p>
+<ul>
+<li>cmake –version</li>
+</ul>
+<p>###2.安装OpenCV</p>
+<p>####安装libgtk2.0-dev和pkg-config</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">apt-get install libgtk2.0-dev</span><br><span class="line">apt-get install pkg-config</span><br></pre></td></tr></table></figure>
+<p>####下载、安装OpenCV</p>
+<ul>
+<li>通过官网下载，装入SD卡并解压</li>
+<li>cd值目录下通过config来进行配置</li>
+<li>之后使用make和make install来进行安装</li>
+</ul>
+<p>####配置OpenCV环境变量<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/ld.so.conf.d/opencv.conf</span><br></pre></td></tr></table></figure></p>
+<p>添加以下内容</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/lib</span><br></pre></td></tr></table></figure>
+<p>配置库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ldconfig</span><br></pre></td></tr></table></figure>
+<p>更改环境变量</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vi /etc/bash.bashrc</span><br></pre></td></tr></table></figure>
+<p>在文件后添加：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/local/lib/pkgconfig</span><br><span class="line">export PKG_CONFIG_PATH</span><br></pre></td></tr></table></figure>
+<p><strong><em>至此OpenCV就已经安装完成</em></strong></p>
+<p>##之后内容：</p>
+<ul>
+<li>编译用户定制Linux内核</li>
+<li>使用Intel提供的Quark环境定制Yocto系统</li>
+<li>……</li>
+</ul>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/嵌入式/" rel="tag"># 嵌入式</a>
+          
+            <a href="/tags/开发板/" rel="tag"># 开发板</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/03/24/使用ICTCLAS2015进行分词/" rel="next" title="使用ICTCLAS2015进行分词">
+                <i class="fa fa-chevron-left"></i> 使用ICTCLAS2015进行分词
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/07/03/反汇编一个简单的C程序并分析/" rel="prev" title="反汇编一个简单的C程序并分析">
+                反汇编一个简单的C程序并分析 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/04/28/Intel-Galileo-Gen-2入门/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

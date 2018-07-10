@@ -1,0 +1,999 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,C,Shell,Linux," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是《动手写 Shell》系列文章的第  篇，在这篇文章中，我们先完成一个 Shell 中最基本的功能 - Shell 提示符的实现。在这篇文章中，我会介绍一下实现的思路，以及介绍下用到的系统 API 和一些 C 语言中的库函数。">
+<meta name="keywords" content="技术,C,Shell,Linux">
+<meta property="og:type" content="article">
+<meta property="og:title" content="PART 1: Shell 提示符的实现">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/04/10/PART-1-Shell-提示符的实现/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是《动手写 Shell》系列文章的第  篇，在这篇文章中，我们先完成一个 Shell 中最基本的功能 - Shell 提示符的实现。在这篇文章中，我会介绍一下实现的思路，以及介绍下用到的系统 API 和一些 C 语言中的库函数。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-04-10T05:18:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="PART 1: Shell 提示符的实现">
+<meta name="twitter:description" content="这篇文章是《动手写 Shell》系列文章的第  篇，在这篇文章中，我们先完成一个 Shell 中最基本的功能 - Shell 提示符的实现。在这篇文章中，我会介绍一下实现的思路，以及介绍下用到的系统 API 和一些 C 语言中的库函数。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/04/10/PART-1-Shell-提示符的实现/"/>
+
+
+
+
+
+  <title> PART 1: Shell 提示符的实现 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/04/10/PART-1-Shell-提示符的实现/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                PART 1: Shell 提示符的实现
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-04-10T12:45:41+08:00">
+                Apr 10 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/04/10/PART-1-Shell-提示符的实现/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/04/10/PART-1-Shell-提示符的实现/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/04/10/PART-1-Shell-提示符的实现/" class="leancloud_visitors" data-flag-title="PART 1: Shell 提示符的实现">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是《动手写 Shell》系列文章的第 <1> 篇，在这篇文章中，我们先完成一个 Shell 中最基本的功能 - Shell 提示符的实现。在这篇文章中，我会介绍一下实现的思路，以及介绍下用到的系统 API 和一些 C 语言中的库函数。</1></p>
+</blockquote>
+<a id="more"></a>
+<h1 id="Shell-提示符"><a href="#Shell-提示符" class="headerlink" title="Shell 提示符"></a>Shell 提示符</h1><p>用过 Linux 的人都知道当我们打开终端时，在命令行中会出现一行字，后边会有光标在一直删，那一行字就是 Shell 的提示符。</p>
+<h2 id="提示符格式"><a href="#提示符格式" class="headerlink" title="提示符格式"></a>提示符格式</h2><p>我们通常看到的 Shell 提示符的格式如下所示：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">username@hostname:~/path$</span><br></pre></td></tr></table></figure>
+<p>我们要写的 Shell 的第一步就是来实现这个东西。</p>
+<h2 id="实现思路"><a href="#实现思路" class="headerlink" title="实现思路"></a>实现思路</h2><p>从提示符的格式中我们就知道我们首先需要得到：</p>
+<ul>
+<li><strong>用户名</strong></li>
+<li><strong>主机名</strong></li>
+<li><strong>当前路径</strong></li>
+</ul>
+<p>我们主要通过调用 Linux 系统 API 的方式来完成上述功能。</p>
+<h1 id="所需要的功能"><a href="#所需要的功能" class="headerlink" title="所需要的功能"></a>所需要的功能</h1><h2 id="0x00-得到当前用户名"><a href="#0x00-得到当前用户名" class="headerlink" title="0x00 得到当前用户名"></a>0x00 得到当前用户名</h2><h3 id="passwd-结构体"><a href="#passwd-结构体" class="headerlink" title="passwd 结构体"></a>passwd 结构体</h3><p>在 Linux 中定义了一个 <code>passwd</code> 结构体，该结构体定义了与用户有关的信息，在 <code>/usr/include/pwd.h</code> 中</p>
+<p>该结构体定义如下：<br><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* The passwd structure.  */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">passwd</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="keyword">char</span> *pw_name;		<span class="comment">/* Username.  */</span></span><br><span class="line">  <span class="keyword">char</span> *pw_passwd;		<span class="comment">/* Password.  */</span></span><br><span class="line">  <span class="keyword">__uid_t</span> pw_uid;		<span class="comment">/* User ID.  */</span></span><br><span class="line">  <span class="keyword">__gid_t</span> pw_gid;		<span class="comment">/* Group ID.  */</span></span><br><span class="line">  <span class="keyword">char</span> *pw_gecos;		<span class="comment">/* Real name.  */</span></span><br><span class="line">  <span class="keyword">char</span> *pw_dir;			<span class="comment">/* Home directory.  */</span></span><br><span class="line">  <span class="keyword">char</span> *pw_shell;		<span class="comment">/* Shell program.  */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="getpwuid-与-getuid-函数"><a href="#getpwuid-与-getuid-函数" class="headerlink" title="getpwuid() 与 getuid() 函数"></a>getpwuid() 与 getuid() 函数</h3><ul>
+<li><strong>getuid():</strong> 用来获取当前用户的 ID</li>
+<li><strong>getpwuid(uid_t uid):</strong> 根据用户 ID 来获取 <code>passwd</code> 结构体</li>
+</ul>
+<p>用法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;pwd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">uid_t</span> my_uid;</span><br><span class="line">    structpasswd *my_info;</span><br><span class="line">    my_info =getpwuid(getuid());</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my name = [%s]\n"</span>, my_info-&gt;pw_name );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my passwd = [%s]\n"</span>, my_info-&gt;pw_passwd );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my uid = [%d]\n"</span>, my_info-&gt;pw_uid );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my gid = [%d]\n"</span>, my_info-&gt;pw_gid );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my gecos = [%s]\n"</span>, my_info-&gt;pw_gecos );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my dir = [%s]\n"</span>, my_info-&gt;pw_dir );</span><br><span class="line">    <span class="built_in">printf</span>( <span class="string">"my shell = [%s]\n"</span>, my_info-&gt;pw_shell );</span><br><span class="line">    return0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="0x02-得到当前主机名"><a href="#0x02-得到当前主机名" class="headerlink" title="0x02 得到当前主机名"></a>0x02 得到当前主机名</h2><p>通过 <code>gethostname()</code> 函数我们可以获得当前主机名</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> max_name_len = <span class="number">256</span>;</span><br><span class="line"><span class="keyword">char</span> hostname[max_name_len];</span><br><span class="line">gethostname(hostname, max_path_len);</span><br></pre></td></tr></table></figure>
+<h2 id="0x03-获取当前路径"><a href="#0x03-获取当前路径" class="headerlink" title="0x03 获取当前路径"></a>0x03 获取当前路径</h2><p>通过 <code>getced()</code> 函数我们可以获得当前路径</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> max_path_len = <span class="number">1024</span>;</span><br><span class="line"><span class="keyword">char</span> pathname[max_path_len];</span><br><span class="line">getcwd(pathname, max_path_len);</span><br></pre></td></tr></table></figure>
+<h2 id="0x04-需要处理的其它问题"><a href="#0x04-需要处理的其它问题" class="headerlink" title="0x04 需要处理的其它问题"></a>0x04 需要处理的其它问题</h2><h3 id="当前用户目录下的显示"><a href="#当前用户目录下的显示" class="headerlink" title="当前用户目录下的显示"></a>当前用户目录下的显示</h3><p>对于在当前目录下的提示符我们采用将用户主目录用 <code>~</code> 来代替，对于不在当前目录下的提示符我们再使用完整的目录来进行显示，这也是目前 Ubuntu 中的默认终端所采取的提示符显示格式。</p>
+<p>实现策略：</p>
+<ul>
+<li>如果当前目录前面一部分同用户主目录路径不相符，则显示完整目录</li>
+<li>如果当前目录的长度小于用户主目录路径，则显示完整目录</li>
+<li>其他情况，将当前目录与用户主目录相同部分用 <code>~</code> 代替</li>
+</ul>
+<p>实现方法：</p>
+<ul>
+<li>获取用户主目录：</li>
+</ul>
+<p>我们通过访问 <code>passwd</code> 结构体的方式来获取用户主目录路径：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">char</span> home_dir[<span class="number">1024</span>];</span><br><span class="line">pwd = getpwuid(getuid());</span><br><span class="line">home_dir = pwd-&gt;pw_dir;</span><br></pre></td></tr></table></figure>
+<h3 id="是否是-root-用户"><a href="#是否是-root-用户" class="headerlink" title="是否是 root 用户"></a>是否是 root 用户</h3><p>对于是 root 用户的提示符我们将使用 <code>#</code> 来进行表示，对于其他用户使用 <code>$</code> 来表示。</p>
+<p>实现方法：</p>
+<p>我们使用 <code>getuid()</code> 函数来判断当前用户是否是 root 用户， 如果返回值为 0，则是 root 用户。</p>
+<h1 id="用到的C库函数"><a href="#用到的C库函数" class="headerlink" title="用到的C库函数"></a>用到的C库函数</h1><h2 id="sprintf"><a href="#sprintf" class="headerlink" title="sprintf()"></a>sprintf()</h2><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>它的功能是把格式化的数据写入某个字符串缓冲区。</p>
+<h3 id="头文件"><a href="#头文件" class="headerlink" title="头文件"></a>头文件</h3><p><code>stdio.h</code></p>
+<h3 id="原型"><a href="#原型" class="headerlink" title="原型"></a>原型</h3><p><code>int sprintf( char *buffer, const char *format, [ argument] … );</code></p>
+<h3 id="参数列表"><a href="#参数列表" class="headerlink" title="参数列表"></a>参数列表</h3><ul>
+<li><strong>buffer：</strong> char型指针，指向将要写入的字符串的缓冲区。</li>
+<li><strong>format：</strong> 格式化字符串。</li>
+<li><strong>[argument]…：</strong> 可选参数，可以是任何类型的数据。</li>
+</ul>
+<h2 id="strncmp"><a href="#strncmp" class="headerlink" title="strncmp()"></a>strncmp()</h2><h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><p>这个函数用来比较 s1 和 s2 字符串的前 num 个字符。如果两个字符串相等的话，strncmp 将返回0。</p>
+<h3 id="头文件-1"><a href="#头文件-1" class="headerlink" title="头文件"></a>头文件</h3><p><code>string.h</code></p>
+<h3 id="原型-1"><a href="#原型-1" class="headerlink" title="原型"></a>原型</h3><p><code>int strncmp ( const char * str1, const char * str2, size_t num );</code></p>
+<h3 id="参数列表-1"><a href="#参数列表-1" class="headerlink" title="参数列表"></a>参数列表</h3><ul>
+<li><strong>str1:</strong> 待比较字符串 1</li>
+<li><strong>str2:</strong> 待比较字符串 2</li>
+<li><strong>num:</strong> 比较的位数</li>
+</ul>
+<h1 id="参考代码"><a href="#参考代码" class="headerlink" title="参考代码"></a>参考代码</h1><p>下面贴上实现 Shell 提示符的代码：</p>
+<p>详见：<a href="https://github.com/luoyhang003/linux_kernel_expriment/tree/master/exp2" target="_blank" rel="noopener"><strong>https://github.com/luoyhang003/linux_kernel_expriment/tree/master/exp2</strong></a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * 		prompt.c ---- Description</span></span><br><span class="line"><span class="comment"> *------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> * Date: April 8th, 2016</span></span><br><span class="line"><span class="comment"> * Copyright: Written by Jason Luo - luoyhang003@hotmail.com</span></span><br><span class="line"><span class="comment"> * Function: Promption of the Shell</span></span><br><span class="line"><span class="comment"> *------------------------------------------------------------</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">"lshell.h"</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> max_name_len = <span class="number">256</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> max_path_len = <span class="number">1024</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">get_prompt</span><span class="params">(<span class="keyword">char</span> *prompt)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">extern</span> <span class="class"><span class="keyword">struct</span> <span class="title">passwd</span> *<span class="title">pwd</span>;</span></span><br><span class="line">	<span class="keyword">char</span> hostname[max_name_len];</span><br><span class="line">	<span class="keyword">char</span> pathname[max_path_len];</span><br><span class="line">	<span class="keyword">int</span> prompt_length;</span><br><span class="line"></span><br><span class="line">	pwd = getpwuid(getuid());</span><br><span class="line">	getcwd(pathname, max_path_len);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(gethostname(hostname, max_path_len) == <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt, <span class="string">"lshell&gt;%s@%s:"</span>, pwd-&gt;pw_name, hostname);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt, <span class="string">"lshell&gt;%s@unknown:"</span>, pwd-&gt;pw_name);</span><br><span class="line">	&#125;</span><br><span class="line">	prompt_length = <span class="built_in">strlen</span>(prompt);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span>(<span class="built_in">strlen</span>(pathname) &lt; <span class="built_in">strlen</span>(pwd-&gt;pw_dir) || (<span class="built_in">strncmp</span>(pathname, pwd-&gt;pw_dir, <span class="built_in">strlen</span>(pwd-&gt;pw_dir))) != <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt + prompt_length, <span class="string">"%s"</span>, pathname);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt + prompt_length, <span class="string">"~%s"</span>, pathname + <span class="built_in">strlen</span>(pwd-&gt;pw_dir));</span><br><span class="line">	&#125;</span><br><span class="line">	prompt_length = <span class="built_in">strlen</span>(prompt);</span><br><span class="line">	<span class="keyword">if</span>(geteuid() != <span class="number">0</span>)</span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt + prompt_length, <span class="string">"$"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	&#123;</span><br><span class="line">		<span class="built_in">sprintf</span>(prompt + prompt_length, <span class="string">"#"</span>);</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/C/" rel="tag"># C</a>
+          
+            <a href="/tags/Shell/" rel="tag"># Shell</a>
+          
+            <a href="/tags/Linux/" rel="tag"># Linux</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/04/07/在-Mac-上打包-PyQT-程序/" rel="next" title="在 Mac 上打包 PyQT 程序">
+                <i class="fa fa-chevron-left"></i> 在 Mac 上打包 PyQT 程序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/04/23/PART-2-使-Shell-能读取命令/" rel="prev" title="PART 2: 使 Shell 能读取命令">
+                PART 2: 使 Shell 能读取命令 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/04/10/PART-1-Shell-提示符的实现/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Shell-提示符"><span class="nav-number">1.</span> <span class="nav-text">Shell 提示符</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#提示符格式"><span class="nav-number">1.1.</span> <span class="nav-text">提示符格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现思路"><span class="nav-number">1.2.</span> <span class="nav-text">实现思路</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#所需要的功能"><span class="nav-number">2.</span> <span class="nav-text">所需要的功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#0x00-得到当前用户名"><span class="nav-number">2.1.</span> <span class="nav-text">0x00 得到当前用户名</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#passwd-结构体"><span class="nav-number">2.1.1.</span> <span class="nav-text">passwd 结构体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getpwuid-与-getuid-函数"><span class="nav-number">2.1.2.</span> <span class="nav-text">getpwuid() 与 getuid() 函数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x02-得到当前主机名"><span class="nav-number">2.2.</span> <span class="nav-text">0x02 得到当前主机名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x03-获取当前路径"><span class="nav-number">2.3.</span> <span class="nav-text">0x03 获取当前路径</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0x04-需要处理的其它问题"><span class="nav-number">2.4.</span> <span class="nav-text">0x04 需要处理的其它问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#当前用户目录下的显示"><span class="nav-number">2.4.1.</span> <span class="nav-text">当前用户目录下的显示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#是否是-root-用户"><span class="nav-number">2.4.2.</span> <span class="nav-text">是否是 root 用户</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#用到的C库函数"><span class="nav-number">3.</span> <span class="nav-text">用到的C库函数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#sprintf"><span class="nav-number">3.1.</span> <span class="nav-text">sprintf()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">3.1.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#头文件"><span class="nav-number">3.1.2.</span> <span class="nav-text">头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型"><span class="nav-number">3.1.3.</span> <span class="nav-text">原型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数列表"><span class="nav-number">3.1.4.</span> <span class="nav-text">参数列表</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#strncmp"><span class="nav-number">3.2.</span> <span class="nav-text">strncmp()</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-1"><span class="nav-number">3.2.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#头文件-1"><span class="nav-number">3.2.2.</span> <span class="nav-text">头文件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">原型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数列表-1"><span class="nav-number">3.2.4.</span> <span class="nav-text">参数列表</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考代码"><span class="nav-number">4.</span> <span class="nav-text">参考代码</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

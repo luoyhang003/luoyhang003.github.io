@@ -1,0 +1,1031 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="笔记,机器学习," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="本篇博客为我本人复习《机器学习》课程时所整理，该课程所用教材为周志华先生的《机器学习》一书，该书是一本质量极高的中文机器学习方向的教科书，希望对机器学习有兴趣的读者可以去花时间阅读一下。">
+<meta name="keywords" content="笔记,机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="山东大学机器学习课程复习提要(2016)">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/12/30/machine-learning-2016-summary/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="本篇博客为我本人复习《机器学习》课程时所整理，该课程所用教材为周志华先生的《机器学习》一书，该书是一本质量极高的中文机器学习方向的教科书，希望对机器学习有兴趣的读者可以去花时间阅读一下。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-01-05T05:14:56.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="山东大学机器学习课程复习提要(2016)">
+<meta name="twitter:description" content="本篇博客为我本人复习《机器学习》课程时所整理，该课程所用教材为周志华先生的《机器学习》一书，该书是一本质量极高的中文机器学习方向的教科书，希望对机器学习有兴趣的读者可以去花时间阅读一下。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/12/30/machine-learning-2016-summary/"/>
+
+
+
+
+
+  <title> 山东大学机器学习课程复习提要(2016) | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/12/30/machine-learning-2016-summary/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                山东大学机器学习课程复习提要(2016)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-12-30T00:06:52+08:00">
+                Dec 30 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/12/30/machine-learning-2016-summary/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/12/30/machine-learning-2016-summary/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/12/30/machine-learning-2016-summary/" class="leancloud_visitors" data-flag-title="山东大学机器学习课程复习提要(2016)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>本篇博客为我本人复习《机器学习》课程时所整理，该课程所用教材为周志华先生的《机器学习》一书，该书是一本质量极高的中文机器学习方向的教科书，希望对机器学习有兴趣的读者可以去花时间阅读一下。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="简答部分"><a href="#简答部分" class="headerlink" title="简答部分"></a>简答部分</h2><p><strong>1.应用贝叶斯决策需要满足的三个前提条件是什么？</strong></p>
+<p>答：若要使用贝叶斯判定准则来最小化决策风险 R，首先要获得后验概率 P(c|x)，基于贝叶斯定理：</p>
+<p>$$<br>P\left( { c }|{ x } \right) =\frac { P\left( c \right) \cdot P\left( { x }|{ c } \right)  }{ P\left( x \right)  }<br>$$</p>
+<p>其中，P(c)是类先验概率，P(x|c)是样本 x 相对于类标记 c 的类条件概率（似然）。</p>
+<p><strong>2.试简述对先验概率和后验概率的理解</strong></p>
+<p>答：先验概率表达了样本空间中各类样本的比例，根据大数定律，当训练集包含充足的独立同分布样本时，先验概率就可以通过各类样本出现的频率来进行估计。</p>
+<p>后验概率是通过贝叶斯公式对先验概率进行修正，计算而得出的概率。</p>
+<p><strong>3.试简述 Fisher 线性判别的基本思想</strong></p>
+<p>答：对于给定的训练样本，需要设法将这些样本投射到一条直线上，使得同一类样本在该直线上的投影点之间的距离尽可能的小，非同一类样本在该直线上的投影点之间的距离尽可能大；在对新样本进行分类时，将它同样投影到该直线上，根据其投影点的位置来判断它的类别。</p>
+<p><strong>4.试简述何为 K-近邻法</strong></p>
+<p>答：K-近邻学习是一种常用的监督学习方法，其工作机制非常简单：给定测试样本，基于某种距离度量（比如欧几里得距离）找出训练集中与其最靠近的 K 个训练样本，然后基于这 K 个『邻居』的信息来进行预测。</p>
+<p><strong>5.试简述对非线性支持向量机（SVM）的理解</strong></p>
+<p>答：对于线性支持向量机，选择一个合适的惩罚参数，并构造凸二次函数线性规划问题，求得原始问题的对偶问题的最优解 $ { \alpha  }^{ \ast  } $ ,由此可以求出原始问题的最优解；在处理非线性行问题时，通过选择合适的核函数来将样本从原始空间映射到一个更高维的特征空间，使得样本在这个特征空间内线性可分。</p>
+<p><strong>6.试简述何为度量学习</strong></p>
+<p>答：在机器学习中，对高维数据进行降维的主要目的是希望找到一个合适的低维空间，在此空间中学习比原始空间更好。事实上，每个空间对应了在样本属性上定义的一个距离度量。度量学习就是通过『学习』来找出一个合适的距离度量。</p>
+<p><strong>7.简述何为半监督学习</strong></p>
+<p>答：半监督学习(Semi-Supervised Learning，SSL)是模式识别和机器学习领域研究的重点问题，是监督学习与无监督学习相结合的一种学习方法。它主要考虑如何利用少量的标注样本和大量的未标注样本进行训练和分类的问题。主要分为半监督分类，半监督回归，半监督聚类和半监督降维算法。</p>
+<p><strong>8.试简述何为聚类</strong></p>
+<p>答：聚类试图将数据集中的样本划分为若干个通常是不相交的子集称为一个『簇』，通过这样的划分，每个簇可能对应于一些潜在的概念（类别），并且这些概念对于聚类算法而言事先是未知的，聚类过程仅能自动地形成簇结构，簇所对应的概念语义需要使用者来把握和定义。</p>
+<p><strong>9.简述对稀疏表达的理解</strong></p>
+<p>答：假设一个样本数据 D，D 对应的矩阵中存在很多零元素，并且它们不是以整行整列的形式出现的，这样的稀疏表达形式对学习任务会有不少好处（例如，SVM 在文本上有很好的性能）；若给定数据集 D 是稠密的，即普通非稀疏数据，我们可以通过『字典学习』（『稀疏编码』）来将样本转化为合适的稀疏表示。</p>
+<p><strong>10.简述对流型学习的理解</strong></p>
+<p>答：流型学习是一类借鉴了拓扑流形概念的降维方法，它可以容易的在局部建立降维映射关系，然后再设法将局部关系拓广到全局；流型学习也通常被用于可视化，因为当维数被降至二维或三维时，能进行可视化。等度量映射和局部线性嵌入是两种著名的流型学习方法。</p>
+<p><strong>11.简述对同分布问题的理解</strong></p>
+<p>答：通常假设样本空间中的样本全部都服从一个未知的分布 D，我们获得的所有样本都是独立同分布的从这个分布上采样获得的，即『独立同分布』，一般而言，训练样本越多，我们得到的对于 D 的信息越多。</p>
+<p><strong>12.试简述对模型泛化能力的理解</strong></p>
+<p>答：机器学习的目标是使学得的模型能很好地应用于『新样本』，而不是仅仅在训练样本上工作得很好，学得模型适用于新样本的能力称为『模型泛化能力』。具有抢饭化能力的模型能很好地适用于整个样本空间。</p>
+<p><strong>13.为什么机器学习此时才热起来？</strong></p>
+<p>答：两个基本原因：数据大了，计算能力强了。</p>
+<p>数据小，样本少，容易产生过拟合问题，面对复杂模型，计算能力不够，则无法求解。</p>
+<h2 id="计算问题"><a href="#计算问题" class="headerlink" title="计算问题"></a>计算问题</h2><p><strong>设在某个局部地区细胞识别中正常 w<sub>1</sub> 和异常 w<sub>2</sub> 两类的先验概率分别为：</strong></p>
+<p><strong>正常状态：P(w<sub>1</sub>) = 0.9</strong></p>
+<p><strong>异常状态：P(w<sub>2</sub>) = 0.1</strong></p>
+<p><strong>现有一待识别的细胞，其观察值为 x，从类条件概率密度分布曲线上查得：</strong></p>
+<p><strong>P(x|w<sub>1</sub>) = 0.2, P(x|w<sub>2</sub>) = 0.4</strong></p>
+<p><strong>试使用贝叶斯决策对该细胞 x 进行分类</strong></p>
+<p>答：根据贝叶斯公式：</p>
+<p>$$<br>P\left( { \omega _{ 1 } }|{ x } \right) =\frac { P \left( { x }|{ \omega _{ 1 } } \right) \cdot P \left( \omega _{ 1 } \right)  }{ P\left( { x }|{ \omega _{ 1 } } \right) \cdot P\left( \omega _{ 1 } \right) +P\left( { x }|{ \omega _{ 2 } } \right) \cdot P\left( \omega _{ 2 } \right)  } \approx 0.818<br>$$</p>
+<p>又有，</p>
+<p>$$<br>P\left( { \omega _{ 2 } }|{ x } \right) =1-P\left( { \omega _{ 1 } }|{ x } \right) =0.182<br>$$</p>
+<p>因为，</p>
+<p>$$ {P}\left( { { w }_{ 1 } }|{ x } \right) &gt; {P}\left( { { w }_{ 2 } }|{ x } \right) $$</p>
+<p>所以，x 归类于正常状态。</p>
+<h2 id="论述部分"><a href="#论述部分" class="headerlink" title="论述部分"></a>论述部分</h2><p><strong>如果让您设计与实现一个模式识别系统，用于实现齐鲁软件学院男、女士的分类（二分类问题），您将如何考虑？其中有哪些需要注意的问题？请就您的理解，尽可能全面，深入地描述，以此展示您对《模式识别技术》这门课程的理解。如果您觉得必要，必要之处也可以画图辅助表达。</strong></p>
+<p>答：假设我们所拥有的训练样本有如下属性：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">身高</th>
+<th style="text-align:center">是否喜欢网购</th>
+<th style="text-align:center">出行次数（月）</th>
+<th style="text-align:center">生活费（月）</th>
+<th style="text-align:center">性别</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">155</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">12</td>
+<td style="text-align:center">2500</td>
+<td style="text-align:center">女</td>
+</tr>
+<tr>
+<td style="text-align:center">159</td>
+<td style="text-align:center">是</td>
+<td style="text-align:center">11</td>
+<td style="text-align:center">2200</td>
+<td style="text-align:center">女</td>
+</tr>
+<tr>
+<td style="text-align:center">182</td>
+<td style="text-align:center">否</td>
+<td style="text-align:center">8</td>
+<td style="text-align:center">1800</td>
+<td style="text-align:center">男</td>
+</tr>
+<tr>
+<td style="text-align:center">……</td>
+<td style="text-align:center">……</td>
+<td style="text-align:center">……</td>
+<td style="text-align:center">……</td>
+<td style="text-align:center">……</td>
+</tr>
+</tbody>
+</table>
+<p>我们可以采用 ID3 决策树算法来用于对学生性别的分类。</p>
+<p>在建立决策树的过程中，首先需要对属性进行划分，为了选择出最优划分属性，我们需要计算出用每个属性对样本集进行划分所获得的信息增益，选择信息增益大的属性划分，我们可以得到一棵决策树。</p>
+<p>可能存在的问题：</p>
+<ul>
+<li>过拟合：我们可以通过剪枝来解决过拟合的问题，使得决策树不会出现分支过多的问题。</li>
+<li>连续值处理：对上述例子中的身高属性，即为连续值的属性，因为连续属性的可取值的数目不是无限的，所以不能根据属性值来划分，因此要计算，找出划分点。</li>
+<li>缺失值处理：如果某些样本的某些属性缺失，我们也不能浪费这些样本，C4.5 算法提供了解决方案。</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/笔记/" rel="tag"># 笔记</a>
+          
+            <a href="/tags/机器学习/" rel="tag"># 机器学习</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/12/15/csapp-labss-01/" rel="next" title="CSAPP 实验I 数据操作（bits lab）（doing）">
+                <i class="fa fa-chevron-left"></i> CSAPP 实验I 数据操作（bits lab）（doing）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/07/the-instant-economist-clippings/" rel="prev" title="《极简经济学》书摘">
+                《极简经济学》书摘 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/12/30/machine-learning-2016-summary/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#简答部分"><span class="nav-number">1.</span> <span class="nav-text">简答部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#计算问题"><span class="nav-number">2.</span> <span class="nav-text">计算问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论述部分"><span class="nav-number">3.</span> <span class="nav-text">论述部分</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

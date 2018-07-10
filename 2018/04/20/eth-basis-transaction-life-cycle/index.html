@@ -1,0 +1,983 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="大体上说，一个交易的生命周期要经历以下几个过程：  构造一笔交易（这里的交易要包含交易双方的地址、以太币数量、时间戳、签名等信息，它是不含任何私密信息的合法交易数据） 将消息广播到网络（几乎网络中的所有节点都会收到这笔交易数据） 验证交易的合法性（生成交易的节点要首先进行验证，其它节点也要进行验证，没有经过验证的交易是不能进入到区块链网络的） 将交易写入区块链">
+<meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Ethereum基础】：交易的生命周期">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2018/04/20/eth-basis-transaction-life-cycle/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="大体上说，一个交易的生命周期要经历以下几个过程：  构造一笔交易（这里的交易要包含交易双方的地址、以太币数量、时间戳、签名等信息，它是不含任何私密信息的合法交易数据） 将消息广播到网络（几乎网络中的所有节点都会收到这笔交易数据） 验证交易的合法性（生成交易的节点要首先进行验证，其它节点也要进行验证，没有经过验证的交易是不能进入到区块链网络的） 将交易写入区块链">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-20T03:33:50.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【Ethereum基础】：交易的生命周期">
+<meta name="twitter:description" content="大体上说，一个交易的生命周期要经历以下几个过程：  构造一笔交易（这里的交易要包含交易双方的地址、以太币数量、时间戳、签名等信息，它是不含任何私密信息的合法交易数据） 将消息广播到网络（几乎网络中的所有节点都会收到这笔交易数据） 验证交易的合法性（生成交易的节点要首先进行验证，其它节点也要进行验证，没有经过验证的交易是不能进入到区块链网络的） 将交易写入区块链">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2018/04/20/eth-basis-transaction-life-cycle/"/>
+
+
+
+
+
+  <title> 【Ethereum基础】：交易的生命周期 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2018/04/20/eth-basis-transaction-life-cycle/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【Ethereum基础】：交易的生命周期
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-20T11:29:20+08:00">
+                Apr 20 2018
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/20/eth-basis-transaction-life-cycle/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2018/04/20/eth-basis-transaction-life-cycle/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/20/eth-basis-transaction-life-cycle/" class="leancloud_visitors" data-flag-title="【Ethereum基础】：交易的生命周期">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>大体上说，一个交易的生命周期要经历以下几个过程：</p>
+<ul>
+<li>构造一笔交易（这里的交易要包含交易双方的地址、以太币数量、时间戳、签名等信息，它是不含任何私密信息的合法交易数据）</li>
+<li>将消息广播到网络（几乎网络中的所有节点都会收到这笔交易数据）</li>
+<li>验证交易的合法性（生成交易的节点要首先进行验证，其它节点也要进行验证，没有经过验证的交易是不能进入到区块链网络的）</li>
+<li>将交易写入区块链</li>
+</ul>
+<a id="more"></a>
+<h2 id="构造一笔交易"><a href="#构造一笔交易" class="headerlink" title="构造一笔交易"></a>构造一笔交易</h2><p>我们先用一个简单的合约作为例子来谈论一笔交易的构造过程，这个合约的作用是在区块链上存储一个数字：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">pragma solidity ^<span class="number">0.4</span><span class="number">.1</span>;</span><br><span class="line"></span><br><span class="line">contract SimpleStorage &#123;</span><br><span class="line">	uint storedData;</span><br><span class="line"></span><br><span class="line">	function set(uint x) public &#123;</span><br><span class="line">		storedData = x;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	function get() public constant returns (uint) &#123;</span><br><span class="line">		<span class="keyword">return</span> storedData;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>然后我们要构造一笔交易，该交易的内容是调用合约中的函数<code>set(uint x)</code>，并且传入参数<code>1</code>。</p>
+<p>首先我们知道，构造一笔交易需要以下字段（具体参照《交易与消息》一文）：</p>
+<ul>
+<li>nonce：交易发送者的交易序列号</li>
+<li>gasPrice：gas价格</li>
+<li>gasLimit：消耗的gas上限</li>
+<li>to：交易接收者的地址</li>
+<li>value：要发送的以太币（以wei为单位）</li>
+<li>data：可选的数据域（在该例子中是必须的字段）</li>
+</ul>
+<p><strong>获取nonce</strong><br>通过geth控制台我们能获取到nonce值，例如：<br>    eth.getTransactionCount(eth.account[0])</p>
+<p><strong>gasPrice</strong><br>我们能够自己随意设置gas的价格，但是有可能由于gas的价格过低，导致交易没有矿工进行处理导致失效。我们可以从这个<a href="https://ethgasstation.info/" target="_blank" rel="noopener">网站</a>来获取推荐的gas价格。</p>
+<p><strong>gasLimit</strong><br>设置你能接受的该交易能够消耗的gas的最大数量。</p>
+<p><strong>to</strong><br>在该例子中，接收者的地址应该是该合约的地址</p>
+<p><strong>value</strong><br>在该例子中，不需要发送以太币，值为0</p>
+<p><strong>data</strong><br>我们需要构造该交易的数据域。</p>
+<p>首先，我们要调用的函数是合约中的<code>set(uint x)</code>，根据Solidity文档<a href="Solidity_ABI_Specification：[https://solidity.readthedocs.io/en/develop/abi-spec.html#function-selector-and-argument-encoding](https://solidity.readthedocs.io/en/develop/abi-spec.html#function-selector-and-argument-encoding)">^1</a>，我们将该函数<code>set(uint)</code>做Keccak-256哈希<a href="Keccak-256_Hash_Online_Tool：[https://emn178.github.io/online-tools/keccak\_256.html](https://emn178.github.io/online-tools/keccak_256.html)">^2</a>，结果为：</p>
+<pre><code>cccdda2cf2895862749f1c69aa9f55cf481ea82500e4eabb4e2578b36636979b
+</code></pre><p>我们取其前4字节：<code>0xcccdda2c</code></p>
+<p>然后我们所传入的函数的参数是1，填充为32字节：</p>
+<p><code>0000000000000000000000000000000000000000000000000000000000000001</code></p>
+<p>将这两部分连接起来：</p>
+<p><code>0xcccdda2c0000000000000000000000000000000000000000000000000000000000000001</code></p>
+<p>这就是数据域的内容，共计36字节。</p>
+<p>最终我们构造好的交易是这样的：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">txnCount = web3.eth.getTransactionCount(web3.eth.accounts[<span class="number">0</span>])</span><br><span class="line"><span class="keyword">var</span> rawTxn = &#123;</span><br><span class="line">nonce: web3.toHex(txnCount),</span><br><span class="line">gasPrice: web3.toHex(<span class="number">800000000000</span>),</span><br><span class="line">gasLimit: web3.toHex(<span class="number">160000</span>),</span><br><span class="line">to: <span class="string">'0xa55fe56f2a183f795fdaae3529d58b58e57ef5ed'</span>,</span><br><span class="line">value: web3.toHex(<span class="number">0</span>),</span><br><span class="line">data: <span class="string">'0xcccdda2c0000000000000000000000000000000000000000000000000000000000000001'</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="对交易进行签名"><a href="#对交易进行签名" class="headerlink" title="对交易进行签名"></a>对交易进行签名</h2><p>接下来我们需要使用交易发送者账号的私钥对交易进行签名：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> privateKey = Buffer.from(<span class="string">'你的账户私钥'</span>, <span class="string">'hex'</span>)</span><br><span class="line"><span class="keyword">const</span> txn = <span class="keyword">new</span> EthereumTx(rawTxn)</span><br><span class="line">txn.sign(privateKey)</span><br><span class="line"><span class="keyword">const</span> serializedTxn = txn.serialize()</span><br></pre></td></tr></table></figure>
+<h2 id="本地对交易进行验证"><a href="#本地对交易进行验证" class="headerlink" title="本地对交易进行验证"></a>本地对交易进行验证</h2><p>签名后的交易会首先提交至你的本地以太坊的节点，你的本地节点会首先对该笔交易进行验证，它会验证签名是否有效。</p>
+<h2 id="把交易广播至区块链网络"><a href="#把交易广播至区块链网络" class="headerlink" title="把交易广播至区块链网络"></a>把交易广播至区块链网络</h2><p>之后，你的本地以太坊节点会将交易广播至整个网络，在广播之后会返回一个交易id，你可以通过该id查看和追踪该交易的状态和相关信息。几乎以太坊网络上的所有节点都会收到这笔交易。有一些节点会设置一个最低的gas价格，它们会忽略低于该gasPrice值的交易。</p>
+<h2 id="矿工节点接收到交易"><a href="#矿工节点接收到交易" class="headerlink" title="矿工节点接收到交易"></a>矿工节点接收到交易</h2><p>生成的交易需要被区块链网络中的矿工打包到区块，才能写入到区块链中。矿工会有一个待处理的交易列表，其中的交易是按交易的gasPrice进行排序的，交易的gasPrice越高，处理的优先级就越高。如果交易的gasPrice过低，有可能一直得不到矿工的处理，从而被忽略。</p>
+<h2 id="矿工将交易打包至区块并广播至网络"><a href="#矿工将交易打包至区块并广播至网络" class="headerlink" title="矿工将交易打包至区块并广播至网络"></a>矿工将交易打包至区块并广播至网络</h2><p>矿工会取若干交易然后打包至一个区块中，一个区块中能够包含多少条交易是和区块的gasLimit有关的，所有交易的gasLimit总和不能超过区块的gasLimit。当矿工选择好要打包的交易之后，就开始了PoW（Proof of Work）挖矿过程，最先发现新的区块的矿工能够将交易打包至区块，并且获取到相应的奖励。</p>
+<h2 id="其它节点同步新的区块数据"><a href="#其它节点同步新的区块数据" class="headerlink" title="其它节点同步新的区块数据"></a>其它节点同步新的区块数据</h2><p>由于新的区块已经产生，所有的节点都需要对区块进行同步，你的交易会随着区块的同步被同步至所有节点上。</p>
+<p>至此，一笔交易的生命周期彻底结束，它被永远的写入到了区块链中。</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+          
+            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
+          
+            <a href="/tags/ETH/" rel="tag"># ETH</a>
+          
+            <a href="/tags/区块链/" rel="tag"># 区块链</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/20/eth-basis-transaction-and-message/" rel="next" title="【Ethereum基础】：交易和消息">
+                <i class="fa fa-chevron-left"></i> 【Ethereum基础】：交易和消息
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/02/eth-basis-block-concepts/" rel="prev" title="以太坊区块的生成">
+                以太坊区块的生成 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2018/04/20/eth-basis-transaction-life-cycle/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一笔交易"><span class="nav-number">1.</span> <span class="nav-text">构造一笔交易</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对交易进行签名"><span class="nav-number">2.</span> <span class="nav-text">对交易进行签名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#本地对交易进行验证"><span class="nav-number">3.</span> <span class="nav-text">本地对交易进行验证</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#把交易广播至区块链网络"><span class="nav-number">4.</span> <span class="nav-text">把交易广播至区块链网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矿工节点接收到交易"><span class="nav-number">5.</span> <span class="nav-text">矿工节点接收到交易</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#矿工将交易打包至区块并广播至网络"><span class="nav-number">6.</span> <span class="nav-text">矿工将交易打包至区块并广播至网络</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其它节点同步新的区块数据"><span class="nav-number">7.</span> <span class="nav-text">其它节点同步新的区块数据</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

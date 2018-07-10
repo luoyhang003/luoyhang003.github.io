@@ -1,0 +1,1222 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,操作系统,从头开始写操作系统," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="在这篇文章中我们完成了以下内容：  介绍 GDT 介绍段描述符 实现一个段描述符">
+<meta name="keywords" content="技术,操作系统,从头开始写操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【从头开始写操作系统系列】实现一个 GDT（1）">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="在这篇文章中我们完成了以下内容：  介绍 GDT 介绍段描述符 实现一个段描述符">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1euqoqs2jz9j20j708ldik.jpg">
+<meta property="og:updated_time" content="2016-02-19T12:16:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【从头开始写操作系统系列】实现一个 GDT（1）">
+<meta name="twitter:description" content="在这篇文章中我们完成了以下内容：  介绍 GDT 介绍段描述符 实现一个段描述符">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1euqoqs2jz9j20j708ldik.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/"/>
+
+
+
+
+
+  <title> 【从头开始写操作系统系列】实现一个 GDT（1） | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【从头开始写操作系统系列】实现一个 GDT（1）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-08-07T13:36:17+08:00">
+                Aug 7 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/从头开始写操作系统系列/" itemprop="url" rel="index">
+                    <span itemprop="name">从头开始写操作系统系列</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/" class="leancloud_visitors" data-flag-title="【从头开始写操作系统系列】实现一个 GDT（1）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在这篇文章中我们完成了以下内容：</p>
+<ul>
+<li>介绍 GDT</li>
+<li>介绍段描述符</li>
+<li>实现一个段描述符</li>
+</ul>
+<a id="more"></a>
+<p>#介绍 GDT</p>
+<p>##GDT 是什么？</p>
+<p>GDT（Global Descriptor Table）是一种数据结构，用来提供段式存储机制，这种机制是通过段寄存器和 GDT 中的描述符共同提供的。</p>
+<p>在保护模式下，虽然现在的寄存器已经有32位的，但是我们依旧采用『段：偏移』的形式来寻址，只不过『段』的概念就相当于 GDT，段值仍然由16位的 cs、ds 等寄存器表示，但是这时段值仅仅是相当于一个索引，指向一个数据结构，这个数据结构就是 GDT一个表项，这个表项定义有段的起始地址、界限、属性等内容，这个表项也叫做描述符（descriptor）</p>
+<p>##描述符结构</p>
+<ul>
+<li>代码段和数据段描述符</li>
+</ul>
+<p>  段描述符是一个8个字节的结构体，其中包含了段基址、段界限、段属性等信息</p>
+<ul>
+<li>段基址（32位）：表示物理地址</li>
+<li>段界限（20位）：表示段的长度（并不是地址，而是字节长度）</li>
+<li><p>段属性（12位）：系统、门、数据等属性</p>
+<p>下面我们来实现这个结构体：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">;描述符</span><br><span class="line">;3个参数：</span><br><span class="line">;	1.段基址：32位（4字节）</span><br><span class="line">;	2.段界限：低20位</span><br><span class="line">;	3.属性：12位（高字节中的低4位总是0）</span><br><span class="line"></span><br><span class="line">%macro Descriptor 3	;定义宏Descriptor,有3个参数</span><br><span class="line">	dw	%2 &amp; 0FFFFh	;用参数2的低16位填充一个WORD</span><br><span class="line">	dw	%1 &amp; 0FFFFh	;用参数1的低16位填充一个WORD</span><br><span class="line">	db	(%1 &gt;&gt; 16) &amp; 0FFh	;用参数1的17-25位填充一个BYTE</span><br><span class="line">	dw	((%2 &gt;&gt; 8) &amp; 0F00h) | (%3 &amp; 0F0FFh)	;用参数2的17-21位以及参数3的1-8位和13-16位填充一个WORD</span><br><span class="line">	db	(%1 &gt;&gt; 24) &amp; 0FFh	;用参数1的25-32位填充一个BYTE</span><br><span class="line">%endmacro</span><br></pre></td></tr></table></figure>
+<p>从代码中我们可以分析出各个参数的有效位：（F为有效）</p>
+<ul>
+<li>段基址：0xFFFFFFFF</li>
+<li>段界限：0x000FFFFF</li>
+<li><p>属性：0x0000F0FF</p>
+<p>我们得到了如下图所示的结构：</p>
+<p><img src="http://ww2.sinaimg.cn/mw690/4858d6a8jw1euqoqs2jz9j20j708ldik.jpg" alt="image"></p>
+</li>
+</ul>
+<p>下面我们来介绍每一位的作用：</p>
+<ul>
+<li>第0、1字节：表示段界限</li>
+<li>第2、3、4字节：表示段基址</li>
+<li><p>第5、6字节比较复杂</p>
+<ul>
+<li>第5字节（从低到高）：<ul>
+<li>0-3：TYPE，说明存储段描述符所描述的存储段的具体属性</li>
+<li>4：S,说明描述符的类型。对于存储段描述符而言，S=1，以区别与系统段描述符和门描述符(S=0)。 </li>
+<li>5-6:DPL,表示描述符特权级(Descriptor Privilege level)，共2位。它规定了所描述段的特权级，用于特权检查，以决定对该段能否访问。</li>
+<li>7:P,存在(Present)位。<br><ul>
+<li>P=1 表示描述符对地址转换是有效的，或者说该描述符所描述的段存在，即在内存中<br></li>
+<li>P=0 表示描述符对地址转换无效，即该段不存在。使用该描述符进行内存访问时会引起异常。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>第6字节</p>
+<ul>
+<li>0-3：段界限</li>
+<li>4：AVL，软件可利用位。80386对该位的使用未做规定，Intel公司也保证今后开发生产的处理器只要与80386兼容，就不会对该位的使用做任何定义或规定。</li>
+<li>5：0（未定义）</li>
+<li>6：D/B，D位是一个很特殊的位，在描述可执行段、向下扩展数据段或由SS寄存器寻址的段(通常是堆栈段)的三种描述符中的意义各不相同。 <ol>
+<li>在描述可执行段的描述符中，D位决定了指令使用的地址及操作数所默认的大小<br><ul>
+<li>D=1表示默认情况下指令使用32位地址及32位或8位操作数，这样的代码段也称为32位代码段；<br></li>
+<li>D=0 表示默认情况下，使用16位地址及16位或8位操作数，这样的代码段也称为16位代码段，它与80286兼容。可以使用地址大小前缀和操作数大小前缀分别改变默认的地址或操作数的大小。</li>
+</ul>
+</li>
+<li>在向下扩展数据段的描述符中，D位决定段的上部边界<ul>
+<li>D=1表示段的上部界限为4G</li>
+<li>D=0表示段的上部界限为64K，这是为了与80286兼容</li>
+</ul>
+</li>
+<li>在描述由SS寄存器寻址的段描述符中，D位决定隐式的堆栈访问指令(如PUSH和POP指令)使用何种堆栈指针寄存器<ul>
+<li>D=1表示使用32位堆栈指针寄存器ESP；</li>
+<li>D=0表示使用16位堆栈指针寄存器SP，这与80286兼容</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>7:G,段界限粒度(Granularity)位</p>
+<ul>
+<li>G=0 表示界限粒度为字节</li>
+<li>G=1 表示界限粒度为4K 字节</li>
+</ul>
+<p><strong>注意，界限粒度只对段界限有效，对段基地址无效，段基地址总是以字节为单位</strong></p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">S</th>
+<th style="text-align:center">段类型</th>
+<th style="text-align:center">类型值（TYPE）</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0000</td>
+<td>只读</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0001</td>
+<td>只读、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0010</td>
+<td>读/写</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0011</td>
+<td>读/写、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0100</td>
+<td>只读、向下扩展</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0101</td>
+<td>只读、向下扩展、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0110</td>
+<td>写、向下扩展</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">数据段</td>
+<td style="text-align:center">0111</td>
+<td>写、向下扩展、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1000</td>
+<td>只执行</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1001</td>
+<td>只执行、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1010</td>
+<td>执行/读</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1011</td>
+<td>执行/读、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1100</td>
+<td>只执行、一致码段</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1101</td>
+<td>只执行、一致码段、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1110</td>
+<td>执行/读、一致码段</td>
+</tr>
+<tr>
+<td style="text-align:center">1</td>
+<td style="text-align:center">代码段</td>
+<td style="text-align:center">1111</td>
+<td>执行/读、一致码段、已访问</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0000</td>
+<td>（未定义）</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0001</td>
+<td>可用286TSS</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0010</td>
+<td>LDT</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0011</td>
+<td>忙的286TSS</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0100</td>
+<td>286调用门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0101</td>
+<td>任务门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0110</td>
+<td>286中断门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">0111</td>
+<td>286陷阱门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1000</td>
+<td>（未定义）</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1001</td>
+<td>可用386TSS</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1010</td>
+<td>（未定义）</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1011</td>
+<td>忙的386TSS</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1100</td>
+<td>386调用门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1101</td>
+<td>（未定义）</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1110</td>
+<td>386中断门</td>
+</tr>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">系统段</td>
+<td style="text-align:center">1111</td>
+<td>386陷阱门</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<p><strong>版权声明：本文为博主原创文章，未经博主允许不得转载。</strong></p>
+<p>文章来源：<a href="http://blog.luoyuanhang.com">http://blog.luoyuanhang.com</a>  </p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+            <a href="/tags/从头开始写操作系统/" rel="tag"># 从头开始写操作系统</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/04/【从头开始写操作系统系列】使用-bochs-调试操作系统/" rel="next" title="【从头开始写操作系统系列】使用 bochs 调试操作系统">
+                <i class="fa fa-chevron-left"></i> 【从头开始写操作系统系列】使用 bochs 调试操作系统
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（2）/" rel="prev" title="【从头开始写操作系统系列】实现一个 GDT（2）">
+                【从头开始写操作系统系列】实现一个 GDT（2） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/08/07/【从头开始写操作系统系列】实现一个-GDT（1）/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

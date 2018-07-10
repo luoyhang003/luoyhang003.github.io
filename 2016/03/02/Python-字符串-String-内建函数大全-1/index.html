@@ -1,0 +1,1072 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Python," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="关于 Python 的字符串处理相关的方法还是非常多的，由于我正在学习 Python，于是就把 Python 中这些混杂的用于 string 的函数总结出来，在自己忘记的时候便于查找，希望对于有类似需求的人有所帮助。">
+<meta name="keywords" content="技术,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python 字符串 String 内建函数大全(1)">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/03/02/Python-字符串-String-内建函数大全-1/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="关于 Python 的字符串处理相关的方法还是非常多的，由于我正在学习 Python，于是就把 Python 中这些混杂的用于 string 的函数总结出来，在自己忘记的时候便于查找，希望对于有类似需求的人有所帮助。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-03-02T03:11:36.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python 字符串 String 内建函数大全(1)">
+<meta name="twitter:description" content="关于 Python 的字符串处理相关的方法还是非常多的，由于我正在学习 Python，于是就把 Python 中这些混杂的用于 string 的函数总结出来，在自己忘记的时候便于查找，希望对于有类似需求的人有所帮助。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/03/02/Python-字符串-String-内建函数大全-1/"/>
+
+
+
+
+
+  <title> Python 字符串 String 内建函数大全(1) | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/03/02/Python-字符串-String-内建函数大全-1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Python 字符串 String 内建函数大全(1)
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-03-02T11:10:42+08:00">
+                Mar 2 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/03/02/Python-字符串-String-内建函数大全-1/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/03/02/Python-字符串-String-内建函数大全-1/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/03/02/Python-字符串-String-内建函数大全-1/" class="leancloud_visitors" data-flag-title="Python 字符串 String 内建函数大全(1)">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>关于 Python 的字符串处理相关的方法还是非常多的，由于我正在学习 Python，于是就把 Python 中这些混杂的用于 string 的函数总结出来，在自己忘记的时候便于查找，希望对于有类似需求的人有所帮助。</p>
+</blockquote>
+<a id="more"></a>
+<h2 id="captalize-函数"><a href="#captalize-函数" class="headerlink" title="captalize() 函数"></a>captalize() 函数</h2><h3 id="功能"><a href="#功能" class="headerlink" title="功能"></a>功能</h3><p>将一个字符串的第一个字母大写</p>
+<h3 id="用法"><a href="#用法" class="headerlink" title="用法"></a>用法</h3><p><code>str.captalize()</code></p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>string</p>
+<h3 id="示例代码"><a href="#示例代码" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"str.capitalize(): "</span>, str.capitalize()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tr.capitalize():  Hello world!</span><br></pre></td></tr></table></figure>
+<h2 id="center-width-fillchar-函数"><a href="#center-width-fillchar-函数" class="headerlink" title="center(width, fillchar) 函数"></a>center(width, fillchar) 函数</h2><p>将字符串居中，居中后的长度为 <code>width</code></p>
+<h3 id="功能-1"><a href="#功能-1" class="headerlink" title="功能"></a>功能</h3><p>将字符串居中，居中后的长度为 <code>width</code></p>
+<h3 id="用法-1"><a href="#用法-1" class="headerlink" title="用法"></a>用法</h3><p><code>str.center(width[, fillchar])</code></p>
+<h3 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>width: </strong>表示字符串总长度</li>
+<li><strong>fillchar: </strong>使字符串居中所填充的字符，默认为空格 </li>
+</ul>
+<h3 id="返回值-1"><a href="#返回值-1" class="headerlink" title="返回值"></a>返回值</h3><p>返回填充字符后的字符串</p>
+<h3 id="示例代码-1"><a href="#示例代码-1" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"str.center(20): "</span>, str.center(<span class="number">20</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"str.center(20,'-'): "</span>, str.center(<span class="number">20</span>,<span class="string">'-'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">tr.center(20):      hello world!</span><br><span class="line">str.center(20,<span class="string">'-'</span>):  ----hello world!----</span><br></pre></td></tr></table></figure>
+<h2 id="count-str-start-0-end-len-string-函数"><a href="#count-str-start-0-end-len-string-函数" class="headerlink" title="count(str, start=0, end=len(string)) 函数"></a>count(str, start=0, end=len(string)) 函数</h2><h3 id="功能-2"><a href="#功能-2" class="headerlink" title="功能"></a>功能</h3><p>返回该字符串中出现某字符串序列（或字符）的次数</p>
+<h3 id="用法-2"><a href="#用法-2" class="headerlink" title="用法"></a>用法</h3><p><code>str.count(sub, start=0, end=len(string))</code></p>
+<h3 id="参数-2"><a href="#参数-2" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>sub: </strong>被查找的字符串序列</li>
+<li><strong>start: </strong>开始查找的索引位置，默认为字符串开始</li>
+<li><strong>end: </strong>结束查找的索引位置，默认为字符串结束</li>
+</ul>
+<h3 id="返回值-2"><a href="#返回值-2" class="headerlink" title="返回值"></a>返回值</h3><p>被查找的序列在字符串的查找位置中出现的次数</p>
+<h3 id="示例代码-2"><a href="#示例代码-2" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world! hello world!"</span></span><br><span class="line"></span><br><span class="line">sub = <span class="string">"o"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"str.count(sub): "</span>, str.count(sub)</span><br><span class="line"></span><br><span class="line">sub = <span class="string">"hello"</span></span><br><span class="line"><span class="keyword">print</span> <span class="string">"str.count(sub, 5) "</span>, str.count(sub, <span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-2"><a href="#运行结果-2" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">str.count(sub):  4</span><br><span class="line">str.count(sub, 5)  1</span><br></pre></td></tr></table></figure>
+<h2 id="decode-encoding-’UTF-8’-errors-’strict’-函数-amp-encode-encoding-’UTF-8’-errors-’strict’"><a href="#decode-encoding-’UTF-8’-errors-’strict’-函数-amp-encode-encoding-’UTF-8’-errors-’strict’" class="headerlink" title="decode(encoding=’UTF-8’,errors=’strict’) 函数 &amp; encode(encoding=’UTF-8’,errors=’strict’)"></a>decode(encoding=’UTF-8’,errors=’strict’) 函数 &amp; encode(encoding=’UTF-8’,errors=’strict’)</h2><h3 id="功能-3"><a href="#功能-3" class="headerlink" title="功能"></a>功能</h3><p>使用特定编码将字符串解码(decode)/编码(encode)</p>
+<h3 id="用法-3"><a href="#用法-3" class="headerlink" title="用法"></a>用法</h3><p><code>str.decode(encoding=&#39;UTF-8&#39;,errors=&#39;strict&#39;)</code></p>
+<p><code>str.encode(encoding=&#39;UTF-8&#39;,errors=&#39;strict&#39;)</code></p>
+<h3 id="参数-3"><a href="#参数-3" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>encoding: </strong>使用的编码格式</li>
+<li><strong>errors: </strong>设置不同的错误处理方法，其他选项有 <code>ignore</code>, <code>replace</code>, <code>xmlcharrefreplace</code>, <code>backslashreplace</code></li>
+</ul>
+<h3 id="返回值-3"><a href="#返回值-3" class="headerlink" title="返回值"></a>返回值</h3><p>编码/解码后的字符串</p>
+<h3 id="示例代码-3"><a href="#示例代码-3" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line">str = str.encode(<span class="string">'base64'</span>, <span class="string">'strict'</span>)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Encoded str: "</span>, str</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Decoded str: "</span>, str.decode(<span class="string">'base64'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-3"><a href="#运行结果-3" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Encoded str:  aGVsbG8gd29ybGQh</span><br><span class="line"></span><br><span class="line">Decoded str:  hello world!</span><br></pre></td></tr></table></figure>
+<h2 id="endswith-suffix-start-0-end-len-string-函数"><a href="#endswith-suffix-start-0-end-len-string-函数" class="headerlink" title="endswith(suffix, start=0, end=len(string)) 函数"></a>endswith(suffix, start=0, end=len(string)) 函数</h2><h3 id="功能-4"><a href="#功能-4" class="headerlink" title="功能"></a>功能</h3><p>判断字符串是否是以某字符串结尾的</p>
+<h3 id="用法-4"><a href="#用法-4" class="headerlink" title="用法"></a>用法</h3><p><code>str.endswith(suffix, start=0, end=len(string))</code></p>
+<h3 id="参数-4"><a href="#参数-4" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>suffix: </strong>被查找的字符串</li>
+<li><strong>start: </strong>字符串查找的起始位置，默认为字符串起始位置</li>
+<li><strong>end: </strong> 字符串查找的结束位置，默认为字符串结束位置</li>
+</ul>
+<h3 id="返回值-4"><a href="#返回值-4" class="headerlink" title="返回值"></a>返回值</h3><p>如果字符串是以 <code>suffix</code> 结尾的返回 <code>True</code>, 否则返回 <code>False</code></p>
+<h3 id="示例代码-4"><a href="#示例代码-4" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line">suffix = <span class="string">"world!"</span></span><br><span class="line"><span class="keyword">print</span> str.endswith(suffix)</span><br><span class="line"></span><br><span class="line">suffix = <span class="string">"llo"</span></span><br><span class="line"><span class="keyword">print</span> str.endswith(suffix,<span class="number">0</span>,<span class="number">4</span>)</span><br><span class="line"><span class="keyword">print</span> str.endswith(suffix,<span class="number">0</span>,<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-4"><a href="#运行结果-4" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+<h2 id="expandstabs-tabsize-8-函数"><a href="#expandstabs-tabsize-8-函数" class="headerlink" title="expandstabs(tabsize=8) 函数"></a>expandstabs(tabsize=8) 函数</h2><h3 id="功能-5"><a href="#功能-5" class="headerlink" title="功能"></a>功能</h3><p>提供自定义 tab(/t) 长度的方法，默认为8</p>
+<h3 id="用法-5"><a href="#用法-5" class="headerlink" title="用法"></a>用法</h3><p><code>str.expandtabs(tabsize=8)</code></p>
+<h3 id="参数-5"><a href="#参数-5" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>tabsize: </strong>表示自定义 tab 的长度</li>
+</ul>
+<h3 id="返回值-5"><a href="#返回值-5" class="headerlink" title="返回值"></a>返回值</h3><p>string</p>
+<h3 id="示例代码-5"><a href="#示例代码-5" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello\tworld!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"Original str: "</span> + str</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Defalut expanded tab: "</span> + str.expandtabs();</span><br><span class="line"><span class="keyword">print</span> <span class="string">"Double expanded tab: "</span> + str.expandtabs(<span class="number">16</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-5"><a href="#运行结果-5" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Original str: hello	world!</span><br><span class="line">Defalut expanded tab: hello   world!</span><br><span class="line">Double expanded tab: hello           world!</span><br></pre></td></tr></table></figure>
+<h2 id="find-str-start-0-end-len-string-函数"><a href="#find-str-start-0-end-len-string-函数" class="headerlink" title="find(str, start=0, end=len(string)) 函数"></a>find(str, start=0, end=len(string)) 函数</h2><h3 id="功能-6"><a href="#功能-6" class="headerlink" title="功能"></a>功能</h3><p>在字符串的某指定位置查找某字符串</p>
+<h3 id="用法-6"><a href="#用法-6" class="headerlink" title="用法"></a>用法</h3><p><code>str.find(str, start=0, end=len(string))</code></p>
+<h3 id="参数-6"><a href="#参数-6" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>str: </strong>被查找的子字符串</li>
+<li><strong>start: </strong>查找的起始位置，默认为字符串起始位置</li>
+<li><strong>end: </strong>查找的结束位置，默认为字符串结束位置</li>
+</ul>
+<h3 id="返回值-6"><a href="#返回值-6" class="headerlink" title="返回值"></a>返回值</h3><p>如果查找到，返回该子字符串的索引；未查找到，返回-1</p>
+<h3 id="示例代码-6"><a href="#示例代码-6" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"wo"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.find(str1)</span><br><span class="line"><span class="keyword">print</span> str.find(str1, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-6"><a href="#运行结果-6" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">6</span><br><span class="line">-1</span><br></pre></td></tr></table></figure>
+<h2 id="index-str-start-0-end-len-string-函数"><a href="#index-str-start-0-end-len-string-函数" class="headerlink" title="index(str, start=0, end=len(string)) 函数"></a>index(str, start=0, end=len(string)) 函数</h2><h3 id="功能-7"><a href="#功能-7" class="headerlink" title="功能"></a>功能</h3><p>功能上与 find() 相同，只是在未找到子字符串是抛出异常</p>
+<h3 id="用法-7"><a href="#用法-7" class="headerlink" title="用法"></a>用法</h3><p><code>str.index(str, start=0, end=len(string))</code></p>
+<h3 id="参数-7"><a href="#参数-7" class="headerlink" title="参数"></a>参数</h3><p>同 find()</p>
+<h3 id="返回值-7"><a href="#返回值-7" class="headerlink" title="返回值"></a>返回值</h3><p>如果查找到，返回该子字符串的索引；未查找到，抛出异常</p>
+<h3 id="示例代码-7"><a href="#示例代码-7" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello world!"</span></span><br><span class="line"></span><br><span class="line">str1 = <span class="string">"wo"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.index(str1)</span><br><span class="line"><span class="keyword">print</span> str.index(str1, <span class="number">8</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-7"><a href="#运行结果-7" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">6</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">"teststrmethods.py"</span>, line 6, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    <span class="built_in">print</span> str.index(str1, 8)</span><br><span class="line">ValueError: substring not found</span><br></pre></td></tr></table></figure>
+<h2 id="isalnum-函数"><a href="#isalnum-函数" class="headerlink" title="isalnum() 函数"></a>isalnum() 函数</h2><h3 id="功能-8"><a href="#功能-8" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串是否只是字母数字组合</p>
+<h3 id="用法-8"><a href="#用法-8" class="headerlink" title="用法"></a>用法</h3><p><code>str.isalnum()</code></p>
+<h3 id="参数-8"><a href="#参数-8" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-8"><a href="#返回值-8" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串是字母数字组合，返回 <code>True</code>,否则返回 <code>False</code></p>
+<h3 id="示例代码-8"><a href="#示例代码-8" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"helloworld"</span></span><br><span class="line"><span class="keyword">print</span> str.isalnum()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello world"</span></span><br><span class="line"><span class="keyword">print</span> str.isalnum()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello123"</span></span><br><span class="line"><span class="keyword">print</span> str.isalnum()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello123!"</span></span><br><span class="line"><span class="keyword">print</span> str.isalnum()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-8"><a href="#运行结果-8" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+<h2 id="isalpha-函数"><a href="#isalpha-函数" class="headerlink" title="isalpha() 函数"></a>isalpha() 函数</h2><h3 id="功能-9"><a href="#功能-9" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串是否是字母组合</p>
+<h3 id="用法-9"><a href="#用法-9" class="headerlink" title="用法"></a>用法</h3><p><code>str.isalpha()</code></p>
+<h3 id="参数-9"><a href="#参数-9" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-9"><a href="#返回值-9" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串是字母组合，返回 <code>True</code>,否则返回 <code>False</code></p>
+<h3 id="示例代码-9"><a href="#示例代码-9" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"helloworld"</span></span><br><span class="line"><span class="keyword">print</span> str.isalpha()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello world"</span></span><br><span class="line"><span class="keyword">print</span> str.isalpha()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello123"</span></span><br><span class="line"><span class="keyword">print</span> str.isalpha()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"hello123!"</span></span><br><span class="line"><span class="keyword">print</span> str.isalpha()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-9"><a href="#运行结果-9" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br><span class="line">False</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+<h2 id="isdigit-函数"><a href="#isdigit-函数" class="headerlink" title="isdigit() 函数"></a>isdigit() 函数</h2><h3 id="功能-10"><a href="#功能-10" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串是否只包含数字</p>
+<h3 id="用法-10"><a href="#用法-10" class="headerlink" title="用法"></a>用法</h3><p><code>str.isdigit()</code></p>
+<h3 id="参数-10"><a href="#参数-10" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-10"><a href="#返回值-10" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串只包含数字，则返回 <code>True</code>,否则返回 <code>False</code></p>
+<h3 id="示例代码-10"><a href="#示例代码-10" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello123"</span></span><br><span class="line"><span class="keyword">print</span> str.isdigit()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"123456"</span></span><br><span class="line"><span class="keyword">print</span> str.isdigit()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-10"><a href="#运行结果-10" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">False</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+<h2 id="islower-函数"><a href="#islower-函数" class="headerlink" title="islower() 函数"></a>islower() 函数</h2><h3 id="功能-11"><a href="#功能-11" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串中是否只是小写字母</p>
+<h3 id="用法-11"><a href="#用法-11" class="headerlink" title="用法"></a>用法</h3><p><code>str.islower()</code></p>
+<h3 id="参数-11"><a href="#参数-11" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-11"><a href="#返回值-11" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串中只是小写字母，返回<code>True</code>,否则返回<code>False</code></p>
+<h3 id="示例代码-11"><a href="#示例代码-11" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"hello wolrd!"</span></span><br><span class="line"><span class="keyword">print</span> str.islower()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"Hello Wolrd!"</span></span><br><span class="line"><span class="keyword">print</span> str.islower()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-11"><a href="#运行结果-11" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+<h2 id="isspace-函数"><a href="#isspace-函数" class="headerlink" title="isspace() 函数"></a>isspace() 函数</h2><h3 id="功能-12"><a href="#功能-12" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串是否只包含空格</p>
+<h3 id="用法-12"><a href="#用法-12" class="headerlink" title="用法"></a>用法</h3><p><code>str.isspace()</code></p>
+<h3 id="参数-12"><a href="#参数-12" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-12"><a href="#返回值-12" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串只包含空格，返回<code>True</code>,否则返回<code>False</code></p>
+<h3 id="示例代码-12"><a href="#示例代码-12" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"    "</span></span><br><span class="line"><span class="keyword">print</span> str.isspace()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"Hello Wolrd!"</span></span><br><span class="line"><span class="keyword">print</span> str.isspace()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-12"><a href="#运行结果-12" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">True</span><br><span class="line">False</span><br></pre></td></tr></table></figure>
+<h2 id="istitle-函数"><a href="#istitle-函数" class="headerlink" title="istitle() 函数"></a>istitle() 函数</h2><h3 id="功能-13"><a href="#功能-13" class="headerlink" title="功能"></a>功能</h3><p>检查该字符串中的单词是否首字母都大写</p>
+<h3 id="用法-13"><a href="#用法-13" class="headerlink" title="用法"></a>用法</h3><p><code>str.istitle()</code></p>
+<h3 id="参数-13"><a href="#参数-13" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-13"><a href="#返回值-13" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串中的单词首字母都大写了，返回<code>True</code>,否则返回<code>False</code></p>
+<h3 id="示例代码-13"><a href="#示例代码-13" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello world!"</span></span><br><span class="line"><span class="keyword">print</span> str.istitle()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"Hello Wolrd!"</span></span><br><span class="line"><span class="keyword">print</span> str.istitle()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-13"><a href="#运行结果-13" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">False</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+<h2 id="isupper-函数"><a href="#isupper-函数" class="headerlink" title="isupper() 函数"></a>isupper() 函数</h2><h3 id="功能-14"><a href="#功能-14" class="headerlink" title="功能"></a>功能</h3><p>判断该字符串中的字母是否都是大写</p>
+<h3 id="用法-14"><a href="#用法-14" class="headerlink" title="用法"></a>用法</h3><p><code>str.isupper()</code></p>
+<h3 id="参数-14"><a href="#参数-14" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-14"><a href="#返回值-14" class="headerlink" title="返回值"></a>返回值</h3><p>如果该字符串中的字母都是大写，返回<code>True</code>,否则返回<code>False</code></p>
+<h3 id="示例代码-14"><a href="#示例代码-14" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello world!"</span></span><br><span class="line"><span class="keyword">print</span> str.isupper()</span><br><span class="line"></span><br><span class="line">str = <span class="string">"HELLO WORLD!"</span></span><br><span class="line"><span class="keyword">print</span> str.isupper()</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-14"><a href="#运行结果-14" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">False</span><br><span class="line">True</span><br></pre></td></tr></table></figure>
+<h2 id="join-seq-函数"><a href="#join-seq-函数" class="headerlink" title="join(seq) 函数"></a>join(seq) 函数</h2><h3 id="功能-15"><a href="#功能-15" class="headerlink" title="功能"></a>功能</h3><p>用该字符串连接某字符序列(seq)</p>
+<h3 id="用法-15"><a href="#用法-15" class="headerlink" title="用法"></a>用法</h3><p><code>str.join(sequence)</code></p>
+<h3 id="参数-15"><a href="#参数-15" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>sequence: </strong>被连接的字符序列</li>
+</ul>
+<h3 id="返回值-15"><a href="#返回值-15" class="headerlink" title="返回值"></a>返回值</h3><p>返回连接之后的字符串</p>
+<h3 id="示例代码-15"><a href="#示例代码-15" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"-"</span></span><br><span class="line">sequence = (<span class="string">"hello"</span>, <span class="string">"world"</span>, <span class="string">"everyone"</span>, <span class="string">"!"</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.join(sequence)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-15"><a href="#运行结果-15" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello-world-everyone-!</span><br></pre></td></tr></table></figure>
+<h2 id="len-string-函数"><a href="#len-string-函数" class="headerlink" title="len(string) 函数"></a>len(string) 函数</h2><h3 id="功能-16"><a href="#功能-16" class="headerlink" title="功能"></a>功能</h3><p>得到该字符串的长度</p>
+<h3 id="用法-16"><a href="#用法-16" class="headerlink" title="用法"></a>用法</h3><p><code>len(str)</code></p>
+<h3 id="参数-16"><a href="#参数-16" class="headerlink" title="参数"></a>参数</h3><p>无</p>
+<h3 id="返回值-16"><a href="#返回值-16" class="headerlink" title="返回值"></a>返回值</h3><p>返回该字符串长度</p>
+<h3 id="示例代码-16"><a href="#示例代码-16" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello world!"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">"the length of str: "</span>, len(str)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-16"><a href="#运行结果-16" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">the length of str:  12</span><br></pre></td></tr></table></figure>
+<h2 id="ljust-width-fillchar-’-‘-函数"><a href="#ljust-width-fillchar-’-‘-函数" class="headerlink" title="ljust(width, fillchar=’ ‘)函数"></a>ljust(width, fillchar=’ ‘)函数</h2><h3 id="功能-17"><a href="#功能-17" class="headerlink" title="功能"></a>功能</h3><p>在字符串的右边填充字符使得字符串达到指定长度</p>
+<h3 id="用法-17"><a href="#用法-17" class="headerlink" title="用法"></a>用法</h3><p><code>str.ljust(width, fillchar=&#39; &#39;)</code></p>
+<h3 id="参数-17"><a href="#参数-17" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><strong>width: </strong>填充后的目标长度</li>
+<li><strong>fillchar: </strong> 用于填充的字符，默认为空格</li>
+</ul>
+<h3 id="返回值-17"><a href="#返回值-17" class="headerlink" title="返回值"></a>返回值</h3><p>返回填充后的字符串</p>
+<h3 id="示例代码-17"><a href="#示例代码-17" class="headerlink" title="示例代码"></a>示例代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">str = <span class="string">"Hello world"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> str.ljust(<span class="number">15</span>)</span><br><span class="line"><span class="keyword">print</span> str.ljust(<span class="number">15</span>,<span class="string">'!'</span>)</span><br></pre></td></tr></table></figure>
+<h3 id="运行结果-17"><a href="#运行结果-17" class="headerlink" title="运行结果"></a>运行结果</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Hello world</span><br><span class="line">Hello world!!!!</span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://www.luoyuanhang.com" target="_blank" rel="noopener">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/02/27/编写带命令行参数的-Python-程序/" rel="next" title="编写带命令行参数的 Python 程序">
+                <i class="fa fa-chevron-left"></i> 编写带命令行参数的 Python 程序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/03/07/Python-字符串-String-内建函数大全-2/" rel="prev" title="Python 字符串 String 内建函数大全(2)">
+                Python 字符串 String 内建函数大全(2) <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/03/02/Python-字符串-String-内建函数大全-1/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#captalize-函数"><span class="nav-number">1.</span> <span class="nav-text">captalize() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能"><span class="nav-number">1.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法"><span class="nav-number">1.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数"><span class="nav-number">1.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值"><span class="nav-number">1.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码"><span class="nav-number">1.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果"><span class="nav-number">1.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#center-width-fillchar-函数"><span class="nav-number">2.</span> <span class="nav-text">center(width, fillchar) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-1"><span class="nav-number">2.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-1"><span class="nav-number">2.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-1"><span class="nav-number">2.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-1"><span class="nav-number">2.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-1"><span class="nav-number">2.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-1"><span class="nav-number">2.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#count-str-start-0-end-len-string-函数"><span class="nav-number">3.</span> <span class="nav-text">count(str, start=0, end=len(string)) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-2"><span class="nav-number">3.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-2"><span class="nav-number">3.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-2"><span class="nav-number">3.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-2"><span class="nav-number">3.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-2"><span class="nav-number">3.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-2"><span class="nav-number">3.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#decode-encoding-’UTF-8’-errors-’strict’-函数-amp-encode-encoding-’UTF-8’-errors-’strict’"><span class="nav-number">4.</span> <span class="nav-text">decode(encoding=’UTF-8’,errors=’strict’) 函数 &amp; encode(encoding=’UTF-8’,errors=’strict’)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-3"><span class="nav-number">4.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-3"><span class="nav-number">4.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-3"><span class="nav-number">4.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-3"><span class="nav-number">4.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-3"><span class="nav-number">4.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-3"><span class="nav-number">4.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#endswith-suffix-start-0-end-len-string-函数"><span class="nav-number">5.</span> <span class="nav-text">endswith(suffix, start=0, end=len(string)) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-4"><span class="nav-number">5.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-4"><span class="nav-number">5.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-4"><span class="nav-number">5.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-4"><span class="nav-number">5.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-4"><span class="nav-number">5.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-4"><span class="nav-number">5.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#expandstabs-tabsize-8-函数"><span class="nav-number">6.</span> <span class="nav-text">expandstabs(tabsize=8) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-5"><span class="nav-number">6.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-5"><span class="nav-number">6.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-5"><span class="nav-number">6.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-5"><span class="nav-number">6.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-5"><span class="nav-number">6.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-5"><span class="nav-number">6.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#find-str-start-0-end-len-string-函数"><span class="nav-number">7.</span> <span class="nav-text">find(str, start=0, end=len(string)) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-6"><span class="nav-number">7.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-6"><span class="nav-number">7.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-6"><span class="nav-number">7.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-6"><span class="nav-number">7.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-6"><span class="nav-number">7.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-6"><span class="nav-number">7.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#index-str-start-0-end-len-string-函数"><span class="nav-number">8.</span> <span class="nav-text">index(str, start=0, end=len(string)) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-7"><span class="nav-number">8.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-7"><span class="nav-number">8.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-7"><span class="nav-number">8.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-7"><span class="nav-number">8.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-7"><span class="nav-number">8.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-7"><span class="nav-number">8.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isalnum-函数"><span class="nav-number">9.</span> <span class="nav-text">isalnum() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-8"><span class="nav-number">9.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-8"><span class="nav-number">9.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-8"><span class="nav-number">9.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-8"><span class="nav-number">9.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-8"><span class="nav-number">9.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-8"><span class="nav-number">9.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isalpha-函数"><span class="nav-number">10.</span> <span class="nav-text">isalpha() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-9"><span class="nav-number">10.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-9"><span class="nav-number">10.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-9"><span class="nav-number">10.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-9"><span class="nav-number">10.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-9"><span class="nav-number">10.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-9"><span class="nav-number">10.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isdigit-函数"><span class="nav-number">11.</span> <span class="nav-text">isdigit() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-10"><span class="nav-number">11.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-10"><span class="nav-number">11.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-10"><span class="nav-number">11.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-10"><span class="nav-number">11.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-10"><span class="nav-number">11.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-10"><span class="nav-number">11.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#islower-函数"><span class="nav-number">12.</span> <span class="nav-text">islower() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-11"><span class="nav-number">12.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-11"><span class="nav-number">12.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-11"><span class="nav-number">12.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-11"><span class="nav-number">12.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-11"><span class="nav-number">12.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-11"><span class="nav-number">12.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isspace-函数"><span class="nav-number">13.</span> <span class="nav-text">isspace() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-12"><span class="nav-number">13.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-12"><span class="nav-number">13.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-12"><span class="nav-number">13.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-12"><span class="nav-number">13.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-12"><span class="nav-number">13.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-12"><span class="nav-number">13.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#istitle-函数"><span class="nav-number">14.</span> <span class="nav-text">istitle() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-13"><span class="nav-number">14.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-13"><span class="nav-number">14.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-13"><span class="nav-number">14.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-13"><span class="nav-number">14.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-13"><span class="nav-number">14.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-13"><span class="nav-number">14.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#isupper-函数"><span class="nav-number">15.</span> <span class="nav-text">isupper() 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-14"><span class="nav-number">15.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-14"><span class="nav-number">15.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-14"><span class="nav-number">15.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-14"><span class="nav-number">15.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-14"><span class="nav-number">15.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-14"><span class="nav-number">15.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#join-seq-函数"><span class="nav-number">16.</span> <span class="nav-text">join(seq) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-15"><span class="nav-number">16.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-15"><span class="nav-number">16.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-15"><span class="nav-number">16.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-15"><span class="nav-number">16.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-15"><span class="nav-number">16.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-15"><span class="nav-number">16.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#len-string-函数"><span class="nav-number">17.</span> <span class="nav-text">len(string) 函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-16"><span class="nav-number">17.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-16"><span class="nav-number">17.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-16"><span class="nav-number">17.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-16"><span class="nav-number">17.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-16"><span class="nav-number">17.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-16"><span class="nav-number">17.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ljust-width-fillchar-’-‘-函数"><span class="nav-number">18.</span> <span class="nav-text">ljust(width, fillchar=’ ‘)函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#功能-17"><span class="nav-number">18.1.</span> <span class="nav-text">功能</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#用法-17"><span class="nav-number">18.2.</span> <span class="nav-text">用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参数-17"><span class="nav-number">18.3.</span> <span class="nav-text">参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回值-17"><span class="nav-number">18.4.</span> <span class="nav-text">返回值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#示例代码-17"><span class="nav-number">18.5.</span> <span class="nav-text">示例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#运行结果-17"><span class="nav-number">18.6.</span> <span class="nav-text">运行结果</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

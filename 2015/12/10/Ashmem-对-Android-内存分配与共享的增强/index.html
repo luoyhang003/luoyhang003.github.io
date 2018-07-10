@@ -1,0 +1,1009 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Android," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="Ashmem(Anonymous Shared Memory 匿名共享内存)，是在 Android 的内存管理中提供的一种机制。它基于mmap系统调用，不同的进程可以将同一段物理内存空间映射到各自的虚拟空间，从而实现共享。">
+<meta name="keywords" content="技术,Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ashmem 对 Android 内存分配与共享的增强">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="Ashmem(Anonymous Shared Memory 匿名共享内存)，是在 Android 的内存管理中提供的一种机制。它基于mmap系统调用，不同的进程可以将同一段物理内存空间映射到各自的虚拟空间，从而实现共享。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-01-06T11:37:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Ashmem 对 Android 内存分配与共享的增强">
+<meta name="twitter:description" content="Ashmem(Anonymous Shared Memory 匿名共享内存)，是在 Android 的内存管理中提供的一种机制。它基于mmap系统调用，不同的进程可以将同一段物理内存空间映射到各自的虚拟空间，从而实现共享。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/"/>
+
+
+
+
+
+  <title> Ashmem 对 Android 内存分配与共享的增强 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Ashmem 对 Android 内存分配与共享的增强
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-12-10T22:26:40+08:00">
+                Dec 10 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/" class="leancloud_visitors" data-flag-title="Ashmem 对 Android 内存分配与共享的增强">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Ashmem(Anonymous Shared Memory 匿名共享内存)，是在 Android 的内存管理中提供的一种机制。它基于mmap系统调用，不同的进程可以将同一段物理内存空间映射到各自的虚拟空间，从而实现共享。
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="Ashmem-是什么？"><a href="#Ashmem-是什么？" class="headerlink" title="Ashmem 是什么？"></a>Ashmem 是什么？</h1><p>Ashmem(Anonymous Shared Memory 匿名共享内存)，是在 Android 的内存管理中提供的一种机制。它基于mmap系统调用，不同的进程可以将同一段物理内存空间映射到各自的虚拟空间，从而实现共享。</p>
+<h2 id="mmap机制"><a href="#mmap机制" class="headerlink" title="mmap机制"></a>mmap机制</h2><p>mmap系统调用是将一个打开的文件映射到进程的用户空间，mmap系统调用使得进程之间通过映射同一个普通文件实现共享内存。普通文件被映射到进程地址空间后，进程可以像访问普通内存一样对文件进行访问，不必再调用read()，write（）等操作。</p>
+<p>mmap 函数原型：</p>
+<p><strong><code>void *mmap(void *addr, size_t length, int prot, int flags, int fd, off_t offset);</code></strong></p>
+<p><strong> addr: </strong>指定为文件描述符fd应被映射到的进程空间的起始地址。它通常被指定为一个空指针，这样告诉内核自己去选择起始地址。一般默认为NULL</p>
+<p><strong> length: </strong>是映射到调用进程地址空间中的字节数，从被映射文件开头offset个字节处开始算</p>
+<p><strong> prot: </strong>负责保护内存映射区的保护。常用值是代表读写访问的PROT_READ | PROT_WRITE.当然还包括数据的执行（PROT_EXEC）、数据不可访问（PROT_NONE）</p>
+<p><strong> flag: </strong>flags常用值有MAP_SHARED或MAP_PRIVATE这两个标志必须选一个，并可以选上MAP_FIXED。如果指定了，那么调用进程对被映射数据所做的修改只对该进程可见，而不该变其底层支撑对象。如果指定了，那么调用进程对被映射数据所作的修改对于共享该对象的所有进程都可见，而且确实改变了其底层支撑对象</p>
+<p><strong> fd: </strong>参数fd为映射文件的描述符，offset为文件的起点，默认为0</p>
+<p><strong> offset: </strong>偏移量</p>
+<h2 id="ashmem-在-mmap-上的改进"><a href="#ashmem-在-mmap-上的改进" class="headerlink" title="ashmem 在 mmap 上的改进"></a>ashmem 在 mmap 上的改进</h2><p>ashmem通过内核驱动提供了辅助内核的内存回收算法机制(pin/unpin)</p>
+<p><strong>什么是pin和unpin呢?</strong></p>
+<p>具体来讲，就是当你使用Ashmem分配了一块内存，但是其中某些部分却不会被使用时，那么就可以将这块内存unpin掉。unpin后，内核可以将它对应的物理页面回收，以作他用。你也不用担心进程无法对unpin掉的内存进行再次访问，因为回收后的内存还可以再次被获得(通过缺页handler)，因为unpin操作并不会改变已经 mmap的地址空间。</p>
+<h2 id="Ashmem-的定义"><a href="#Ashmem-的定义" class="headerlink" title="Ashmem 的定义"></a>Ashmem 的定义</h2><ul>
+<li>我们先来看一下部分 ashmem 实现的头文件（ashmem.h）</li>
+</ul>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">#define ASHMEM_NAME_LEN	    256</span><br><span class="line">//定义设备名称</span><br><span class="line">#define ASHMEM_NAME_DEF	    &quot;dev/ashmem&quot;</span><br><span class="line"></span><br><span class="line">/* 从 ASHMEM_PIN 返回的值: 判断是否要清除 */</span><br><span class="line">#define ASHMEM_NOT_PURGED    0</span><br><span class="line">#define ASHMEM_WAS_PURGED    1</span><br><span class="line"></span><br><span class="line">/*从 ASHMEM_GET_PIN_STATUS 返回的值: 是 pinned 还是 unpined */</span><br><span class="line">#define ASHMEM_IS_UNPINNED   0</span><br><span class="line">#define ASHMEM_IS_PINNED     1</span><br><span class="line"></span><br><span class="line">struct ashmem_pin &#123;</span><br><span class="line">	__u32 offset;	/* 偏移量 */</span><br><span class="line">	__u32 len;	/* 从偏移开始的长度 */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h1 id="Ashmem-是怎么实现的？"><a href="#Ashmem-是怎么实现的？" class="headerlink" title="Ashmem 是怎么实现的？"></a>Ashmem 是怎么实现的？</h1><p>下面我们开始按照 Ashmem 的实现代码来看看它是怎么样工作的（ashmem.c）</p>
+<p>我们先来看一下两个结构体<code>ashmem_area</code>和<code>ashmem_range</code>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * ashmem_area - anonymous shared memory area</span><br><span class="line"> * Lifecycle: From our parent file&apos;s open() until its release()</span><br><span class="line"> * Locking: Protected by `ashmem_mutex&apos;</span><br><span class="line"> * Big Note: Mappings do NOT pin this structure; it dies on close()</span><br><span class="line"> */</span><br><span class="line">struct ashmem_area &#123;</span><br><span class="line">	char name[ASHMEM_FULL_NAME_LEN]; /* 用于/proc/pid/maps中的一个标识名称（可选） */</span><br><span class="line">	struct list_head unpinned_list;	 /* 所有 ashmem 共享内存区域列表 */</span><br><span class="line">	struct file *file;		 /* ashmem 支持的文件 */</span><br><span class="line">	size_t size;			 /* 区域字节大小 */</span><br><span class="line">	unsigned long prot_mask;	 /* 内存映射区的保护 */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们可以看到 <code>ashmem_area</code> 定义了一个内存共享区域，它的生命周期是从文件打开<code>open()</code>到它被释放<code>release()</code>,并且支持原子性</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">/*</span><br><span class="line"> * ashmem_range - represents an interval of unpinned (evictable) pages</span><br><span class="line"> * Lifecycle: From unpin to pin</span><br><span class="line"> * Locking: Protected by `ashmem_mutex&apos;</span><br><span class="line"> */</span><br><span class="line">struct ashmem_range &#123;</span><br><span class="line">	struct list_head lru;		/* LRU 列表 */</span><br><span class="line">	struct list_head unpinned;	/* unpinned 列表 */</span><br><span class="line">	struct ashmem_area *asma;	/* 关联的 ashmem 区域 */</span><br><span class="line">	size_t pgstart;			/* 开始页面 */</span><br><span class="line">	size_t pgend;			/* 结束页面 */</span><br><span class="line">	unsigned int purged;		/* 是否要被回收 */</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>我们看到<code>ashmem_range</code>的生命周期是从 unpin 到 pin</p>
+<h2 id="初始化-ashmem-init-void"><a href="#初始化-ashmem-init-void" class="headerlink" title="初始化 - ashmem_init(void)"></a>初始化 - ashmem_init(void)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">static int __init ashmem_init(void)</span><br><span class="line">&#123;</span><br><span class="line">	int ret;</span><br><span class="line"></span><br><span class="line">	ashmem_area_cachep = kmem_cache_create(&quot;ashmem_area_cache&quot;,</span><br><span class="line">					  sizeof(struct ashmem_area),</span><br><span class="line">					  0, 0, NULL);</span><br><span class="line">	if (unlikely(!ashmem_area_cachep)) &#123;</span><br><span class="line">		pr_err(&quot;failed to create slab cache\n&quot;);</span><br><span class="line">		return -ENOMEM;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ashmem_range_cachep = kmem_cache_create(&quot;ashmem_range_cache&quot;,</span><br><span class="line">					  sizeof(struct ashmem_range),</span><br><span class="line">					  0, 0, NULL);</span><br><span class="line">	if (unlikely(!ashmem_range_cachep)) &#123;</span><br><span class="line">		pr_err(&quot;failed to create slab cache\n&quot;);</span><br><span class="line">		return -ENOMEM;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	ret = misc_register(&amp;ashmem_misc);</span><br><span class="line">	if (unlikely(ret)) &#123;</span><br><span class="line">		pr_err(&quot;failed to register misc device!\n&quot;);</span><br><span class="line">		return ret;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	register_shrinker(&amp;ashmem_shrinker);</span><br><span class="line"></span><br><span class="line">	pr_info(&quot;initialized\n&quot;);</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们从代码中可以看到初始化函数<code>ashmem_init(void)</code>主要做了以下几件事：</p>
+<ul>
+<li><p>通过<code>kmem_cache_create</code>[^1]创建 ahemem_area 高速缓存</p>
+</li>
+<li><p>通过<code>kmem_cache_create</code>创建 ahemem_range 高速缓存</p>
+</li>
+<li><p>通过<code>misc_register</code>将 Ashmem 注册为 misc 设备[^2]</p>
+</li>
+<li><p>通过<code>register_shrinker</code>注册回收函数</p>
+</li>
+</ul>
+<h2 id="退出-ashmem-exit-void"><a href="#退出-ashmem-exit-void" class="headerlink" title="退出 -  ashmem_exit(void)"></a>退出 -  ashmem_exit(void)</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">static void __exit ashmem_exit(void)</span><br><span class="line">&#123;</span><br><span class="line">	int ret;</span><br><span class="line"></span><br><span class="line">	unregister_shrinker(&amp;ashmem_shrinker);</span><br><span class="line"></span><br><span class="line">	ret = misc_deregister(&amp;ashmem_misc);</span><br><span class="line">	if (unlikely(ret))</span><br><span class="line">		pr_err(&quot;failed to unregister misc device!\n&quot;);</span><br><span class="line"></span><br><span class="line">	kmem_cache_destroy(ashmem_range_cachep);</span><br><span class="line">	kmem_cache_destroy(ashmem_area_cachep);</span><br><span class="line"></span><br><span class="line">	pr_info(&quot;unloaded\n&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们在代码中看到了所有在退出时所做的操作：</p>
+<ul>
+<li><p>卸载回收函数<code>unregister_shrinker</code></p>
+</li>
+<li><p>卸载设备<code>misc_deregister</code></p>
+</li>
+<li><p>回收两段高速缓存（ashmem_area &amp; ashmem_range）<code>kmem_cache_destroy</code></p>
+</li>
+</ul>
+<h2 id="对内存进行分配、释放和回收"><a href="#对内存进行分配、释放和回收" class="headerlink" title="对内存进行分配、释放和回收"></a>对内存进行分配、释放和回收</h2><p>我们先看看Ashmem分配内存的流程：</p>
+<ul>
+<li>打开“/dev/ashmem”文件</li>
+<li>通过ioctl来设置名称和大小等</li>
+<li>调用mmap将Ashmem分配的空间映射到进程空间</li>
+</ul>
+<p><strong>打开多少次/dev/ashmem设备并mmap，就会获得多少个不同的空间</strong></p>
+<p>我们在初始化Ashmem时注册了Ashmem设备，其中包含的相关方法及其作用如下面的代码所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">static const struct file_operations ashmem_fops = &#123;</span><br><span class="line">	.owner = THIS_MODULE,</span><br><span class="line">	.open = ashmem_open,</span><br><span class="line">	.release = ashmem_release,</span><br><span class="line">	.read = ashmem_read,</span><br><span class="line">	.llseek = ashmem_llseek,</span><br><span class="line">	.mmap = ashmem_mmap,</span><br><span class="line">	.unlocked_ioctl = ashmem_ioctl,</span><br><span class="line">#ifdef CONFIG_COMPAT</span><br><span class="line">	.compat_ioctl = compat_ashmem_ioctl,</span><br><span class="line">#endif</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">static struct miscdevice ashmem_misc = &#123;</span><br><span class="line">	.minor = MISC_DYNAMIC_MINOR,</span><br><span class="line">	.name = &quot;ashmem&quot;,</span><br><span class="line">	.fops = &amp;ashmem_fops,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>ashmem_open</code>方法主要是对unpinned列表进行初始化，并将Ashmem分配的地址空间赋给file结构的<code>private_data</code>，这就排除了进程间共享的可能性。<code>ashmem_release</code>方法用于将指定的节点的空间从链表中删除并释放掉</p>
+<p><code>ashmem_open</code> 方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">static int ashmem_open(struct inode *inode, struct file *file)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_area *asma;</span><br><span class="line">	int ret;</span><br><span class="line"></span><br><span class="line">	ret = generic_file_open(inode, file);</span><br><span class="line">	if (unlikely(ret))</span><br><span class="line">		return ret;</span><br><span class="line"></span><br><span class="line">	asma = kmem_cache_zalloc(ashmem_area_cachep, GFP_KERNEL);</span><br><span class="line">	if (unlikely(!asma))</span><br><span class="line">		return -ENOMEM;</span><br><span class="line"></span><br><span class="line">	INIT_LIST_HEAD(&amp;asma-&gt;unpinned_list);</span><br><span class="line">	memcpy(asma-&gt;name, ASHMEM_NAME_PREFIX, ASHMEM_NAME_PREFIX_LEN);</span><br><span class="line">	asma-&gt;prot_mask = PROT_MASK;</span><br><span class="line">	file-&gt;private_data = asma;</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>ashmem_release</code> 方法</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">static int ashmem_release(struct inode *ignored, struct file *file)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_area *asma = file-&gt;private_data;</span><br><span class="line">	struct ashmem_range *range, *next;</span><br><span class="line"></span><br><span class="line">	mutex_lock(&amp;ashmem_mutex);</span><br><span class="line">	list_for_each_entry_safe(range, next, &amp;asma-&gt;unpinned_list, unpinned)</span><br><span class="line">		range_del(range);</span><br><span class="line">	mutex_unlock(&amp;ashmem_mutex);</span><br><span class="line"></span><br><span class="line">	if (asma-&gt;file)</span><br><span class="line">		fput(asma-&gt;file);</span><br><span class="line">	kmem_cache_free(ashmem_area_cachep, asma);</span><br><span class="line"></span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要指出的是，当使用<code>list_for_each_entry_safe(pos, n, head,member)</code>函数时，需要调用者另外提供一个与pos同类型的指针n，在for循环中暂存pos节点的下一个节点的地址，避免因pos节点被释放而造成断链</p>
+<p>接下来就是将分配的空间映射到进程空间。在<code>ashmem_mmap</code>函数中需要指出的是，它借助了Linux内核的<code>shmem_file_setup</code>(支撑文件)工具，使得我们不需要自己去实现这一复杂的过程。所以<code>ashmem_mmap</code>的整个实现过程很简单，大家可以参考它的源代码:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_area *asma = file-&gt;private_data;</span><br><span class="line">	int ret = 0;</span><br><span class="line"></span><br><span class="line">	mutex_lock(&amp;ashmem_mutex);</span><br><span class="line"></span><br><span class="line">	/* user needs to SET_SIZE before mapping */</span><br><span class="line">	if (unlikely(!asma-&gt;size)) &#123;</span><br><span class="line">		ret = -EINVAL;</span><br><span class="line">		goto out;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/* requested protection bits must match our allowed protection mask */</span><br><span class="line">	if (unlikely((vma-&gt;vm_flags &amp; ~calc_vm_prot_bits(asma-&gt;prot_mask)) &amp;</span><br><span class="line">		     calc_vm_prot_bits(PROT_MASK))) &#123;</span><br><span class="line">		ret = -EPERM;</span><br><span class="line">		goto out;</span><br><span class="line">	&#125;</span><br><span class="line">	vma-&gt;vm_flags &amp;= ~calc_vm_may_flags(~asma-&gt;prot_mask);</span><br><span class="line"></span><br><span class="line">	if (!asma-&gt;file) &#123;</span><br><span class="line">		char *name = ASHMEM_NAME_DEF;</span><br><span class="line">		struct file *vmfile;</span><br><span class="line"></span><br><span class="line">		if (asma-&gt;name[ASHMEM_NAME_PREFIX_LEN] != &apos;\0&apos;)</span><br><span class="line">			name = asma-&gt;name;</span><br><span class="line"></span><br><span class="line">		/* ... and allocate the backing shmem file */</span><br><span class="line">		vmfile = shmem_file_setup(name, asma-&gt;size, vma-&gt;vm_flags);</span><br><span class="line">		if (unlikely(IS_ERR(vmfile))) &#123;</span><br><span class="line">			ret = PTR_ERR(vmfile);</span><br><span class="line">			goto out;</span><br><span class="line">		&#125;</span><br><span class="line">		asma-&gt;file = vmfile;</span><br><span class="line">	&#125;</span><br><span class="line">	get_file(asma-&gt;file);</span><br><span class="line"></span><br><span class="line">	if (vma-&gt;vm_flags &amp; VM_SHARED)</span><br><span class="line">		shmem_set_file(vma, asma-&gt;file);</span><br><span class="line">	else &#123;</span><br><span class="line">		if (vma-&gt;vm_file)</span><br><span class="line">			fput(vma-&gt;vm_file);</span><br><span class="line">		vma-&gt;vm_file = asma-&gt;file;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">out:</span><br><span class="line">	mutex_unlock(&amp;ashmem_mutex);</span><br><span class="line">	return ret;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后，我们还将分析通过ioctl来pin和unpin某一段映射的空间的实现方式。ashmem_ioctl函数的功能很多，它可以通过其参数cmd来处理不同的操作，包括设置(获取)名称和尺寸、pin/unpin以及获取pin的一些状态。最终对pin/unpin的处理会通过下面这个函数来完成：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line">static int ashmem_pin(struct ashmem_area *asma, size_t pgstart, size_t pgend)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_range *range, *next;</span><br><span class="line">	int ret = ASHMEM_NOT_PURGED;</span><br><span class="line"></span><br><span class="line">	list_for_each_entry_safe(range, next, &amp;asma-&gt;unpinned_list, unpinned) &#123;</span><br><span class="line">		/* moved past last applicable page; we can short circuit */</span><br><span class="line">		if (range_before_page(range, pgstart))</span><br><span class="line">			break;</span><br><span class="line"></span><br><span class="line">		/*</span><br><span class="line">		 * The user can ask us to pin pages that span multiple ranges,</span><br><span class="line">		 * or to pin pages that aren&apos;t even unpinned, so this is messy.</span><br><span class="line">		 *</span><br><span class="line">		 * Four cases:</span><br><span class="line">		 * 1. The requested range subsumes an existing range, so we</span><br><span class="line">		 *    just remove the entire matching range.</span><br><span class="line">		 * 2. The requested range overlaps the start of an existing</span><br><span class="line">		 *    range, so we just update that range.</span><br><span class="line">		 * 3. The requested range overlaps the end of an existing</span><br><span class="line">		 *    range, so we just update that range.</span><br><span class="line">		 * 4. The requested range punches a hole in an existing range,</span><br><span class="line">		 *    so we have to update one side of the range and then</span><br><span class="line">		 *    create a new range for the other side.</span><br><span class="line">		 */</span><br><span class="line">		if (page_range_in_range(range, pgstart, pgend)) &#123;</span><br><span class="line">			ret |= range-&gt;purged;</span><br><span class="line"></span><br><span class="line">			/* Case #1: Easy. Just nuke the whole thing. */</span><br><span class="line">			if (page_range_subsumes_range(range, pgstart, pgend)) &#123;</span><br><span class="line">				range_del(range);</span><br><span class="line">				continue;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			/* Case #2: We overlap from the start, so adjust it */</span><br><span class="line">			if (range-&gt;pgstart &gt;= pgstart) &#123;</span><br><span class="line">				range_shrink(range, pgend + 1, range-&gt;pgend);</span><br><span class="line">				continue;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			/* Case #3: We overlap from the rear, so adjust it */</span><br><span class="line">			if (range-&gt;pgend &lt;= pgend) &#123;</span><br><span class="line">				range_shrink(range, range-&gt;pgstart, pgstart-1);</span><br><span class="line">				continue;</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			range_alloc(asma, range, range-&gt;purged,</span><br><span class="line">				    pgend + 1, range-&gt;pgend);</span><br><span class="line">			range_shrink(range, range-&gt;pgstart, pgstart - 1);</span><br><span class="line">			break;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return ret;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">static int ashmem_unpin(struct ashmem_area *asma, size_t pgstart, size_t pgend)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_range *range, *next;</span><br><span class="line">	unsigned int purged = ASHMEM_NOT_PURGED;</span><br><span class="line"></span><br><span class="line">restart:</span><br><span class="line">	list_for_each_entry_safe(range, next, &amp;asma-&gt;unpinned_list, unpinned) &#123;</span><br><span class="line">		/* short circuit: this is our insertion point */</span><br><span class="line">		if (range_before_page(range, pgstart))</span><br><span class="line">			break;</span><br><span class="line"></span><br><span class="line">		if (page_range_subsumed_by_range(range, pgstart, pgend))</span><br><span class="line">			return 0;</span><br><span class="line">		if (page_range_in_range(range, pgstart, pgend)) &#123;</span><br><span class="line">			pgstart = min_t(size_t, range-&gt;pgstart, pgstart),</span><br><span class="line">			pgend = max_t(size_t, range-&gt;pgend, pgend);</span><br><span class="line">			purged |= range-&gt;purged;</span><br><span class="line">			range_del(range);</span><br><span class="line">			goto restart;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	return range_alloc(asma, range, purged, pgstart, pgend);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最后需要说明：回收函数cache_shrinker同样也参考了Linux内核的slab分配算法用于页面回收的回调函数。具体实现如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">static int ashmem_shrink(struct shrinker *s, struct shrink_control *sc)</span><br><span class="line">&#123;</span><br><span class="line">	struct ashmem_range *range, *next;</span><br><span class="line"></span><br><span class="line">	/* We might recurse into filesystem code, so bail out if necessary */</span><br><span class="line">	if (sc-&gt;nr_to_scan &amp;&amp; !(sc-&gt;gfp_mask &amp; __GFP_FS))</span><br><span class="line">		return -1;</span><br><span class="line">	if (!sc-&gt;nr_to_scan)</span><br><span class="line">		return lru_count;</span><br><span class="line"></span><br><span class="line">	if (!mutex_trylock(&amp;ashmem_mutex))</span><br><span class="line">		return -1;</span><br><span class="line"></span><br><span class="line">	list_for_each_entry_safe(range, next, &amp;ashmem_lru_list, lru) &#123;</span><br><span class="line">		loff_t start = range-&gt;pgstart * PAGE_SIZE;</span><br><span class="line">		loff_t end = (range-&gt;pgend + 1) * PAGE_SIZE;</span><br><span class="line"></span><br><span class="line">		range-&gt;asma-&gt;file-&gt;f_op-&gt;fallocate(range-&gt;asma-&gt;file,</span><br><span class="line">				FALLOC_FL_PUNCH_HOLE | FALLOC_FL_KEEP_SIZE,</span><br><span class="line">				start, end - start);</span><br><span class="line">		range-&gt;purged = ASHMEM_WAS_PURGED;</span><br><span class="line">		lru_del(range);</span><br><span class="line"></span><br><span class="line">		sc-&gt;nr_to_scan -= range_size(range);</span><br><span class="line">		if (sc-&gt;nr_to_scan &lt;= 0)</span><br><span class="line">			break;</span><br><span class="line">	&#125;</span><br><span class="line">	mutex_unlock(&amp;ashmem_mutex);</span><br><span class="line"></span><br><span class="line">	return lru_count;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>cache_shrinker</code>同样先取得了<code>ashmem_mutex</code>，通过<code>list_for_each_entry_safe</code>来确保其被安全释放。该方法会被<code>mm/vmscan.c :: shrink_slab</code>调用，其中参数<code>nr_to_scan</code>表示有多少个页面对象。如果该参数为0，则表示查询所有的页面对象总数。而“gfp_mask”是一个配置，返回值为被回收之后剩下的页面数量;如果返回-1，则表示由于配置文件(gfp_mask)产生的问题，使得<code>mutex_lock</code>不能进行安全的死锁</p>
+<blockquote>
+<p>本文所分析的代码为 Android 3.10 版本代码（ashmem.h<a href="https://github.com/android/kernel_common/blob/android-3.10/drivers/staging/android/ashmem.c" target="_blank" rel="noopener">^3</a> &amp; ashmem.c<a href="https://github.com/android/kernel_common/blob/android-3.10/drivers/staging/android/uapi/ashmem.h" target="_blank" rel="noopener">^4</a>）</p>
+</blockquote>
+<p>[^1]:<code>kmem_cache_create (const char *name, size_t size, size_t align, unsigned long flags,void (*ctor)(void*, struct kmem_cache *, unsigned long))</code> 用于创建 SLAB 高速缓存</p>
+<p>[^2]:<a href="https://en.wikipedia.org/wiki/Minimal_instruction_set_computer" target="_blank" rel="noopener">Minimal instruction set computer</a></p>
+<p>====</p>
+<blockquote>
+<p>本文的版权归作者 <a href="http://www.luoyuanhang.com" target="_blank" rel="noopener">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/11/17/【人人都要学算法】网络流算法远比你想的要好玩/" rel="next" title="【人人都要学算法】网络流算法远比你想的要好玩">
+                <i class="fa fa-chevron-left"></i> 【人人都要学算法】网络流算法远比你想的要好玩
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/12/26/【从头开始写操作系统系列】页表以及相关的描述符详解/" rel="prev" title="【从头开始写操作系统系列】页表以及相关的描述符详解">
+                【从头开始写操作系统系列】页表以及相关的描述符详解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/12/10/Ashmem-对-Android-内存分配与共享的增强/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Ashmem-是什么？"><span class="nav-number">1.</span> <span class="nav-text">Ashmem 是什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#mmap机制"><span class="nav-number">1.1.</span> <span class="nav-text">mmap机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ashmem-在-mmap-上的改进"><span class="nav-number">1.2.</span> <span class="nav-text">ashmem 在 mmap 上的改进</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ashmem-的定义"><span class="nav-number">1.3.</span> <span class="nav-text">Ashmem 的定义</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ashmem-是怎么实现的？"><span class="nav-number">2.</span> <span class="nav-text">Ashmem 是怎么实现的？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#初始化-ashmem-init-void"><span class="nav-number">2.1.</span> <span class="nav-text">初始化 - ashmem_init(void)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#退出-ashmem-exit-void"><span class="nav-number">2.2.</span> <span class="nav-text">退出 -  ashmem_exit(void)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对内存进行分配、释放和回收"><span class="nav-number">2.3.</span> <span class="nav-text">对内存进行分配、释放和回收</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

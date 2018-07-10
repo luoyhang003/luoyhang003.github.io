@@ -1,0 +1,1053 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Python," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="『我不生产代码，我只是代码的搬运工。』当然了，这是一个玩笑。说到代码，我们要学习各种编程语言，学习如何让编译器能懂我们编写的代码。但是，编译器是如何做到能听懂我们的话的呢？按照我们既定的语句一行行的去执行，最终达到我们的目的。这篇文章，我会讲一个很简单的四则运算解释器，通过使用 Python 实现它来一步步了解一个解释器是如何工作的，它们又是怎么得到我们想要的结果的。">
+<meta name="keywords" content="技术,Python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="程序的语法">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/01/17/程序的语法/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="『我不生产代码，我只是代码的搬运工。』当然了，这是一个玩笑。说到代码，我们要学习各种编程语言，学习如何让编译器能懂我们编写的代码。但是，编译器是如何做到能听懂我们的话的呢？按照我们既定的语句一行行的去执行，最终达到我们的目的。这篇文章，我会讲一个很简单的四则运算解释器，通过使用 Python 实现它来一步步了解一个解释器是如何工作的，它们又是怎么得到我们想要的结果的。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/81046a46f6ff89e496f25ca2b624e3ab.png">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/14059ee7221099b7338a386e9f5a435f.png">
+<meta property="og:updated_time" content="2016-01-17T09:26:02.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="程序的语法">
+<meta name="twitter:description" content="『我不生产代码，我只是代码的搬运工。』当然了，这是一个玩笑。说到代码，我们要学习各种编程语言，学习如何让编译器能懂我们编写的代码。但是，编译器是如何做到能听懂我们的话的呢？按照我们既定的语句一行行的去执行，最终达到我们的目的。这篇文章，我会讲一个很简单的四则运算解释器，通过使用 Python 实现它来一步步了解一个解释器是如何工作的，它们又是怎么得到我们想要的结果的。">
+<meta name="twitter:image" content="http://lyhpic-img.stor.sinaapp.com/original/81046a46f6ff89e496f25ca2b624e3ab.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/01/17/程序的语法/"/>
+
+
+
+
+
+  <title> 程序的语法 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/01/17/程序的语法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                程序的语法
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-01-17T17:21:31+08:00">
+                Jan 17 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/01/17/程序的语法/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/01/17/程序的语法/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/01/17/程序的语法/" class="leancloud_visitors" data-flag-title="程序的语法">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>『我不生产代码，我只是代码的搬运工。』当然了，这是一个玩笑。说到代码，我们要学习各种编程语言，学习如何让编译器能懂我们编写的代码。但是，编译器是如何做到能听懂我们的话的呢？按照我们既定的语句一行行的去执行，最终达到我们的目的。这篇文章，我会讲一个很简单的四则运算解释器，通过使用 Python 实现它来一步步了解一个解释器是如何工作的，它们又是怎么得到我们想要的结果的。</p>
+</blockquote>
+<a id="more"></a>
+<p>#语法</p>
+<p>计算机语言同样也是一种语言，是一种计算机能够理解的语言，我们想要和计算机对话，就要去学习这种语言。和我们人类的语言一样，计算机语言也是有语法的。以汉语为例，我说『我是中国人』，因为汉语的语法，你听到这句话之后会知道『我』是主语，『是』是谓语，『中国人』是宾语，同时你又很清楚每一个成分的含义，最终理解了整句话的意思。</p>
+<p>同样，对于计算机语言也是一样，有着程序的语法，一个解释器知道哪个词是操作数，哪个是操作符，哪个是关键字，它们都有着怎样的含义和功能，通过解释器的解释，计算机明白了某行语句的意义，然后进行运算，得到最后的执行结果。</p>
+<p>#语法图</p>
+<p>语法图就是用来表示一种编程语言语法规则设计的示意图，它很直观的显示出了在一种编程语言中，允许使用的语句和不支持的语句。语法图十分易于阅读：只需跟随箭头指示的路径。一些路径表示选择。另一些路径表示循环。</p>
+<p>##一个简单的语法图</p>
+<p>这里我们举一个语法图的例子：</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/81046a46f6ff89e496f25ca2b624e3ab.png" alt="image"></p>
+<p>这个语法图就是一个描述了简单的加减运算的语法图，term 在其中的意思就是一个操作数，一开始输入一个操作数，有三条路径可以选择『+』，『-』和退出，如果进入了『+』、『-』路径，则需要再输入一个操作数，之后的路径包括『+』、『-』和退出，如此循环，就能解释一个简单的加减法解释器。</p>
+<p>根据上边的语法图，下面的表达式都是合法的：</p>
+<ul>
+<li>4</li>
+<li>1 + 1</li>
+<li>1 + 4 - 3</li>
+</ul>
+<p>下面的表达式不合法：</p>
+<ul>
+<li>-</li>
+<li>+ -</li>
+<li>2 +</li>
+<li>+ 3 - 3</li>
+</ul>
+<p><strong>语法图可以帮助我们：</strong></p>
+<ul>
+<li>用图的方式表示出一种计算机语言的设计规范</li>
+<li>可以帮助理解解释器，将图表表示成代码</li>
+</ul>
+<p>##代码实现（Python）</p>
+<p>学习一样东西最简单的就是阅读代码（Read the Fucking Code！），因此我们先来看完整代码然后再来分析一下，完整代码在：<a href="https://github.com/luoyhang003/Pascal-Interpreter/blob/master/calc3.py" target="_blank" rel="noopener">https://github.com/luoyhang003/Pascal-Interpreter/blob/master/calc3.py</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Token Types:</span></span><br><span class="line"><span class="comment"># EOF: End-Of-File</span></span><br><span class="line"></span><br><span class="line">INTEGER, PLUS, MINUS, EOF = <span class="string">'INTEGER'</span>, <span class="string">'PLUS'</span>, <span class="string">'MINUS'</span>, <span class="string">'EOF'</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Token</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, type, value)</span>:</span></span><br><span class="line">        <span class="comment"># Token types: INTEGER, PLUS, MINUS, EOF</span></span><br><span class="line">        self.type = type</span><br><span class="line">        <span class="comment"># Token value: 0,1,2,3,4,5,6,7,8,9,+,None</span></span><br><span class="line">        self.value = value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        The format of the print infomation</span></span><br><span class="line"><span class="string">        For examle:</span></span><br><span class="line"><span class="string">        Token(INTEGER, 3)</span></span><br><span class="line"><span class="string">        Token(PLUS, '+')</span></span><br><span class="line"><span class="string">        Token(MINUS, '-')</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Token(&#123;type&#125;,&#123;value&#125;)'</span>.format(</span><br><span class="line">                type = self.type,</span><br><span class="line">                value = repr(self.value)</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.__str__()</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Interpreter</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, text)</span>:</span></span><br><span class="line">        <span class="comment"># Process the whole input</span></span><br><span class="line">        <span class="comment"># e.g. 3+5</span></span><br><span class="line">        self.text = text</span><br><span class="line">        self.pos = <span class="number">0</span></span><br><span class="line">        self.current_token = <span class="keyword">None</span></span><br><span class="line">        self.current_char = self.text[self.pos]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">error</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Error Parsing Error!'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">advance</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Advance the pos and set current_char</span></span><br><span class="line">        self.pos += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.pos &gt; len(self.text)<span class="number">-1</span>:</span><br><span class="line">            self.current_char = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.current_char = self.text[self.pos]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">skip_whitespace</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Skip space</span></span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> self.current_char.isspace():</span><br><span class="line">            self.advance()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">integer</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Support mutidigit integer</span></span><br><span class="line">        result = <span class="string">''</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> self.current_char.isdigit():</span><br><span class="line">            result += self.current_char</span><br><span class="line">            self.advance()</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> int(result)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_next_token</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Lexical Analyzer:</span></span><br><span class="line"><span class="string">        Parsing the input into tokens.</span></span><br><span class="line"><span class="string">        Strategy:</span></span><br><span class="line"><span class="string">        1. is pos past the end of the text?</span></span><br><span class="line"><span class="string">        2. if so, return EOF</span></span><br><span class="line"><span class="string">        3. get a character at pos, and decide its type depends on the single char</span></span><br><span class="line"><span class="string">        4. if it is a space, advance the pos</span></span><br><span class="line"><span class="string">        5. if it is a digit, then convert it to integer and return INTEGER token</span></span><br><span class="line"><span class="string">        6. if it is a '+', then return PLUS token</span></span><br><span class="line"><span class="string">        7. if it is a '-', then return MINUS token</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.pos &gt; len(self.text) - <span class="number">1</span>:</span><br><span class="line">                <span class="keyword">return</span> Token(EOF, <span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line">            current_char = self.text[self.pos]</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> current_char.isspace():</span><br><span class="line">                self.skip_whitespace()</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> current_char.isdigit():</span><br><span class="line">                <span class="keyword">return</span> Token(INTEGER, self.integer())</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> current_char == <span class="string">'+'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(PLUS, <span class="string">'+'</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> current_char == <span class="string">'-'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(MINUS, <span class="string">'-'</span>)</span><br><span class="line">            </span><br><span class="line">        </span><br><span class="line">            self.error()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Token(EOF, <span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self, token_type)</span>:</span></span><br><span class="line">        <span class="comment"># compare the current token with the passed token type</span></span><br><span class="line">        <span class="comment"># if they match then eat the current token and assign next token to the self.current_token</span></span><br><span class="line">        <span class="comment"># otherwise raise an Exception</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.current_token.type == token_type:</span><br><span class="line">            self.current_token = self.get_next_token()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.error()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">term</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># return an Integer Token's value</span></span><br><span class="line">        token = self.current_token</span><br><span class="line">        self.eat(INTEGER)</span><br><span class="line">        <span class="keyword">return</span> token.value</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">expr</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># expr -&gt; INTEGER PLUS INTEGER</span></span><br><span class="line">        <span class="comment"># expr -&gt; INTEGER MINUS INTEGER</span></span><br><span class="line">        </span><br><span class="line">        self.current_token = self.get_next_token()</span><br><span class="line"></span><br><span class="line">        result = self.term()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> self.current_token.type <span class="keyword">in</span> (PLUS, MINUS):</span><br><span class="line">            token = self.current_token</span><br><span class="line">            <span class="keyword">if</span> token.type == PLUS:</span><br><span class="line">                self.eat(PLUS)</span><br><span class="line">                result += self.term()</span><br><span class="line">            <span class="keyword">if</span> token.type == MINUS:</span><br><span class="line">                self.eat(MINUS)</span><br><span class="line">                result -= self.term()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            text = raw_input(<span class="string">'cal&gt; '</span>)</span><br><span class="line">        <span class="keyword">except</span> EOFError:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> text:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        interpreter = Interpreter(text)</span><br><span class="line">        result = interpreter.expr()</span><br><span class="line">        print(result)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>在代码中，我们首先定义了四种 Token：整数（Integer）、加法（+）、减法（-）、终止符（EOF）</p>
+<p>代码中主要分为几个主要部分：</p>
+<ul>
+<li>term 方法，在表达式中解析出一个整数</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">term</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># return an Integer Token's value</span></span><br><span class="line">    token = self.current_token</span><br><span class="line">    self.eat(INTEGER)</span><br><span class="line">    <span class="keyword">return</span> token.value</span><br></pre></td></tr></table></figure>
+<ul>
+<li>expr 方法，根据语法图的流程来解析语句</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">expr</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># expr -&gt; INTEGER PLUS INTEGER</span></span><br><span class="line">    <span class="comment"># expr -&gt; INTEGER MINUS INTEGER</span></span><br><span class="line">    </span><br><span class="line">    self.current_token = self.get_next_token()</span><br><span class="line"></span><br><span class="line">    result = self.term()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> self.current_token.type <span class="keyword">in</span> (PLUS, MINUS):</span><br><span class="line">        token = self.current_token</span><br><span class="line">        <span class="keyword">if</span> token.type == PLUS:</span><br><span class="line">            self.eat(PLUS)</span><br><span class="line">            result += self.term()</span><br><span class="line">        <span class="keyword">if</span> token.type == MINUS:</span><br><span class="line">            self.eat(MINUS)</span><br><span class="line">            result -= self.term()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<p>expr 方法，首先调用 term 方法获取一个整数，然后判断后边的 Token 是加法还是减法，之后再获取一个整数，然后进行运算，然后判断之后还有没有运算符，如果没有就返回结果，如果还有就重复以上步骤。我们看到 expr 方法是严格按照语法图进行解释的。</p>
+<p>##执行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">cal&gt; 1+2</span><br><span class="line">3</span><br><span class="line">cal&gt; 1+4-3</span><br><span class="line">2</span><br><span class="line">cal&gt; 1+ 5 -6</span><br><span class="line">0</span><br><span class="line">cal&gt; 1 +</span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;calc3.py&quot;, line 176, in &lt;module&gt;</span><br><span class="line">    main()</span><br><span class="line">  File &quot;calc3.py&quot;, line 172, in main</span><br><span class="line">    result = interpreter.expr()</span><br><span class="line">  File &quot;calc3.py&quot;, line 155, in expr</span><br><span class="line">    result += self.term()</span><br><span class="line">  File &quot;calc3.py&quot;, line 136, in term</span><br><span class="line">    self.eat(INTEGER)</span><br><span class="line">  File &quot;calc3.py&quot;, line 131, in eat</span><br><span class="line">    self.error()</span><br><span class="line">  File &quot;calc3.py&quot;, line 54, in error</span><br><span class="line">    raise Exception(&apos;Error Parsing Error!&apos;)</span><br><span class="line">Exception: Error Parsing Error!</span><br></pre></td></tr></table></figure>
+<p>#文法</p>
+<p>文法是另一种被广泛使用的、用于指定一种程序设计语言语法的表示法，它叫做『上下文无关文法』，简称文法。</p>
+<p><strong>为什么要使用文法？</strong></p>
+<ul>
+<li>文法以更简明的方式说明一种程序设计语言的语法。比起来语法图，文法十分简洁。</li>
+<li>文法可以用作很好的文档</li>
+<li>文法可以非常方便的转换成代码（非常方便~）</li>
+</ul>
+<p>##文法原理</p>
+<p>我们以『3 <em> 4 / 5 </em> 2』这样的算数乘除表达式为例，它对应的文法表达式为：</p>
+<p><strong><div align="center"> expr: factor ((MUL | DIV) factor)*  </div></strong><br><strong><div align="center"> factor: INTEGER </div></strong></p>
+<p>一段文法由<strong>一系列的规则（rule）</strong>组成，在上述文法中，我们有两条规则：<code>expr: factor ((MUL | DIV) factor)*</code> 和<code>factor: INTEGER</code></p>
+<p>一条规则由由<strong>一个非终结符（称规则的头或者左边）</strong>、<strong>一个冒号：</strong>、<strong>一系列终结符非终结符（称规则的主体或者右边）</strong>组成</p>
+<p>分析以上文法：</p>
+<ul>
+<li><code>expr</code>、<code>factor</code>这样的变量叫做非终结符</li>
+<li><code>MUL</code>、<code>DIV</code>、<code>Integer</code>这样的标记称为终结符</li>
+<li><code>|</code> 表示『或』，多选一。<code>(MUL | DIV)</code>表示要么 MUL（乘）要么 DIV（除）</li>
+<li><code>( )</code> 一对圆括号表示把终结符非终结符组合起来，就像 (MUL | DIV) 一样</li>
+<li><code>( )*</code> 表示匹配组合里面的内容 0 次或者多次，就像 while 循环</li>
+</ul>
+<p>解释一下 expr 规则：<br><strong>expr 可以是一个 factor 可选地接着一个乘法或者除法运算符，再接着另一个 factor，依次可选地接着一个乘法或者除法运算符，再接着另一个 factor……</strong></p>
+<p>现在我们以解释『3 <em> 4 / 5 </em> 2』这样的算数乘除表达式为例：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">expr</span><br><span class="line">factor ((MUL | DIV) factor)*</span><br><span class="line">factor MUL factor ((MUL | DIV) factor)*</span><br><span class="line">factor MUL factor DIV factor ((MUL | DIV) factor)*</span><br><span class="line">factor MUL factor DIV factor MUL factor</span><br><span class="line">INTEGER MUL INTEGER DIV INTEGER MUL INTEGER</span><br><span class="line"> 3       *   4       /   5       *   2</span><br></pre></td></tr></table></figure>
+<p>##将文法映射称为为代码</p>
+<ul>
+<li>对于文法中定义的每一条规则 R，都可以在代码中变成同名的方法 R()</li>
+<li>对于多个可选项 <code>( | )</code> 可以编程为 <code>if-else</code> 语句</li>
+<li>可选的 <code>( )*</code> 集合编程称为 <code>while</code> 语句，表示可以循环 0~n 次</li>
+</ul>
+<p>因此，上述文法用代码表示出来就是：</p>
+<ul>
+<li>factor 方法</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">factor</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># return an Integer Token's value</span></span><br><span class="line">    <span class="comment"># factor: Integer</span></span><br><span class="line">    token = self.current_token</span><br><span class="line">    self.eat(INTEGER)</span><br><span class="line">    <span class="keyword">return</span> token.value</span><br></pre></td></tr></table></figure>
+<ul>
+<li>expr 方法</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">expr</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="comment"># Arithmetic expression parser</span></span><br><span class="line">    <span class="comment"># expr: factor( (MUL | DIV) factor)*</span></span><br><span class="line">    <span class="comment"># factor: Integer</span></span><br><span class="line">    </span><br><span class="line">    result = self.factor()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">while</span> self.current_token.type <span class="keyword">in</span> (MUL, DIV):</span><br><span class="line">        token = self.current_token</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> token.type == MUL:</span><br><span class="line">            self.eat(MUL)</span><br><span class="line">            result = result * self.factor()</span><br><span class="line">        <span class="keyword">elif</span> token.type == DIV:</span><br><span class="line">            self.eat(DIV)</span><br><span class="line">            result = result / self.factor()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> result</span><br></pre></td></tr></table></figure>
+<p>##扩充我们的文法</p>
+<p>###加入加减运算</p>
+<p>因为，我们加入了加减运算，因此现在存在运算优先级问题，很显然乘除运算优先级要高于加减运算</p>
+<p>我们得到以下的优先级表格：</p>
+<table>
+<thead>
+<tr>
+<th>操作符</th>
+<th>优先级</th>
+<th>结合性 </th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>+  -</td>
+<td>2</td>
+<td>左结合 </td>
+</tr>
+<tr>
+<td>*  /</td>
+<td>1</td>
+<td>左结合 </td>
+</tr>
+</tbody>
+</table>
+<p>根据优先级表格构建文法：</p>
+<ul>
+<li>为每个优先级定义一个非终结符。非终结符所在产生式的主体应该包含同等级的算术运算符和优先级高一级的非终结符</li>
+<li>为表达式创建一个额外的非终结符 factor 作为基本单位，在我们的例子中该基本单位是整数。通用的规则是如果你有 N 层优先级，那么你总共需要 N + 1 个非终结符：每层优先级需要一个非终结符，加上一个用作表达式基本单位的非终结符。</li>
+</ul>
+<p><strong>更新我们的文法：</strong></p>
+<p><strong><div align="center"> expr: term ((PLUS | MINUS) term)*  </div></strong><br><strong><div align="center"> term: factor ((MUL | DIV) factor)*  </div></strong><br><strong><div align="center"> factor: INTEGER </div></strong></p>
+<p>###加入括号表达式</p>
+<p>在之前，我们的基本单位只有 INTEGER，这次我们加入括号表达式。</p>
+<p>更新后的文法为：</p>
+<p><strong><div align="center"> expr: term ((PLUS | MINUS) term)*  </div></strong><br><strong><div align="center"> term: factor ((MUL | DIV) factor)*  </div></strong><br><strong><div align="center"> factor: INTEGER | LPAREN expr RPAREN </div></strong></p>
+<ul>
+<li>LPAREN 表示左括号，RPAREN 表示右括号</li>
+<li>括号表达式内的非终结符 expr 表示 expr 规则</li>
+</ul>
+<p>下面我们以『 3 * （1 + 5）』为例，来说明该文法是如何工作的：</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/14059ee7221099b7338a386e9f5a435f.png" alt="image"></p>
+<p>##最终的四则运算解释器</p>
+<ul>
+<li>完整代码见：<a href="https://github.com/luoyhang003/Pascal-Interpreter/blob/master/calc6.py" target="_blank" rel="noopener">https://github.com/luoyhang003/Pascal-Interpreter/blob/master/calc6.py</a></li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Token Types:</span></span><br><span class="line"><span class="comment"># EOF: End-Of-File</span></span><br><span class="line">INTEGER, PLUS, MINUS, MUL, DIV, LPAREN, RPAREN, EOF = (</span><br><span class="line">    <span class="string">'INTEGER'</span>, <span class="string">'PLUS'</span>, <span class="string">'MINUS'</span>, <span class="string">'MUL'</span>, <span class="string">'DIV'</span>, <span class="string">'('</span>, <span class="string">')'</span>, <span class="string">'EOF'</span></span><br><span class="line">)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Token</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, type, value)</span>:</span></span><br><span class="line">        <span class="comment"># Token types: INTEGER, PLUS, MINUS, MUL, DIV, EOF</span></span><br><span class="line">        self.type = type</span><br><span class="line">        <span class="comment"># Token value: 0,1,2,3,4,5,6,7,8,9,,+,-,*,/,None</span></span><br><span class="line">        self.value = value</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__str__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        The format of the print infomation</span></span><br><span class="line"><span class="string">        For examle:</span></span><br><span class="line"><span class="string">        Token(INTEGER, 3)</span></span><br><span class="line"><span class="string">        Token(PLUS, '+')</span></span><br><span class="line"><span class="string">        Token(MINUS, '-')</span></span><br><span class="line"><span class="string">        TOKEN(MUL, '*')</span></span><br><span class="line"><span class="string">        TOEKN(LPAREN, ')')</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'Token(&#123;type&#125;,&#123;value&#125;)'</span>.format(</span><br><span class="line">                type = self.type,</span><br><span class="line">                value = repr(self.value)</span><br><span class="line">                )</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.__str__()</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Lexer</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, text)</span>:</span></span><br><span class="line">        <span class="comment"># Process the whole input</span></span><br><span class="line">        <span class="comment"># e.g. 3+ 5 * 2 - 4/2</span></span><br><span class="line">        self.text = text</span><br><span class="line">        self.pos = <span class="number">0</span></span><br><span class="line">        self.current_char = self.text[self.pos]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">error</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Invalid character!'</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">advance</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Advance the pos and set current_char</span></span><br><span class="line">        self.pos += <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.pos &gt; len(self.text)<span class="number">-1</span>:</span><br><span class="line">            self.current_char = <span class="keyword">None</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.current_char = self.text[self.pos]</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">skip_whitespace</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Skip space</span></span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> self.current_char.isspace():</span><br><span class="line">            self.advance()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">integer</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># Support mutidigit integer</span></span><br><span class="line">        result = <span class="string">''</span></span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> self.current_char.isdigit():</span><br><span class="line">            result += self.current_char</span><br><span class="line">            self.advance()</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> int(result)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get_next_token</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""</span></span><br><span class="line"><span class="string">        Lexical Analyzer:</span></span><br><span class="line"><span class="string">        Parsing the input into tokens.</span></span><br><span class="line"><span class="string">        Strategy:</span></span><br><span class="line"><span class="string">        1. dictate current char</span></span><br><span class="line"><span class="string">        2. if it is a space, advance the pos</span></span><br><span class="line"><span class="string">        3. if it is a digit, then convert it to integer and return INTEGER token</span></span><br><span class="line"><span class="string">        4. if it is a '+', then return PLUS token</span></span><br><span class="line"><span class="string">        5. if it is a '-', then return MINUS token</span></span><br><span class="line"><span class="string">        6. if it is a '*', then return MUL token</span></span><br><span class="line"><span class="string">        7. if it is a '/', then return DIV token</span></span><br><span class="line"><span class="string">        8. if it is a '(', then return LPAREN token</span></span><br><span class="line"><span class="string">        9. if it is a ')', then return RPAREN token</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> self.current_char <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span>:</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char.isspace():</span><br><span class="line">                self.skip_whitespace()</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char.isdigit():</span><br><span class="line">                <span class="keyword">return</span> Token(INTEGER, self.integer())</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">'+'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(PLUS, <span class="string">'+'</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">'-'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(MINUS, <span class="string">'-'</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">'*'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(MUL, <span class="string">'*'</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">'/'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(DIV, <span class="string">'/'</span>)</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">'('</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(LPAREN, <span class="string">'('</span>)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> self.current_char == <span class="string">')'</span>:</span><br><span class="line">                self.advance()</span><br><span class="line">                <span class="keyword">return</span> Token(RPAREN, <span class="string">')'</span>)</span><br><span class="line">        </span><br><span class="line">            self.error()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Token(EOF, <span class="keyword">None</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Interpreter</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, lexer)</span>:</span></span><br><span class="line">        self.lexer = lexer</span><br><span class="line">        self.current_token = self.lexer.get_next_token()</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">error</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">raise</span> Exception(<span class="string">'Invalid Syntax'</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eat</span><span class="params">(self, token_type)</span>:</span></span><br><span class="line">        <span class="comment"># compare the current token with the passed token type</span></span><br><span class="line">        <span class="comment"># if they match then eat the current token and assign next token to the self.current_token</span></span><br><span class="line">        <span class="comment"># otherwise raise an Exception</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> self.current_token.type == token_type:</span><br><span class="line">            self.current_token = self.lexer.get_next_token()</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.error()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">factor</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># factor: Integer | LPAREN expr RPAREN</span></span><br><span class="line">        token = self.current_token</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> token.type == INTEGER:</span><br><span class="line">            self.eat(INTEGER)</span><br><span class="line">            <span class="keyword">return</span> token.value</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> token.type == LPAREN:</span><br><span class="line">            self.eat(LPAREN)</span><br><span class="line">            result = self.expr()</span><br><span class="line">            self.eat(RPAREN)</span><br><span class="line">            <span class="keyword">return</span> result</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">term</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># term: factor( (MUL | DIV) factor)*</span></span><br><span class="line">        <span class="comment"># factor: Integer</span></span><br><span class="line">        result = self.factor()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> self.current_token.type <span class="keyword">in</span> (MUL, DIV):</span><br><span class="line">            token = self.current_token</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> token.type == MUL:</span><br><span class="line">                self.eat(MUL)</span><br><span class="line">                result = result * self.factor()</span><br><span class="line">            <span class="keyword">elif</span> token.type == DIV:</span><br><span class="line">                self.eat(DIV)</span><br><span class="line">                result = result / self.factor()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">expr</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># expr: term( (PLUS | MINUS) term)*</span></span><br><span class="line">        <span class="comment"># term: factor( (MUL | DIV) factor)*</span></span><br><span class="line">        <span class="comment"># factor: Integer</span></span><br><span class="line">        result = self.term()</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">while</span> self.current_token.type <span class="keyword">in</span> (PLUS, MINUS):</span><br><span class="line">            token = self.current_token</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">if</span> token.type == PLUS:</span><br><span class="line">                self.eat(PLUS)</span><br><span class="line">                result = result + self.term()</span><br><span class="line">            <span class="keyword">elif</span> token.type == MINUS:</span><br><span class="line">                self.eat(MINUS)</span><br><span class="line">                result = result - self.term()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">True</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            text = raw_input(<span class="string">'cal&gt; '</span>)</span><br><span class="line">        <span class="keyword">except</span> EOFError:</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> text:</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">        lexer = Lexer(text)</span><br><span class="line">        interpreter = Interpreter(lexer)</span><br><span class="line">        result = interpreter.expr()</span><br><span class="line">        print(result)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    main()</span><br></pre></td></tr></table></figure>
+<p>##运行结果</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cal&gt; 1+1</span><br><span class="line">2</span><br><span class="line">cal&gt; 1*3</span><br><span class="line">3</span><br><span class="line">cal&gt; 1+3*3</span><br><span class="line">10</span><br><span class="line">cal&gt; 5*(1+5)</span><br><span class="line">30</span><br><span class="line">cal&gt; (5+6)/(3-1)*2</span><br><span class="line">10</span><br></pre></td></tr></table></figure>
+<p>#参考资料</p>
+<ul>
+<li><p><a href="http://www.amazon.cn/Python-Cookbook-%E5%A4%A7%E5%8D%AB%C2%B7%E6%AF%94%E6%96%AF%E5%88%A9/dp/B00WKR1OKG/ref=sr_1_1?s=books&amp;ie=UTF8&amp;qid=1452057641&amp;sr=1-1&amp;keywords=python+cookbook" target="_blank" rel="noopener">Python Cookbook(第3版)</a></p>
+</li>
+<li><p><a href="http://ruslanspivak.com/" target="_blank" rel="noopener">Ruslan’s Blog</a></p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Python/" rel="tag"># Python</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/01/06/【数学模型】商人们怎样过河？/" rel="next" title="【数学模型】商人们怎样过河？">
+                <i class="fa fa-chevron-left"></i> 【数学模型】商人们怎样过河？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/01/27/在-QT-中使用-libusb-检测-MAC-上的-USB-设备/" rel="prev" title="在 QT 中使用 libusb 检测 MAC 上的 USB 设备">
+                在 QT 中使用 libusb 检测 MAC 上的 USB 设备 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/01/17/程序的语法/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1066 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,操作系统,从头开始写操作系统," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="上几篇文章，我们一直在讨论的都是 GDT 相关的一些问题，现在我们知道在系统在从实模式向保护模式跳转时，GDT 是必须要准备的结构。在介绍这一跳转之前，这篇文章我们来介绍两个概念：一致代码段和非一致代码段。">
+<meta name="keywords" content="技术,操作系统,从头开始写操作系统">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【从头开始写操作系统系列】一致代码段与非一致代码段">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="上几篇文章，我们一直在讨论的都是 GDT 相关的一些问题，现在我们知道在系统在从实模式向保护模式跳转时，GDT 是必须要准备的结构。在介绍这一跳转之前，这篇文章我们来介绍两个概念：一致代码段和非一致代码段。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/d865a386764202505e286cee907733fb.png">
+<meta property="og:image" content="http://lyhpic-img.stor.sinaapp.com/original/d38fb708d96587281f0247cd9379abcb.png">
+<meta property="og:updated_time" content="2016-01-06T12:58:26.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【从头开始写操作系统系列】一致代码段与非一致代码段">
+<meta name="twitter:description" content="上几篇文章，我们一直在讨论的都是 GDT 相关的一些问题，现在我们知道在系统在从实模式向保护模式跳转时，GDT 是必须要准备的结构。在介绍这一跳转之前，这篇文章我们来介绍两个概念：一致代码段和非一致代码段。">
+<meta name="twitter:image" content="http://lyhpic-img.stor.sinaapp.com/original/d865a386764202505e286cee907733fb.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/"/>
+
+
+
+
+
+  <title> 【从头开始写操作系统系列】一致代码段与非一致代码段 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【从头开始写操作系统系列】一致代码段与非一致代码段
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-08-18T16:50:45+08:00">
+                Aug 18 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/从头开始写操作系统系列/" itemprop="url" rel="index">
+                    <span itemprop="name">从头开始写操作系统系列</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/" class="leancloud_visitors" data-flag-title="【从头开始写操作系统系列】一致代码段与非一致代码段">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>上几篇文章，我们一直在讨论的都是 GDT 相关的一些问题，现在我们知道在系统在从实模式向保护模式跳转时，GDT 是必须要准备的结构。在介绍这一跳转之前，这篇文章我们来介绍两个概念：一致代码段和非一致代码段。</p>
+</blockquote>
+<a id="more"></a>
+<p>首先，我们先来看几个问题：</p>
+<ul>
+<li><p>一致代码段和非一致代码段是什么？</p>
+</li>
+<li><p>为什么要有一致代码段和非一致代码段？</p>
+</li>
+<li><p>系统提供怎样的机制来使用户程序访问内核数据？</p>
+</li>
+<li><p>程序如何在段与段之间跳转？</p>
+</li>
+</ul>
+<p>接下来，我们将讨论上述这些问题。</p>
+<p>#特权级</p>
+<p>为了更好的理解之后的问题，我们先来讨论一个概念：特权级。</p>
+<ul>
+<li><p>特权级是一种机制来保护数据和防止恶意行为，特权级分4种：0，1，2，3。0为最高特权级，4为最低。（在 Linux 中只使用了0和3）</p>
+</li>
+<li><p>这些特权级是通过三个标志来表示的：CPL，DPL，RPL</p>
+<ul>
+<li>CPL 是存放于如 CS、SS 寄存器中的，表示当前特权级</li>
+<li>DPL 是在 GDT（全局描述符表）/LDT（局部描述符表）中的，静态的</li>
+<li>RPL是代码中根据不同段跳转而确定，用于刷新 CPL</li>
+</ul>
+</li>
+<li><p>CPL（Current Privilege Level）是表示当前执行程序的特权级，它被存放在CS 和 SS 的第0位和第1位。通常情况下，CPL等于代码的段的特权级。在遇到一致代码段时，一致代码段可以被相同或者更低特权级的代码段访问。当处理器访问一个与 CPL特权级不同的代码段时，CPL 不会改变。</p>
+</li>
+<li><p>DPL（Descriptor Privilege Level）表示段或者门的特权级，它被存储在段描述符或门描述符的 DPL 字段中。当当前代码段要访问一个段或门时，DPL 会和 CPL 以及段选择子或门选择子的 RPL 进行比较，根据段或门的不同类型，DPL 将会被区别对待</p>
+<ul>
+<li>数据段：DPL 规定了可以访问该段的最低特权级，如果 DPL 为1，那么只有运行在CPL 为0或者1的程序才有权访问它。</li>
+<li>非一致代码段（不使用调用门的情况下）：DPL 规定了可以访问该段的特权级，如果 DPL 为1，那么只有运行在 CPL 为1的程序才有权访问它。</li>
+<li>调用门：DPL 规定了当前运行程序可以访问调用门的最低特权级（和数据段访问规则相同）</li>
+<li>一致代码段和通过调用门访问的非一致代码段：DPL 规定了有权访问该段的最高特权级。例，一个一致代码段的 DPL 为2，那么运行在 CPL 为0，1的程序无权访问此段。</li>
+</ul>
+</li>
+<li><p>RPL（Request Privilege Level）：RPL 是通过选择子的第0，1位表现出来的，处理器通过检查 CPL 和 RPL来确认一个访问请求是否合法。</p>
+</li>
+</ul>
+<p>#一致代码段与非一致代码段</p>
+<ul>
+<li><p>一致代码段：通俗的讲，一致代码段就是系统用来共享、提供给低特权级的程序使用调用的代码。</p>
+</li>
+<li><p>非一致代码段：为了避免被低特权级程序访问而被系统保护起来的代码。</p>
+</li>
+</ul>
+<p>##一致代码段限制</p>
+<ul>
+<li><p>特权级高的程序不允许访问特权级低的数据，即核心态程序不能访问用户态数据。</p>
+</li>
+<li><p>特权级低的程序可以访问特权级高的程序，但是特权级不会因此而改变。</p>
+</li>
+</ul>
+<p>##非一致代码段限制</p>
+<ul>
+<li><p>只允许同级之间访问</p>
+</li>
+<li><p>不允许不同级之间访问，核心态不能访问用户态，用户态也不能访问核心态</p>
+</li>
+</ul>
+<p><strong>通常低特权值代码必须通过『门』来完成对高特权值代码的调用</strong></p>
+<p>##为什么要定义一致代码段与非一致代码段？</p>
+<p>   定义这个概念主要是为了系统安全：内核要和用户程序分开，内核一定要安全不能被用户程序干涉。但有时候用户程序也需要读取内核的某些数据。于是操作系统内核程序开辟一些可以供用用户程序访问的段，但是不允许用户程序写入数据。内核不用知道用户程序的数据，内核不用调用用户程序的数据，内核不用转移到用户程序中来。用户程序只能访问到内核的某些共享的段，我们称这些段为一致代码段。用户程序不能访问内核不共享的段。</p>
+<p>#门描述符</p>
+<p>##门描述符结构</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/d865a386764202505e286cee907733fb.png" alt="image"></p>
+<p>##调用门的使用方式</p>
+<p><img src="http://lyhpic-img.stor.sinaapp.com/original/d38fb708d96587281f0247cd9379abcb.png" alt="image"></p>
+<p>##门描述符的实现</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">; 门描述符</span><br><span class="line">; 4个参数: </span><br><span class="line">;        1.选择子：16位</span><br><span class="line">;        2.偏移量：32位</span><br><span class="line">;        3.DCount</span><br><span class="line">;        4.属性</span><br><span class="line">%macro Gate 4</span><br><span class="line">	dw	(%2 &amp; 0FFFFh)		;取参数2的低16位填充一个 WORD</span><br><span class="line">	dw	%1					;取参数1填充一个 WORD</span><br><span class="line">	dw	(%3 &amp; 1Fh) | ((%4 &lt;&lt; 8) &amp; 0FF00h)	; 属性</span><br><span class="line">	dw	((%2 &gt;&gt; 16) &amp; 0FFFFh)			; 偏移2</span><br><span class="line">%endmacro ; 共 8 字节</span><br></pre></td></tr></table></figure>
+<p>#不同特权级代码段的转移</p>
+<p>使用 jmp 和 call 可以实现下列4种转移：</p>
+<ul>
+<li><p>目标操作数包含目标代码段的段选择子</p>
+</li>
+<li><p>目标操作数指向包含目标代码段段选择子的门描述符</p>
+</li>
+<li><p>目标操作数指向包含目标代码段段选择子的 TTS（Task-State Stack）</p>
+</li>
+<li><p>目标操作数指向一个任务门，这个任务门指向包含目标代码段段选择子对 TTS</p>
+</li>
+</ul>
+<p><strong>这四种方式可以分为两类：一是，通过 call 或 jmp 的直接转移，二是，通过某个描述符的间接转移</strong></p>
+<p>##通过 call 和 jmp 直接转移</p>
+<table>
+<thead>
+<tr>
+<th>目标代码段</th>
+<th>条件</th>
+<th>CPL 变化</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>非一致代码段</td>
+<td>CPL=DPL<p>RPL&lt;=DPL</p></td>
+<td>当转移到目标代码段时，CPL=DPL</td>
+</tr>
+<tr>
+<td>一致代码段</td>
+<td>CPL&gt;DPL，RPL 不做检查</td>
+<td>当转移到目标代码段时，CPL 会延续下来</td>
+</tr>
+</tbody>
+</table>
+<p>##通过门描述符的转移</p>
+<p>假设我们想由代码A转移到代码B，运用一个调用门G，即调用门G中的目标选择子指向代码B的段。实际上，这个问题主要涉及这几个元素：CPL、RPL、代码B的DPL（记做DPL_B），调用门G的DPL（记做DPL_G）。</p>
+<table>
+<thead>
+<tr>
+<th>目标代码段</th>
+<th>call</th>
+<th>jmp</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>非一致代码段</td>
+<td>CPL&lt;=DPL_G<p>RPL&lt;=DPL_G</p><p>DPL_B&lt;=CPL</p></td>
+<td>CPL&lt;=DPL_G<p>RPL&lt;=DPL_G</p><p>DPL_B=CPL </p></td>
+</tr>
+<tr>
+<td>一致代码段</td>
+<td>CPL&lt;=DPL_G<p>RPL&lt;=DPL_G</p><p>DPL_B&lt;=CPL</p></td>
+<td>CPL&lt;=DPL_G<p>RPL&lt;=DPL_G</p><p>DPL_B&lt;=CPL</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>通过调用门和 call 指令，可以实现低特权级到高特权级的转移，无论目标代码段是一致的还是非一致的</strong></p>
+<p><strong>通过门调用和 jmp 指令，如果目标代码段是一致的，则可以实现低特权级到高特权级的转移；如果是非一致的，那么只能实现相同特权级的转移</strong></p>
+<hr>
+<p><strong>版权声明：本文为博主原创文章，未经博主允许不得转载。</strong></p>
+<p>文章来源：<a href="http://blog.luoyuanhang.com">http://blog.luoyuanhang.com</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
+          
+            <a href="/tags/从头开始写操作系统/" rel="tag"># 从头开始写操作系统</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/08/11/【从头开始写操作系统系列】实现一个-GDT（3）/" rel="next" title="【从头开始写操作系统系列】实现一个 GDT（3）">
+                <i class="fa fa-chevron-left"></i> 【从头开始写操作系统系列】实现一个 GDT（3）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/09/07/KNN-在手写识别中的应用（Java-实现）/" rel="prev" title="KNN 在手写识别中的应用（Java 实现）">
+                KNN 在手写识别中的应用（Java 实现） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/08/18/【从头开始写操作系统系列】一致代码段与非一致代码段/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

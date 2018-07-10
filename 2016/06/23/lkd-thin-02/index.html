@@ -1,0 +1,1103 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,读书笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 II 篇，本文主要讲了以下问题：进程管理的任务、进程管理与其他模块的依赖关系、进程描述符和任务队列、进程的创建、线程的实现、进程的终止、进程调度。">
+<meta name="keywords" content="技术,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读薄「Linux 内核设计与实现」(2) - 进程管理和调度">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/06/23/lkd-thin-02/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 II 篇，本文主要讲了以下问题：进程管理的任务、进程管理与其他模块的依赖关系、进程描述符和任务队列、进程的创建、线程的实现、进程的终止、进程调度。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-06-22T18:03:00.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读薄「Linux 内核设计与实现」(2) - 进程管理和调度">
+<meta name="twitter:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 II 篇，本文主要讲了以下问题：进程管理的任务、进程管理与其他模块的依赖关系、进程描述符和任务队列、进程的创建、线程的实现、进程的终止、进程调度。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/06/23/lkd-thin-02/"/>
+
+
+
+
+
+  <title> 读薄「Linux 内核设计与实现」(2) - 进程管理和调度 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/06/23/lkd-thin-02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                读薄「Linux 内核设计与实现」(2) - 进程管理和调度
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-06-23T01:09:57+08:00">
+                Jun 23 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/06/23/lkd-thin-02/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/06/23/lkd-thin-02/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/06/23/lkd-thin-02/" class="leancloud_visitors" data-flag-title="读薄「Linux 内核设计与实现」(2) - 进程管理和调度">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是<a href="http://blog.luoyuanhang.com/2016/06/07/lkd-thin-00/">《读薄「Linux 内核设计与实现」》系列文章</a>的第 II 篇，本文主要讲了以下问题：进程管理的任务、进程管理与其他模块的依赖关系、进程描述符和任务队列、进程的创建、线程的实现、进程的终止、进程调度。</p>
+</blockquote>
+<a id="more"></a>
+<p>#0x00 进程管理的任务</p>
+<ul>
+<li><p>进程能创建新的进程（通过复制现有进程）</p>
+</li>
+<li><p>确定哪个进程能拥有 CPU</p>
+</li>
+<li><p>接受中断并将中断导向相应的内核子系统</p>
+</li>
+<li><p>管理时钟硬件</p>
+</li>
+<li><p>当一个进程结束时释放其资源</p>
+</li>
+<li><p>动态装载执行模块</p>
+</li>
+</ul>
+<p>#0x01 进程管理与其他模块的依赖关系</p>
+<h2 id="I-进程模块的内外界面"><a href="#I-进程模块的内外界面" class="headerlink" title="I 进程模块的内外界面"></a>I 进程模块的内外界面</h2><ul>
+<li><p>对用户进程提供了一组简单的系统调用接口</p>
+</li>
+<li><p>对内核的其他模块提供了丰富的接口功能</p>
+</li>
+</ul>
+<h2 id="II-进程模块与其他模块的依赖关系"><a href="#II-进程模块与其他模块的依赖关系" class="headerlink" title="II 进程模块与其他模块的依赖关系"></a>II 进程模块与其他模块的依赖关系</h2><ul>
+<li><p>内存管理模块：当一个进程被调度时，为它建立内存映射</p>
+</li>
+<li><p>IPC 模块：bottom-half 处理使用了其中的信号量队列</p>
+</li>
+<li><p>文件系统模块：在装载 module 时为进程调度提供实际设备的访问途径</p>
+</li>
+</ul>
+<p><strong>所有其他模块都依赖于进程调度模块，因为当要进行硬件访问时，它们需要 CPU 挂起用户进程，切换到系统态进行处理</strong></p>
+<p>#0x02 进程描述符和任务队列</p>
+<h2 id="I-进程描述符"><a href="#I-进程描述符" class="headerlink" title="I 进程描述符"></a>I 进程描述符</h2><ul>
+<li><p><code>task_struct</code> （进程描述符）定义于&lt;linux/sched.h&gt;，其中包含：它打开的文件、进程的地址空间、挂起的信号、进程的状态……</p>
+</li>
+<li><p>任务队列(<code>task_list</code>)是一个双向循环链表，每一项都是 <code>task_struct</code></p>
+</li>
+</ul>
+<h2 id="II-分配进程描述符"><a href="#II-分配进程描述符" class="headerlink" title="II 分配进程描述符"></a>II 分配进程描述符</h2><ul>
+<li>Linux 通过 slab 分配 <code>task_struct</code> 可以达到对象复用和缓存着色的目的，不需要频繁调用内存管理相应功能，相当于一种高级缓存</li>
+</ul>
+<h2 id="III-进程描述符的存放"><a href="#III-进程描述符的存放" class="headerlink" title="III 进程描述符的存放"></a>III 进程描述符的存放</h2><ul>
+<li><p>通过 PID 标识进程，最大值默认为32768</p>
+</li>
+<li><p>如何获得当前运行的进程？</p>
+</li>
+</ul>
+<p>通过 current 宏（体系结构相关），<code>current_thread_info()-&gt;task;</code></p>
+<p>#0x03 进程的创建</p>
+<h2 id="I-进程创建过程描述"><a href="#I-进程创建过程描述" class="headerlink" title="I 进程创建过程描述"></a>I 进程创建过程描述</h2><ul>
+<li><p>Linux 中，进程的创建是通过拷贝已存在的进程来实现的</p>
+</li>
+<li><p>内核启动的时候，<code>start_kernel()</code> 初始化各系统数据结构，同时生成了与系统共存亡的后台进程：init</p>
+</li>
+<li><p>这些子进程通过 <code>fork()</code> 系统调用生成他们的子进程</p>
+</li>
+<li><p>进程的终止是通过系统调用 <code>_exit()</code> 实现的</p>
+</li>
+</ul>
+<h2 id="II-进程创建函数"><a href="#II-进程创建函数" class="headerlink" title="II 进程创建函数"></a>II 进程创建函数</h2><ul>
+<li><p>fork(): 进程复制自身产生子进程</p>
+</li>
+<li><p>exec(): 加载可执行代码模块覆盖自身代码</p>
+</li>
+</ul>
+<h2 id="III-写时拷贝-copy-on-write"><a href="#III-写时拷贝-copy-on-write" class="headerlink" title="III 写时拷贝(copy-on-write)"></a>III 写时拷贝(copy-on-write)</h2><p>使地址空间上的页的拷贝被推迟到实际发生写入的时候才进行</p>
+<p>#0x04 线程的实现</p>
+<ul>
+<li><p>Linux 没有真正的线程，线程当做进程来实现（仅仅是进程间资源直接共享的一种机制）</p>
+</li>
+<li><p>通过 clone 时传递一些参数标志来实现：</p>
+</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">clone(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND, 0);</span><br></pre></td></tr></table></figure>
+<p>这些标志定义于 &lt;linux/sched.h&gt;</p>
+<ul>
+<li>内核线程：独立运行在内核的标准进程</li>
+</ul>
+<p>#0x05 进程的终止</p>
+<h2 id="删除进程描述符"><a href="#删除进程描述符" class="headerlink" title="删除进程描述符"></a>删除进程描述符</h2><ul>
+<li><p>父进程得知进程终止的消息后才能删除子进程的描述符</p>
+</li>
+<li><p>父进程 WAIT() （通过系统调用 <code>wait4()</code>实现），挂起父进程，直到其中一个子进程退出</p>
+</li>
+<li><p>之后，真正释放描述符（<code>release_task()</code>）:</p>
+<ul>
+<li>调用 <code>_unhash_process()</code>从 pidhash 上删除该进程</li>
+<li><code>_exit_signal()</code> 释放目前僵死进程所使用剩余资源</li>
+<li>调用 <code>put_task_struct</code> 释放描述符（内核栈、thread_info 所占的页、slab 高速缓存）</li>
+</ul>
+</li>
+</ul>
+<h2 id="若父进程异常终止，将发生什么情况？"><a href="#若父进程异常终止，将发生什么情况？" class="headerlink" title="若父进程异常终止，将发生什么情况？"></a>若父进程异常终止，将发生什么情况？</h2><p> 如果父进程在子进程之前推出，这些成为孤儿的进程会处于僵死状态，解决方案是给子线程在当前进程中找一个父亲，如果不行，则以 init 进程为父亲，过程：</p>
+<p> <code>do_exit() -&gt; exit_notify() -&gt; forget_original_parent() -&gt; find_new_reaper()</code></p>
+<p>开始寻父。</p>
+<p>#0x06 进程调度</p>
+<h2 id="I-多任务系统分类"><a href="#I-多任务系统分类" class="headerlink" title="I 多任务系统分类"></a>I 多任务系统分类</h2><ul>
+<li><p>抢占式：由调度程序决定一个进程的运行与挂起，挂起的动作就叫做抢占（Linux 为抢占式内核），进程在被抢占之前的运行时间是预先设置好的，叫做时间片</p>
+</li>
+<li><p>非抢占式：除非进程自己停止，否则它会一直运行，它主动挂起自己的动作叫让步（yielding）</p>
+</li>
+</ul>
+<h2 id="II-调度策略"><a href="#II-调度策略" class="headerlink" title="II 调度策略"></a>II 调度策略</h2><h3 id="I-O-消耗型和-CPU-消耗型进程"><a href="#I-O-消耗型和-CPU-消耗型进程" class="headerlink" title="I/O 消耗型和 CPU 消耗型进程"></a>I/O 消耗型和 CPU 消耗型进程</h3><ul>
+<li><p>I/O 消耗型：进程大部分时间用来提交 I/O 请求或是等待 I/O 请求</p>
+</li>
+<li><p>CPU 消耗型：进程把时间大多用在执行代码上</p>
+</li>
+</ul>
+<p><strong>UNIX 系列倾向于 I/O 消耗型</strong></p>
+<h3 id="进程优先级-Linux-采用2种不同的优先级范围"><a href="#进程优先级-Linux-采用2种不同的优先级范围" class="headerlink" title="进程优先级(Linux 采用2种不同的优先级范围)"></a>进程优先级(Linux 采用2种不同的优先级范围)</h3><ul>
+<li><p>nice 值：从 -20~+19，默认为0，nice 越大，优先级越低</p>
+</li>
+<li><p>实时优先级：从 0~99，越高的实时优先级越高，它的值可以配置</p>
+</li>
+</ul>
+<h3 id="时间片"><a href="#时间片" class="headerlink" title="时间片"></a>时间片</h3><ul>
+<li><p>时间片分配多大？：时间片过长使得系统交互性不好；时间片过短会导致大部分 CPU 时间浪费在进程的切换上。</p>
+</li>
+<li><p>Linux 采用可变长的时间片</p>
+</li>
+</ul>
+<h2 id="III-Linux-调度算法"><a href="#III-Linux-调度算法" class="headerlink" title="III Linux 调度算法"></a>III Linux 调度算法</h2><h3 id="O-1-调度"><a href="#O-1-调度" class="headerlink" title="O(1) 调度"></a>O(1) 调度</h3><h4 id="优先级数组"><a href="#优先级数组" class="headerlink" title="优先级数组"></a>优先级数组</h4><p>O(1)调度算法中的一个核心数据结构即为<code>prio_array</code>结构体，该结构体中有一个用来表示进程动态优先级的 queue，它其中的每一项都是一种优先级形成的进程的链表，即每一条链表中的进程都有相同优先级</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct prio_array&#123;</span><br><span class="line">    unsigned int nr_active;</span><br><span class="line">    unsigned long bitmap[BITMAP_SIZE];</span><br><span class="line">    struct list_head queue[MAX_PRIO];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>另外，该结构体中还包含一个优先级位图 bitmap，该位图使用1位来表示1种优先级，开始时，所有位置都置0，一旦有进程处于可运行状态时，该进程所在优先级对应位图中的相应位被置1.</p>
+<p><strong>因此，在 O(1)调度中查找最高的优先级就转化为查找优先级位图中第一个被置1的位</strong></p>
+<p>确定了最高优先级之后，选取下一个进程就是在 queue 对应的链表中取一个进程即可</p>
+<h4 id="活动进程和过期进程"><a href="#活动进程和过期进程" class="headerlink" title="活动进程和过期进程"></a>活动进程和过期进程</h4><p>在 O(1)调度中，对可运行态的进程分了两类：一类为<strong>活动进程</strong>，即时间片还未用完的进程；另一类为<strong>过期进程</strong>，即时间片已经用完的进程，但进程还未结束，它们没有机会得到执行。</p>
+<p>在可运行队列结构中（runqueue）的 arrays 的两个元素分别来表示上述两个集合，<code>active</code> 和 <code>expire</code> 两个指针分别指向这2个集合</p>
+<h4 id="时间片的计算"><a href="#时间片的计算" class="headerlink" title="时间片的计算"></a>时间片的计算</h4><p><strong><code>active</code>中的进程一旦时间片使用完毕就会放入<code>expire</code>中，并设置好新的时间片；当<code>active</code>为空时，说明所有进程时间片已耗尽，此时，将<code>active</code>和<code>expire</code>对调，重新开始下一轮时间片的递减过程。</strong></p>
+<h4 id="O-1-算法中的两个核心"><a href="#O-1-算法中的两个核心" class="headerlink" title="O(1)算法中的两个核心"></a>O(1)算法中的两个核心</h4><ul>
+<li><p>选择下一个进程</p>
+</li>
+<li><p>时间片的重新分配</p>
+</li>
+</ul>
+<h3 id="CFS-调度（公平调度）"><a href="#CFS-调度（公平调度）" class="headerlink" title="CFS 调度（公平调度）"></a>CFS 调度（公平调度）</h3><p>O(1)算法是根据进程的优先级进行调度的；CFS 是根据进程的虚拟进程运行时间来进行调度的</p>
+<h4 id="如何选择进程"><a href="#如何选择进程" class="headerlink" title="如何选择进程?"></a>如何选择进程?</h4><p>CFS 提出了虚拟运行时间的概念（vruntime），vruntime 记录了一个<strong>可执行进程到当前时刻为止执行的总时间</strong>，vruntime 越大，它被调度的可能性越小，因此每次选择 vruntime 越小的进程进行调度（在 Linux 中使用红黑树来找出 vruntime 最小的进程）</p>
+<h4 id="调度进程的运行时间"><a href="#调度进程的运行时间" class="headerlink" title="调度进程的运行时间"></a>调度进程的运行时间</h4><p>现在已经知道了进程是如何调度的，那么当进程运行时，它的运行时间是多少呢？</p>
+<p><strong>CFS 的运行时间是由当前所有可调度进程优先级比重来确定的</strong></p>
+<p>例：3个进程优先级为5，15，20，它们时间片大小分配为：5/40, 15/40, 20/40</p>
+<h2 id="IV-抢占和上下文切换"><a href="#IV-抢占和上下文切换" class="headerlink" title="IV 抢占和上下文切换"></a>IV 抢占和上下文切换</h2><p>上下文切换表示从一个可执行进程切换到另一个可执行进程（定义在 sched.h 中的 context_switch()）</p>
+<ul>
+<li><p>调用 <code>switch_mm()</code>：把虚拟进程从一个进程切换到新进程</p>
+</li>
+<li><p>调用 <code>switch_to()</code>：保存和恢复栈信息、寄存器信息</p>
+</li>
+<li><p><code>need_resched</code> 标志：每个进程都包含该标志，为了让内核知道在什么时候调用<code>schedule()</code>.当某进程应该被抢占时，设置该标志；当一个优先级高的进程进入可执行态时，也会设置该标志。</p>
+</li>
+</ul>
+<h3 id="用户抢占的发生"><a href="#用户抢占的发生" class="headerlink" title="用户抢占的发生"></a>用户抢占的发生</h3><ul>
+<li><p>从系统调用返回用户空间时</p>
+</li>
+<li><p>从中断处理程序返回用户空间时</p>
+</li>
+</ul>
+<p><strong>当内核返回用户空间时，如果 <code>need_resched</code> 被设置，会导致 <code>schedule()</code> 被调用，此时发生用户抢占</strong></p>
+<h3 id="内核抢占的发生"><a href="#内核抢占的发生" class="headerlink" title="内核抢占的发生"></a>内核抢占的发生</h3><ul>
+<li><p>从中断程序返回内核空间时</p>
+</li>
+<li><p>内核代码再一次具有可抢占性时</p>
+</li>
+<li><p>如果内核中的任务显示调用 <code>schedule()</code></p>
+</li>
+<li><p>如果内核中的任务阻塞（同样也会调用<code>schedule()</code>）</p>
+</li>
+</ul>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/07/lkd-thin-00/" rel="next" title="读薄「Linux 内核设计与实现」">
+                <i class="fa fa-chevron-left"></i> 读薄「Linux 内核设计与实现」
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/06/25/lkd-thin-03/" rel="prev" title="读薄《Linux 内核设计与实现》(3) -  系统调用">
+                读薄《Linux 内核设计与实现》(3) -  系统调用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/06/23/lkd-thin-02/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-进程模块的内外界面"><span class="nav-number">1.</span> <span class="nav-text">I 进程模块的内外界面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-进程模块与其他模块的依赖关系"><span class="nav-number">2.</span> <span class="nav-text">II 进程模块与其他模块的依赖关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-进程描述符"><span class="nav-number">3.</span> <span class="nav-text">I 进程描述符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-分配进程描述符"><span class="nav-number">4.</span> <span class="nav-text">II 分配进程描述符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-进程描述符的存放"><span class="nav-number">5.</span> <span class="nav-text">III 进程描述符的存放</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-进程创建过程描述"><span class="nav-number">6.</span> <span class="nav-text">I 进程创建过程描述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-进程创建函数"><span class="nav-number">7.</span> <span class="nav-text">II 进程创建函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-写时拷贝-copy-on-write"><span class="nav-number">8.</span> <span class="nav-text">III 写时拷贝(copy-on-write)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除进程描述符"><span class="nav-number">9.</span> <span class="nav-text">删除进程描述符</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#若父进程异常终止，将发生什么情况？"><span class="nav-number">10.</span> <span class="nav-text">若父进程异常终止，将发生什么情况？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#I-多任务系统分类"><span class="nav-number">11.</span> <span class="nav-text">I 多任务系统分类</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-调度策略"><span class="nav-number">12.</span> <span class="nav-text">II 调度策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-消耗型和-CPU-消耗型进程"><span class="nav-number">12.1.</span> <span class="nav-text">I/O 消耗型和 CPU 消耗型进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#进程优先级-Linux-采用2种不同的优先级范围"><span class="nav-number">12.2.</span> <span class="nav-text">进程优先级(Linux 采用2种不同的优先级范围)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#时间片"><span class="nav-number">12.3.</span> <span class="nav-text">时间片</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-Linux-调度算法"><span class="nav-number">13.</span> <span class="nav-text">III Linux 调度算法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#O-1-调度"><span class="nav-number">13.1.</span> <span class="nav-text">O(1) 调度</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#优先级数组"><span class="nav-number">13.1.1.</span> <span class="nav-text">优先级数组</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#活动进程和过期进程"><span class="nav-number">13.1.2.</span> <span class="nav-text">活动进程和过期进程</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#时间片的计算"><span class="nav-number">13.1.3.</span> <span class="nav-text">时间片的计算</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#O-1-算法中的两个核心"><span class="nav-number">13.1.4.</span> <span class="nav-text">O(1)算法中的两个核心</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CFS-调度（公平调度）"><span class="nav-number">13.2.</span> <span class="nav-text">CFS 调度（公平调度）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#如何选择进程"><span class="nav-number">13.2.1.</span> <span class="nav-text">如何选择进程?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#调度进程的运行时间"><span class="nav-number">13.2.2.</span> <span class="nav-text">调度进程的运行时间</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IV-抢占和上下文切换"><span class="nav-number">14.</span> <span class="nav-text">IV 抢占和上下文切换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用户抢占的发生"><span class="nav-number">14.1.</span> <span class="nav-text">用户抢占的发生</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#内核抢占的发生"><span class="nav-number">14.2.</span> <span class="nav-text">内核抢占的发生</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

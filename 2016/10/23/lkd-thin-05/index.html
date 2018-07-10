@@ -1,0 +1,1048 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,读书笔记," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 V 篇，本文主要讲了以下问题：Linux 内核中的时间概念和时间表示，硬件时钟和定时器以及时间中断和内存管理的相关知识。">
+<meta name="keywords" content="技术,读书笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2016/10/23/lkd-thin-05/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 V 篇，本文主要讲了以下问题：Linux 内核中的时间概念和时间表示，硬件时钟和定时器以及时间中断和内存管理的相关知识。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2016-10-23T05:58:51.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理">
+<meta name="twitter:description" content="这篇文章是《读薄「Linux 内核设计与实现」》系列文章的第 V 篇，本文主要讲了以下问题：Linux 内核中的时间概念和时间表示，硬件时钟和定时器以及时间中断和内存管理的相关知识。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2016/10/23/lkd-thin-05/"/>
+
+
+
+
+
+  <title> 读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2016/10/23/lkd-thin-05/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2016-10-23T13:54:51+08:00">
+                Oct 23 2016
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2016/10/23/lkd-thin-05/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2016/10/23/lkd-thin-05/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2016/10/23/lkd-thin-05/" class="leancloud_visitors" data-flag-title="读薄《Linux 内核设计与实现》(5) -  定时器、时间管理和内存管理">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>这篇文章是<a href="http://blog.luoyuanhang.com/2016/06/07/lkd-thin-00/">《读薄「Linux 内核设计与实现」》系列文章</a>的第 V 篇，本文主要讲了以下问题：Linux 内核中的时间概念和时间表示，硬件时钟和定时器以及时间中断和内存管理的相关知识。</p>
+</blockquote>
+<a id="more"></a>
+<h1 id="0x00-内核中的时间概念"><a href="#0x00-内核中的时间概念" class="headerlink" title="0x00 内核中的时间概念"></a>0x00 内核中的时间概念</h1><ul>
+<li>内核需要管理相对时间和绝对时间</li>
+<li>硬件为内核提供了一个系统定时器用以计算流逝的时间，它以某种频率自行触发时间中断，该频率可以通过编程预定，称作节拍率</li>
+<li>时间的作用：<ul>
+<li>更新系统时间</li>
+<li>更新实际时间</li>
+<li>定期均衡运行队列（SMP）</li>
+<li>时间片</li>
+<li>定期统计处理器时间</li>
+</ul>
+</li>
+</ul>
+<h1 id="0x01-Linux-中的时间表示"><a href="#0x01-Linux-中的时间表示" class="headerlink" title="0x01 Linux 中的时间表示"></a>0x01 Linux 中的时间表示</h1><h2 id="I-节拍率（Hz）"><a href="#I-节拍率（Hz）" class="headerlink" title="I 节拍率（Hz）"></a>I 节拍率（Hz）</h2><p>在 &lt;asm/param.h&gt; 中定义，不同体系结构不同。</p>
+<p><strong>理想的Hz 值应该是多少？ </strong></p>
+<p>高 Hz 的优势：</p>
+<ul>
+<li>提高定时器频度和精度</li>
+<li>依赖定时值值省得系统调用能够以更高精度运行</li>
+<li>提高进程抢占的精准度</li>
+</ul>
+<p>高 Hz 的劣势：</p>
+<ul>
+<li>提高时钟中断频率，加重系统负担</li>
+<li>提高中断处理程序占CPU时间</li>
+<li>更频繁的打乱处理器高速缓存并增加能耗</li>
+</ul>
+<h2 id="II-jiffies"><a href="#II-jiffies" class="headerlink" title="II jiffies"></a>II jiffies</h2><p>全局变量 jiffies 用来记录自系统启动以来产生的节拍的总数，定义于 &lt;linux/jiffies.h&gt; 中</p>
+<p><code>extern unsigned long volatile jiffies;</code></p>
+<p><strong>jiffies 的回绕问题</strong></p>
+<p>jiffies 的值超过它的最大存放范围后就会发生溢出，溢出后它的值会回绕到0</p>
+<p><strong>解决方案</strong></p>
+<ol>
+<li>宏 <code>time_after(unknown, known)</code>: 当时间 unknown 超过指定的 known 时，返回真，否则返回假；</li>
+<li>宏 <code>time_before(unknown, known)</code>: 当时间 unknown 没超过指定的 known 时，返回真，否则返回假；</li>
+<li>unknown 通常是 jiffies，unknown是需要对比的值；</li>
+<li>宏 <code>time_before_eq</code> 和 <code>time_after_eq</code>:当 unknown 和 known 相等时，返回真</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">unsigned</span> <span class="keyword">long</span> timeout = jiffies + HZ / <span class="number">2</span>; <span class="comment">/*0.5秒后超时*/</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span>(time_before(jiffies, timeout))&#123;</span><br><span class="line">  <span class="comment">/*没有超时,很好*/</span></span><br><span class="line">&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">  <span class="comment">/*超时，发生错误*/</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="0x02-硬件时钟和定时器"><a href="#0x02-硬件时钟和定时器" class="headerlink" title="0x02 硬件时钟和定时器"></a>0x02 硬件时钟和定时器</h1><p>体系结构中提供了两种设备进行计时：</p>
+<ul>
+<li>系统定时器：提供了一种周期性触发中断机制</li>
+<li>实时时钟：用来持久存放系统时间的设备</li>
+</ul>
+<h1 id="0x03-Linux-下的时钟中断"><a href="#0x03-Linux-下的时钟中断" class="headerlink" title="0x03 Linux 下的时钟中断"></a>0x03 Linux 下的时钟中断</h1><h2 id="I-时钟中断处理程序做的工作"><a href="#I-时钟中断处理程序做的工作" class="headerlink" title="I 时钟中断处理程序做的工作"></a>I 时钟中断处理程序做的工作</h2><ul>
+<li><p>获得 <code>xtime_lock</code> 锁，对 jiffies_64 和 xtime 进行保护</p>
+</li>
+<li><p>应答或重新设置系统时钟</p>
+</li>
+<li><p>周期性使用墙上时间更新实时时钟</p>
+</li>
+<li><p>调用体系结构无关的时钟例程：<code>do_timer()</code></p>
+<p>​</p>
+</li>
+</ul>
+<h2 id="II-do-timer"><a href="#II-do-timer" class="headerlink" title="II do_timer()"></a>II do_timer()</h2><ul>
+<li>jiffies + 1</li>
+<li>更新资源消耗的统计值</li>
+<li>执行到期的动态定时器</li>
+<li>执行 <code>scheduler_tick()</code></li>
+<li>更新墙上时间并存到 xtime 变量中</li>
+<li>计算平均负载值</li>
+</ul>
+<h2 id="III-从用户空间获取时间"><a href="#III-从用户空间获取时间" class="headerlink" title="III 从用户空间获取时间"></a>III 从用户空间获取时间</h2><p>gettimeofday(): 对应系统调用 <code>sys_gettimeofday()</code></p>
+<h1 id="0x04-Linux-内存页"><a href="#0x04-Linux-内存页" class="headerlink" title="0x04 Linux 内存页"></a>0x04 Linux 内存页</h1><h2 id="I-内核分配内存特点"><a href="#I-内核分配内存特点" class="headerlink" title="I 内核分配内存特点"></a>I 内核分配内存特点</h2><ul>
+<li>内核使用的内存空间有限</li>
+<li>内核不支持便捷的内存分配方式</li>
+<li>处理内存分配错误难度大</li>
+<li>内核分配机制不能太复杂</li>
+</ul>
+<h2 id="II-页"><a href="#II-页" class="headerlink" title="II 页"></a>II 页</h2><ul>
+<li>内核以物理页为单位分配内存</li>
+<li>物理页的大小取决于体系结构</li>
+<li>page 结构体（定义于 &lt;linux/mm_types.h&gt;）</li>
+</ul>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">page</span>&#123;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> flags; <span class="comment">//存放页的状态</span></span><br><span class="line">  <span class="keyword">atomic_t</span> _count; <span class="comment">//存放页的引用计数</span></span><br><span class="line">  <span class="keyword">atomic_t</span> _mapcount;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="keyword">private</span>;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">address_space</span> *<span class="title">mapping</span>;</span></span><br><span class="line">  <span class="keyword">pgoff_t</span> index;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">lru</span>;</span></span><br><span class="line">  <span class="keyword">void</span> *<span class="keyword">virtual</span>; <span class="comment">//页的虚拟地址</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="0x05-Linux-内存区"><a href="#0x05-Linux-内存区" class="headerlink" title="0x05 Linux 内存区"></a>0x05 Linux 内存区</h1><p>由于硬件的限制，内核并不能对所有的页一样看待，内核需要对页进行分类，分不同区域</p>
+<ul>
+<li>Linux 必需处理 2 种由于硬件存在缺陷而引起的内存寻址问题：<ul>
+<li>一些硬件只能用某些特定的内存地址来执行DMA（Direct Memory Access）</li>
+<li>一些体系结构的内存的物理寻址范围比虚拟内存大得多，导致一些内存不能总是映射到内核空间</li>
+</ul>
+</li>
+<li>Linux 主要使用了 4 种区：<ul>
+<li>ZONE_DMA： 该区页面用来执行 DMA</li>
+<li>ZONE_DMA32： 用于 32 位设备执行 DMA</li>
+<li>ZONE_NORMAL：该区页面都能正常映射</li>
+<li>ZONE_HIGHEM：该区包含“高端内存”，这里的页不能永久映射到内核空间</li>
+</ul>
+</li>
+</ul>
+<h1 id="0x06-内存管理提供的服务"><a href="#0x06-内存管理提供的服务" class="headerlink" title="0x06 内存管理提供的服务"></a>0x06 内存管理提供的服务</h1><h2 id="I-获得页"><a href="#I-获得页" class="headerlink" title="I 获得页"></a>I 获得页</h2><ul>
+<li>alloc_pages()</li>
+<li>page_address(struct page* page)</li>
+<li>__get_free_pages()</li>
+<li>alloc_page()</li>
+<li>__get_free_page()</li>
+</ul>
+<h2 id="II-获得填充为-0-的页"><a href="#II-获得填充为-0-的页" class="headerlink" title="II 获得填充为 0 的页"></a>II 获得填充为 0 的页</h2><ul>
+<li>get_zeroed_page()</li>
+</ul>
+<h2 id="III-释放页"><a href="#III-释放页" class="headerlink" title="III 释放页"></a>III 释放页</h2><ul>
+<li>__free_pages()</li>
+<li>free_pages()</li>
+<li>free_page()</li>
+</ul>
+<h2 id="IV-kmalloc"><a href="#IV-kmalloc" class="headerlink" title="IV kmalloc()"></a>IV kmalloc()</h2><p>用于获得以字节为单位的一块连续内存空间：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">kmalloc</span> <span class="params">(<span class="keyword">size_t</span> size, <span class="keyword">gfp_t</span> flags)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="V-kfree"><a href="#V-kfree" class="headerlink" title="V kfree()"></a>V kfree()</h2><p>该函数用于释放 kmalloc() 分配出的内存块：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">kfree</span><span class="params">(<span class="keyword">const</span> <span class="keyword">void</span> *ptr)</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="VI-vmalloc"><a href="#VI-vmalloc" class="headerlink" title="VI vmalloc()"></a>VI vmalloc()</h2><p>类似 kmalloc(), 但分配的内存空间不连续，释放使用 vfree()</p>
+<h2 id="VII-slab-层"><a href="#VII-slab-层" class="headerlink" title="VII slab 层"></a>VII slab 层</h2><p>即 slab 分配器，它扮演了通用数据结构缓存层的角色，是一种缓存机制</p>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/读书笔记/" rel="tag"># 读书笔记</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2016/06/30/lkd-thin-04/" rel="next" title="读薄《Linux 内核设计与实现》(4) -  中断与同步">
+                <i class="fa fa-chevron-left"></i> 读薄《Linux 内核设计与实现》(4) -  中断与同步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2016/11/07/lkd-thin-06/" rel="prev" title="读薄《Linux 内核设计与实现》(6) -  虚拟文件系统">
+                读薄《Linux 内核设计与实现》(6) -  虚拟文件系统 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2016/10/23/lkd-thin-05/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#0x00-内核中的时间概念"><span class="nav-number">1.</span> <span class="nav-text">0x00 内核中的时间概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x01-Linux-中的时间表示"><span class="nav-number">2.</span> <span class="nav-text">0x01 Linux 中的时间表示</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-节拍率（Hz）"><span class="nav-number">2.1.</span> <span class="nav-text">I 节拍率（Hz）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-jiffies"><span class="nav-number">2.2.</span> <span class="nav-text">II jiffies</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x02-硬件时钟和定时器"><span class="nav-number">3.</span> <span class="nav-text">0x02 硬件时钟和定时器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x03-Linux-下的时钟中断"><span class="nav-number">4.</span> <span class="nav-text">0x03 Linux 下的时钟中断</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-时钟中断处理程序做的工作"><span class="nav-number">4.1.</span> <span class="nav-text">I 时钟中断处理程序做的工作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-do-timer"><span class="nav-number">4.2.</span> <span class="nav-text">II do_timer()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-从用户空间获取时间"><span class="nav-number">4.3.</span> <span class="nav-text">III 从用户空间获取时间</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x04-Linux-内存页"><span class="nav-number">5.</span> <span class="nav-text">0x04 Linux 内存页</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-内核分配内存特点"><span class="nav-number">5.1.</span> <span class="nav-text">I 内核分配内存特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-页"><span class="nav-number">5.2.</span> <span class="nav-text">II 页</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x05-Linux-内存区"><span class="nav-number">6.</span> <span class="nav-text">0x05 Linux 内存区</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#0x06-内存管理提供的服务"><span class="nav-number">7.</span> <span class="nav-text">0x06 内存管理提供的服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#I-获得页"><span class="nav-number">7.1.</span> <span class="nav-text">I 获得页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#II-获得填充为-0-的页"><span class="nav-number">7.2.</span> <span class="nav-text">II 获得填充为 0 的页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#III-释放页"><span class="nav-number">7.3.</span> <span class="nav-text">III 释放页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IV-kmalloc"><span class="nav-number">7.4.</span> <span class="nav-text">IV kmalloc()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#V-kfree"><span class="nav-number">7.5.</span> <span class="nav-text">V kfree()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VI-vmalloc"><span class="nav-number">7.6.</span> <span class="nav-text">VI vmalloc()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VII-slab-层"><span class="nav-number">7.7.</span> <span class="nav-text">VII slab 层</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1004 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Linux内核," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="通过代码来分析 Linux 是如何创建一个新进程的">
+<meta name="keywords" content="技术,Linux内核">
+<meta property="og:type" content="article">
+<meta property="og:title" content="分析Linux内核创建一个新进程的过程">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2015/07/27/分析Linux内核创建一个新进程的过程/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="通过代码来分析 Linux 是如何创建一个新进程的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eu8b93kem2j20pb0dndl8.jpg">
+<meta property="og:updated_time" content="2016-01-06T11:56:46.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="分析Linux内核创建一个新进程的过程">
+<meta name="twitter:description" content="通过代码来分析 Linux 是如何创建一个新进程的">
+<meta name="twitter:image" content="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eu8b93kem2j20pb0dndl8.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2015/07/27/分析Linux内核创建一个新进程的过程/"/>
+
+
+
+
+
+  <title> 分析Linux内核创建一个新进程的过程 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2015/07/27/分析Linux内核创建一个新进程的过程/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                分析Linux内核创建一个新进程的过程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2015-07-27T18:35:54+08:00">
+                Jul 27 2015
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2015/07/27/分析Linux内核创建一个新进程的过程/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2015/07/27/分析Linux内核创建一个新进程的过程/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2015/07/27/分析Linux内核创建一个新进程的过程/" class="leancloud_visitors" data-flag-title="分析Linux内核创建一个新进程的过程">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  通过代码来分析 Linux 是如何创建一个新进程的
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>##进程描述</p>
+<ul>
+<li><p><strong>进程描述符（task_struct）</strong></p>
+<p>用来描述进程的数据结构，可以理解为进程的属性。比如进程的状态、进程的标识（PID）等，都被封装在了进程描述符这个数据结构中，该数据结构被定义为task_struct</p>
+</li>
+</ul>
+<ul>
+<li><p><strong>进程控制块（PCB）</strong></p>
+<p>是操作系统核心中一种数据结构，主要表示进程状态。</p>
+</li>
+</ul>
+<ul>
+<li><strong>进程状态</strong></li>
+</ul>
+<p><img src="http://ww2.sinaimg.cn/mw690/4858d6a8jw1eu8b93kem2j20pb0dndl8.jpg" alt="image"></p>
+<ul>
+<li><p><strong>fork()</strong></p>
+<p>fork()在父、子进程各返回一次。在父进程中返回子进程的 pid，在子进程中返回0。</p>
+</li>
+</ul>
+<ul>
+<li><p>fork一个子进程的代码 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line">#include &lt;unistd.h&gt;</span><br><span class="line">int main(int argc, char * argv[])</span><br><span class="line">&#123;</span><br><span class="line">  int pid;</span><br><span class="line">  /* fork another process */</span><br><span class="line">  </span><br><span class="line">  pid = fork();</span><br><span class="line">  if (pid &lt; 0) </span><br><span class="line">  &#123; </span><br><span class="line">      /* error occurred */</span><br><span class="line">      fprintf(stderr,&quot;Fork Failed!&quot;);</span><br><span class="line">      exit(-1);</span><br><span class="line">  &#125; </span><br><span class="line">  else if (pid == 0) </span><br><span class="line">  &#123;</span><br><span class="line">      /* child process */</span><br><span class="line">      printf(&quot;This is Child Process!\n&quot;);</span><br><span class="line">  &#125; </span><br><span class="line">  else </span><br><span class="line">  &#123;  </span><br><span class="line">      /* parent process  */</span><br><span class="line">      printf(&quot;This is Parent Process!\n&quot;);</span><br><span class="line">      /* parent will wait for the child to complete*/</span><br><span class="line">      wait(NULL);</span><br><span class="line">      printf(&quot;Child Complete!\n&quot;);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>##进程创建</p>
+<p>###大致流程</p>
+<p>fork 通过0x80中断（系统调用）来陷入内核，由系统提供的相应系统调用来完成进程的创建。</p>
+<ul>
+<li><strong>fork.c</strong></li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">//fork</span><br><span class="line">#ifdef __ARCH_WANT_SYS_FORK</span><br><span class="line">SYSCALL_DEFINE0(fork)</span><br><span class="line">&#123;</span><br><span class="line">#ifdef CONFIG_MMU</span><br><span class="line">	return do_fork(SIGCHLD, 0, 0, NULL, NULL);</span><br><span class="line">#else</span><br><span class="line">	/* can not support in nommu mode */</span><br><span class="line">	return -EINVAL;</span><br><span class="line">#endif</span><br><span class="line">&#125;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">//vfork</span><br><span class="line">#ifdef __ARCH_WANT_SYS_VFORK</span><br><span class="line">SYSCALL_DEFINE0(vfork)</span><br><span class="line">&#123;</span><br><span class="line">	return do_fork(CLONE_VFORK | CLONE_VM | SIGCHLD, 0,</span><br><span class="line">			0, NULL, NULL);</span><br><span class="line">&#125;</span><br><span class="line">#endif</span><br><span class="line"></span><br><span class="line">//clone</span><br><span class="line">#ifdef __ARCH_WANT_SYS_CLONE</span><br><span class="line">#ifdef CONFIG_CLONE_BACKWARDS</span><br><span class="line">SYSCALL_DEFINE5(clone, unsigned long, clone_flags, unsigned long, newsp,</span><br><span class="line">		 int __user *, parent_tidptr,</span><br><span class="line">		 int, tls_val,</span><br><span class="line">		 int __user *, child_tidptr)</span><br><span class="line">#elif defined(CONFIG_CLONE_BACKWARDS2)</span><br><span class="line">SYSCALL_DEFINE5(clone, unsigned long, newsp, unsigned long, clone_flags,</span><br><span class="line">		 int __user *, parent_tidptr,</span><br><span class="line">		 int __user *, child_tidptr,</span><br><span class="line">		 int, tls_val)</span><br><span class="line">#elif defined(CONFIG_CLONE_BACKWARDS3)</span><br><span class="line">SYSCALL_DEFINE6(clone, unsigned long, clone_flags, unsigned long, newsp,</span><br><span class="line">		int, stack_size,</span><br><span class="line">		int __user *, parent_tidptr,</span><br><span class="line">		int __user *, child_tidptr,</span><br><span class="line">		int, tls_val)</span><br><span class="line">#else</span><br><span class="line">SYSCALL_DEFINE5(clone, unsigned long, clone_flags, unsigned long, newsp,</span><br><span class="line">		 int __user *, parent_tidptr,</span><br><span class="line">		 int __user *, child_tidptr,</span><br><span class="line">		 int, tls_val)</span><br><span class="line">#endif</span><br><span class="line">&#123;</span><br><span class="line">	return do_fork(clone_flags, newsp, 0, parent_tidptr, child_tidptr);</span><br><span class="line">&#125;</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+<p>通过看上边的代码，我们可以清楚的看到，不论是使用 fork 还是 vfork 来创建进程，最终都是通过 do_fork() 方法来实现的。接下来我们可以追踪到 do_fork()的代码（部分代码，经过笔者的精简）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">long do_fork(unsigned long clone_flags,</span><br><span class="line">	      unsigned long stack_start,</span><br><span class="line">	      unsigned long stack_size,</span><br><span class="line">	      int __user *parent_tidptr,</span><br><span class="line">	      int __user *child_tidptr)</span><br><span class="line">&#123;</span><br><span class="line">		//创建进程描述符指针</span><br><span class="line">		struct task_struct *p;</span><br><span class="line">	</span><br><span class="line">		//……</span><br><span class="line">		</span><br><span class="line">		//复制进程描述符，copy_process()的返回值是一个 task_struct 指针。</span><br><span class="line">		p = copy_process(clone_flags, stack_start, stack_size,</span><br><span class="line">			 child_tidptr, NULL, trace);</span><br><span class="line"></span><br><span class="line">		if (!IS_ERR(p)) &#123;</span><br><span class="line">			struct completion vfork;</span><br><span class="line">			struct pid *pid;</span><br><span class="line"></span><br><span class="line">			trace_sched_process_fork(current, p);</span><br><span class="line">			</span><br><span class="line">			//得到新创建的进程描述符中的pid</span><br><span class="line">			pid = get_task_pid(p, PIDTYPE_PID);</span><br><span class="line">			nr = pid_vnr(pid);</span><br><span class="line"></span><br><span class="line">			if (clone_flags &amp; CLONE_PARENT_SETTID)</span><br><span class="line">				put_user(nr, parent_tidptr);</span><br><span class="line"></span><br><span class="line">			//如果调用的 vfork()方法，初始化 vfork 完成处理信息。</span><br><span class="line">			if (clone_flags &amp; CLONE_VFORK) &#123;</span><br><span class="line">				p-&gt;vfork_done = &amp;vfork;</span><br><span class="line">				init_completion(&amp;vfork);</span><br><span class="line">				get_task_struct(p);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			//将子进程加入到调度器中，为其分配 CPU，准备执行</span><br><span class="line">			wake_up_new_task(p);</span><br><span class="line"></span><br><span class="line">			//fork 完成，子进程即将开始运行</span><br><span class="line">			if (unlikely(trace))</span><br><span class="line">				ptrace_event_pid(trace, pid);</span><br><span class="line">			</span><br><span class="line">			//如果是 vfork，将父进程加入至等待队列，等待子进程完成</span><br><span class="line">			if (clone_flags &amp; CLONE_VFORK) &#123;</span><br><span class="line">				if (!wait_for_vfork_done(p, &amp;vfork))</span><br><span class="line">					ptrace_event_pid(PTRACE_EVENT_VFORK_DONE, pid);</span><br><span class="line">			&#125;</span><br><span class="line"></span><br><span class="line">			put_pid(pid);</span><br><span class="line">		&#125; else &#123;</span><br><span class="line">			nr = PTR_ERR(p);</span><br><span class="line">		&#125;</span><br><span class="line">		return nr;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>###do_fork 流程</p>
+<ul>
+<li>调用 <strong>copy_process</strong> 为子进程复制出一份进程信息</li>
+<li>如果是 vfork 初始化完成处理信息</li>
+<li>调用 <strong>wake_up_new_task</strong> 将子进程加入调度器，为之分配 CPU</li>
+<li>如果是 vfork，父进程等待子进程完成 exec 替换自己的地址空间</li>
+</ul>
+<p>###copy_process 流程</p>
+<ul>
+<li>追踪copy_process 代码（部分）</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">static struct task_struct *copy_process(unsigned long clone_flags,</span><br><span class="line">					unsigned long stack_start,</span><br><span class="line">					unsigned long stack_size,</span><br><span class="line">					int __user *child_tidptr,</span><br><span class="line">					struct pid *pid,</span><br><span class="line">					int trace)</span><br><span class="line">&#123;</span><br><span class="line">	int retval;</span><br><span class="line">	</span><br><span class="line">	//创建进程描述符指针</span><br><span class="line">	struct task_struct *p;</span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line">	</span><br><span class="line">	//复制当前的 task_struct</span><br><span class="line">	p = dup_task_struct(current);</span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line"></span><br><span class="line">	//初始化互斥变量	</span><br><span class="line">	rt_mutex_init_task(p);</span><br><span class="line"></span><br><span class="line">	//检查进程数是否超过限制，由操作系统定义</span><br><span class="line">	if (atomic_read(&amp;p-&gt;real_cred-&gt;user-&gt;processes) &gt;=</span><br><span class="line">			task_rlimit(p, RLIMIT_NPROC)) &#123;</span><br><span class="line">		if (p-&gt;real_cred-&gt;user != INIT_USER &amp;&amp;</span><br><span class="line">		    !capable(CAP_SYS_RESOURCE) &amp;&amp; !capable(CAP_SYS_ADMIN))</span><br><span class="line">			goto bad_fork_free;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line"></span><br><span class="line">	//检查进程数是否超过 max_threads 由内存大小决定</span><br><span class="line">	if (nr_threads &gt;= max_threads)</span><br><span class="line">		goto bad_fork_cleanup_count;</span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line"></span><br><span class="line">	//初始化自旋锁</span><br><span class="line">	spin_lock_init(&amp;p-&gt;alloc_lock);</span><br><span class="line">	//初始化挂起信号</span><br><span class="line">	init_sigpending(&amp;p-&gt;pending);</span><br><span class="line">	//初始化 CPU 定时器</span><br><span class="line">	posix_cpu_timers_init(p);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line">	</span><br><span class="line">	//初始化进程数据结构，并把进程状态设置为 TASK_RUNNING</span><br><span class="line">	retval = sched_fork(clone_flags, p);</span><br><span class="line">	</span><br><span class="line">	//复制所有进程信息，包括文件系统、信号处理函数、信号、内存管理等</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_policy;</span><br><span class="line"></span><br><span class="line">	retval = perf_event_init_task(p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_policy;</span><br><span class="line">	retval = audit_alloc(p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_perf;</span><br><span class="line">	/* copy all the process information */</span><br><span class="line">	shm_init_task(p);</span><br><span class="line">	retval = copy_semundo(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_audit;</span><br><span class="line">	retval = copy_files(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_semundo;</span><br><span class="line">	retval = copy_fs(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_files;</span><br><span class="line">	retval = copy_sighand(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_fs;</span><br><span class="line">	retval = copy_signal(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_sighand;</span><br><span class="line">	retval = copy_mm(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_signal;</span><br><span class="line">	retval = copy_namespaces(clone_flags, p);</span><br><span class="line">	if (retval)</span><br><span class="line">		goto bad_fork_cleanup_mm;</span><br><span class="line">	retval = copy_io(clone_flags, p);</span><br><span class="line"></span><br><span class="line">	//初始化子进程内核栈</span><br><span class="line">	retval = copy_thread(clone_flags, stack_start, stack_size, p);</span><br><span class="line">	</span><br><span class="line">	//为新进程分配新的 pid</span><br><span class="line">	if (pid != &amp;init_struct_pid) &#123;</span><br><span class="line">		retval = -ENOMEM;</span><br><span class="line">		pid = alloc_pid(p-&gt;nsproxy-&gt;pid_ns_for_children);</span><br><span class="line">		if (!pid)</span><br><span class="line">			goto bad_fork_cleanup_io;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	//设置子进程 pid	</span><br><span class="line">	p-&gt;pid = pid_nr(pid);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	//返回结构体 p</span><br><span class="line">	return p;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用 <strong>dup_task_struct</strong> 复制当前的 task_struct</li>
+<li>检查进程数是否超过限制</li>
+<li>初始化自旋锁、挂起信号、CPU 定时器等</li>
+<li>调用 <strong>sched_fork</strong> 初始化进程数据结构，并把进程状态设置为 TASK_RUNNING</li>
+<li>复制所有进程信息，包括文件系统、信号处理函数、信号、内存管理等</li>
+<li>调用 <strong>copy_thread</strong> 初始化子进程内核栈</li>
+<li>为新进程分配并设置新的 pid</li>
+</ul>
+<p>###dup_task_struct 流程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">static struct task_struct *dup_task_struct(struct task_struct *orig)</span><br><span class="line">&#123;</span><br><span class="line">	struct task_struct *tsk;</span><br><span class="line">	struct thread_info *ti;</span><br><span class="line">	int node = tsk_fork_get_node(orig);</span><br><span class="line">	int err;</span><br><span class="line"></span><br><span class="line">	//分配一个 task_struct 节点</span><br><span class="line">	tsk = alloc_task_struct_node(node);</span><br><span class="line">	if (!tsk)</span><br><span class="line">		return NULL;</span><br><span class="line"></span><br><span class="line">	//分配一个 thread_info 节点，包含进程的内核栈，ti 为栈底</span><br><span class="line">	ti = alloc_thread_info_node(tsk, node);</span><br><span class="line">	if (!ti)</span><br><span class="line">		goto free_tsk;</span><br><span class="line"></span><br><span class="line">	//将栈底的值赋给新节点的栈</span><br><span class="line">	tsk-&gt;stack = ti;</span><br><span class="line"></span><br><span class="line">	//……</span><br><span class="line"></span><br><span class="line">	return tsk;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>调用alloc_task_struct_node分配一个 task_struct 节点</li>
+<li>调用alloc_thread_info_node分配一个 thread_info 节点，其实是分配了一个thread_union联合体,将栈底返回给 ti</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">union thread_union &#123;</span><br><span class="line">   struct thread_info thread_info;</span><br><span class="line">  unsigned long stack[THREAD_SIZE/sizeof(long)];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>最后将栈底的值 ti 赋值给新节点的栈</li>
+</ul>
+<blockquote>
+<p>最终执行完dup_task_struct之后，子进程除了tsk-&gt;stack指针不同之外，全部都一样！</p>
+</blockquote>
+<p>###sched_fork 流程</p>
+<ul>
+<li>core.c</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">int sched_fork(unsigned long clone_flags, struct task_struct *p)</span><br><span class="line">&#123;</span><br><span class="line">	unsigned long flags;</span><br><span class="line">	int cpu = get_cpu();</span><br><span class="line"></span><br><span class="line">	__sched_fork(clone_flags, p);</span><br><span class="line">	 </span><br><span class="line">	//将子进程状态设置为 TASK_RUNNING</span><br><span class="line">	p-&gt;state = TASK_RUNNING;</span><br><span class="line">	</span><br><span class="line">	//……</span><br><span class="line">	</span><br><span class="line">	//为子进程分配 CPU</span><br><span class="line">	set_task_cpu(p, cpu);</span><br><span class="line"></span><br><span class="line">	put_cpu();</span><br><span class="line">	return 0;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>我们可以看到sched_fork大致完成了两项重要工作，一是将子进程状态设置为 TASK_RUNNING，二是为其分配 CPU</li>
+</ul>
+<p>###copy_thread 流程</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">int copy_thread(unsigned long clone_flags, unsigned long sp,</span><br><span class="line">	unsigned long arg, struct task_struct *p)</span><br><span class="line">&#123;</span><br><span class="line">	//获取寄存器信息</span><br><span class="line">	struct pt_regs *childregs = task_pt_regs(p);</span><br><span class="line">	struct task_struct *tsk;</span><br><span class="line">	int err;</span><br><span class="line"></span><br><span class="line">	p-&gt;thread.sp = (unsigned long) childregs;</span><br><span class="line">	p-&gt;thread.sp0 = (unsigned long) (childregs+1);</span><br><span class="line">	memset(p-&gt;thread.ptrace_bps, 0, sizeof(p-&gt;thread.ptrace_bps));</span><br><span class="line"></span><br><span class="line">	if (unlikely(p-&gt;flags &amp; PF_KTHREAD)) &#123;</span><br><span class="line">		//内核线程</span><br><span class="line">		memset(childregs, 0, sizeof(struct pt_regs));</span><br><span class="line">		p-&gt;thread.ip = (unsigned long) ret_from_kernel_thread;</span><br><span class="line">		task_user_gs(p) = __KERNEL_STACK_CANARY;</span><br><span class="line">		childregs-&gt;ds = __USER_DS;</span><br><span class="line">		childregs-&gt;es = __USER_DS;</span><br><span class="line">		childregs-&gt;fs = __KERNEL_PERCPU;</span><br><span class="line">		childregs-&gt;bx = sp;	/* function */</span><br><span class="line">		childregs-&gt;bp = arg;</span><br><span class="line">		childregs-&gt;orig_ax = -1;</span><br><span class="line">		childregs-&gt;cs = __KERNEL_CS | get_kernel_rpl();</span><br><span class="line">		childregs-&gt;flags = X86_EFLAGS_IF | X86_EFLAGS_FIXED;</span><br><span class="line">		p-&gt;thread.io_bitmap_ptr = NULL;</span><br><span class="line">		return 0;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	//将当前寄存器信息复制给子进程</span><br><span class="line">	*childregs = *current_pt_regs();</span><br><span class="line">	</span><br><span class="line">	//子进程 eax 置 0，因此fork 在子进程返回0</span><br><span class="line">	childregs-&gt;ax = 0;</span><br><span class="line">	if (sp)</span><br><span class="line">		childregs-&gt;sp = sp;</span><br><span class="line">	</span><br><span class="line">	//子进程ip 设置为ret_from_fork，因此子进程从ret_from_fork开始执行</span><br><span class="line">	p-&gt;thread.ip = (unsigned long) ret_from_fork;</span><br><span class="line">	</span><br><span class="line">	//……</span><br><span class="line">	</span><br><span class="line">	return err;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p><strong>copy_thread 这段代码为我们解释了两个相当重要的问题！</strong></p>
+</blockquote>
+<ul>
+<li><strong>一是，为什么 fork 在子进程中返回0，原因是<code>childregs-&gt;ax = 0;</code>这段代码将子进程的 eax 赋值为0</strong></li>
+<li><strong>二是，<code>p-&gt;thread.ip = (unsigned long) ret_from_fork;</code>将子进程的 ip 设置为 ret_form_fork 的首地址，因此子进程是从 ret_from_fork 开始执行的</strong></li>
+</ul>
+<p>##总结</p>
+<p>新进程的执行源于以下前提：</p>
+<ul>
+<li>dup_task_struct中为其分配了新的堆栈</li>
+<li>调用了sched_fork，将其置为TASK_RUNNING</li>
+<li>copy_thread中将父进程的寄存器上下文复制给子进程，保证了父子进程的堆栈信息是一致的</li>
+<li>将ret_from_fork的地址设置为eip寄存器的值</li>
+</ul>
+<p>最终子进程从ret_from_fork开始执行</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Linux内核/" rel="tag"># Linux内核</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2015/07/24/用-Arduino-Uno-给-Arduino-Mini（Pro）烧录程序/" rel="next" title="用 Arduino Uno 给 Arduino Mini（Pro）烧录程序">
+                <i class="fa fa-chevron-left"></i> 用 Arduino Uno 给 Arduino Mini（Pro）烧录程序
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2015/08/04/【从头开始写操作系统系列】环境搭建以及第一个Hello-World/" rel="prev" title="【从头开始写操作系统系列】环境搭建以及第一个Hello World">
+                【从头开始写操作系统系列】环境搭建以及第一个Hello World <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2015/07/27/分析Linux内核创建一个新进程的过程/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>

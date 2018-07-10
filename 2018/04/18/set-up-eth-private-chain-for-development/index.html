@@ -1,0 +1,1023 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链," />
+
+
+
+
+
+  <link rel="alternate" href="/rss2.xml" title="远航" type="application/atom+xml" />
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+  <meta property="fb:admins" content="luoyhang003@hotmail.com" />
+  <meta property="fb:app_id" content="1356944904328979" />
+
+
+
+<meta name="description" content="以太坊测试私链的搭建这篇文档通过使用Geth来搭建Ethereum（以太坊）私有测试链。本文档两个节点的系统环境为： OS：Ubuntu Memory：8G CPU：Intel Xeon E5-2620">
+<meta name="keywords" content="技术,Ethereum,以太坊,ETH,区块链">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【Ethereum基础实践】：以太坊测试私链的搭建">
+<meta property="og:url" content="http://blog.luoyuanhang.com/2018/04/18/set-up-eth-private-chain-for-development/index.html">
+<meta property="og:site_name" content="远航">
+<meta property="og:description" content="以太坊测试私链的搭建这篇文档通过使用Geth来搭建Ethereum（以太坊）私有测试链。本文档两个节点的系统环境为： OS：Ubuntu Memory：8G CPU：Intel Xeon E5-2620">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-18T01:20:28.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="【Ethereum基础实践】：以太坊测试私链的搭建">
+<meta name="twitter:description" content="以太坊测试私链的搭建这篇文档通过使用Geth来搭建Ethereum（以太坊）私有测试链。本文档两个节点的系统环境为： OS：Ubuntu Memory：8G CPU：Intel Xeon E5-2620">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":true,"scrollpercent":true},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.luoyuanhang.com/2018/04/18/set-up-eth-private-chain-for-development/"/>
+
+
+
+
+
+  <title> 【Ethereum基础实践】：以太坊测试私链的搭建 | 远航 </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '1356944904328979',
+      xfbml      : true,
+      version    : 'v2.6'
+    });
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/zh_Hans/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?0458911b7b78e99efc3094c783ab5b48";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">远航</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">请叫我：远航</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="http://www.luoyuanhang.com" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br />
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-books">
+          <a href="/books" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-book"></i> <br />
+            
+            书单
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="st-search-show-outputs">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <form class="site-search-form">
+  <input type="text" id="st-search-input" class="st-search-input st-default-search-input" />
+</form>
+
+<script type="text/javascript">
+  (function(w,d,t,u,n,s,e){w['SwiftypeObject']=n;w[n]=w[n]||function(){
+    (w[n].q=w[n].q||[]).push(arguments);};s=d.createElement(t);
+    e=d.getElementsByTagName(t)[0];s.async=1;s.src=u;e.parentNode.insertBefore(s,e);
+  })(window,document,'script','//s.swiftypecdn.com/install/v2/st.js','_st');
+
+  _st('install', 'gXp91xL3h58o6xkgXzZQ','2.0.0');
+</script>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://blog.luoyuanhang.com/2018/04/18/set-up-eth-private-chain-for-development/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="远航">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="远航">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                【Ethereum基础实践】：以太坊测试私链的搭建
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-04-18T09:07:41+08:00">
+                Apr 18 2018
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2018/04/18/set-up-eth-private-chain-for-development/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count fb-comments-count" data-href="http://blog.luoyuanhang.com/2018/04/18/set-up-eth-private-chain-for-development/" itemprop="commentCount">0</span> comments
+                </a>
+              </span>
+            
+          
+
+          
+          
+             <span id="/2018/04/18/set-up-eth-private-chain-for-development/" class="leancloud_visitors" data-flag-title="【Ethereum基础实践】：以太坊测试私链的搭建">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数 </span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="以太坊测试私链的搭建"><a href="#以太坊测试私链的搭建" class="headerlink" title="以太坊测试私链的搭建"></a>以太坊测试私链的搭建</h1><p>这篇文档通过使用Geth来搭建Ethereum（以太坊）私有测试链。<br>本文档两个节点的系统环境为：</p>
+<pre><code>OS：Ubuntu
+Memory：8G
+CPU：Intel Xeon E5-2620
+</code></pre><a id="more"></a>
+<h2 id="安装Geth"><a href="#安装Geth" class="headerlink" title="安装Geth"></a>安装Geth</h2><p>Geth是通过Go语言实现的一款Ethereum客户端，通过Geth我们可以搭建Ethereum的测试私链。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install software-properties-common</span><br><span class="line">sudo add-apt-repository -y ppa:ethereum/ethereum</span><br><span class="line">sudo apt-get update</span><br><span class="line">sudo apt-get install ethereum</span><br></pre></td></tr></table></figure>
+<h2 id="搭建私有测试链"><a href="#搭建私有测试链" class="headerlink" title="搭建私有测试链"></a>搭建私有测试链</h2><p>通过搭建私有测试链，可以预分配以太币或者调低挖矿的难度来高效的获取以太币，可以便于对以太坊的测试。</p>
+<p><strong>搭建私有测试链需要做的主要有下列这些事项：</strong></p>
+<ul>
+<li><strong>自定义创世块（Genesis Block）</strong></li>
+<li><strong>自定义数据存放位置</strong></li>
+<li><strong>自定义网络ID</strong></li>
+<li><strong>关闭节点发现（Node Discovery）（推荐）</strong></li>
+</ul>
+<h3 id="自定义创世块（Genesis-Block）"><a href="#自定义创世块（Genesis-Block）" class="headerlink" title="自定义创世块（Genesis Block）"></a>自定义创世块（Genesis Block）</h3><ul>
+<li>CustomGenesis.json</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">		<span class="attr">"config"</span>: &#123;</span><br><span class="line">			<span class="attr">"chainId"</span>: <span class="number">3131</span>,</span><br><span class="line">			<span class="attr">"homesteadBlock"</span>: <span class="number">0</span>,</span><br><span class="line">			<span class="attr">"eip155Block"</span>: <span class="number">0</span>,</span><br><span class="line">			<span class="attr">"eip158Block"</span>: <span class="number">0</span></span><br><span class="line">		&#125;,</span><br><span class="line">		<span class="attr">"difficulty"</span>: <span class="string">"200000000"</span>,</span><br><span class="line">		<span class="attr">"gasLimit"</span>: <span class="string">"2100000"</span>,</span><br><span class="line">		<span class="attr">"alloc"</span>: &#123;</span><br><span class="line">			<span class="attr">"7df9a875a174b3bc565e6424a0050ebc1b2d1d82"</span>: &#123; <span class="attr">"balance"</span>: <span class="string">"300"</span> &#125;,</span><br><span class="line">			<span class="attr">"f41c74c9ae680c1aa78f42e5647a62f353b7bdde"</span>: &#123; <span class="attr">"balance"</span>: <span class="string">"400"</span> &#125;</span><br><span class="line">		&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创世块是区块链中的第一个初始区块，我们通过定义<code>CustomGenesis.json</code>文件来对其进行自定义。</p>
+<p>在创世块的配置文件<a href="Config配置参数：[https://github.com/ethereum/go-ethereum/blob/feeccdf4ec1084b38dac112ff4f86809efd7c0e5/params/config.go#L71](https://github.com/ethereum/go-ethereum/blob/feeccdf4ec1084b38dac112ff4f86809efd7c0e5/params/config.go#L71)">^1</a>中，有四个参数是必须要指定的：</p>
+<ul>
+<li>config：区块链的相关参数<ul>
+<li>chainId：防止重放攻击（replay attack，简单来说就是未经授权的用户来假扮交易的发送者）</li>
+<li>homesteadBlock：Homestead<a href="Ethereum_Homestead：[http://www.ethdocs.org/en/latest/](http://www.ethdocs.org/en/latest/)">^2</a>是以太坊的第二个发行版本（Frontier<a href="Ethereum_Frontier：[https://ethereum.gitbooks.io/frontier-guide/](https://ethereum.gitbooks.io/frontier-guide/)">^3</a>是第一个发行版本），值为0表示的使用的是该版本的以太坊</li>
+</ul>
+</li>
+<li>difficult：初始挖矿难度</li>
+<li>gasLimit：每一个区块所消耗的gas上限</li>
+<li>alloc：可以往地址中预先分配以太币</li>
+</ul>
+<h3 id="生成创世块"><a href="#生成创世块" class="headerlink" title="生成创世块"></a>生成创世块</h3><p>使用下列命令来初始化创世块：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">geth --datadir /path/to/data init /path/to/CustomGenesis.json</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>--datadir</code>：指定区块链的数据目录（默认为<code>~/.ethereum</code>）</li>
+<li><code>init</code>：创世块初始化JSON文件的目录</li>
+</ul>
+<h3 id="启动以太坊私有测试链"><a href="#启动以太坊私有测试链" class="headerlink" title="启动以太坊私有测试链"></a>启动以太坊私有测试链</h3><p><strong>相关启动参数</strong></p>
+<p>启动geth有如下主要参数（可以使用<code>geth --help</code>进行查看）：</p>
+<ul>
+<li><code>--nodiscover</code>：关闭节点的可发现性，可以防止使用了相同network id和创世块的节点连接到你的区块链网络中（只能通过手动来添加节点）</li>
+<li><code>--maxpeers 0</code>：指定网络中的最多节点数</li>
+<li><code>--rpc</code>：启用RPC服务</li>
+<li><code>--rpcapi &quot;db,eth,net,web3&quot;</code>：指定启用的RPC API</li>
+<li><code>--rpcport &quot;8080&quot;</code>：指定RPC的端口</li>
+<li><code>--rpccorsdomain</code>：指定哪些URL可以连接到你的节点</li>
+<li><code>--datadir</code>：以太坊区块链的数据目录</li>
+<li><code>--port</code>：连接到其它节点的网络监听端口</li>
+<li><code>--identity &quot;FirstNode&quot;</code>：指定节点名称</li>
+<li><code>console</code>：启动geth控制台程序</li>
+</ul>
+<p><strong>启动geth</strong></p>
+<p>使用以下命令来启动geth：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">geth --identity "ETH-MainNode" --rpc --rpcport "6060" --rpccorsdomain "*" --datadir "/home/lyh/privatechain-eth/data" --port "30303" --nodiscover --maxpeers 5 --rpcapi "admin,db,eth,debug,miner,net,shh,txpool,personal,web3" --networkid 3131 console</span><br></pre></td></tr></table></figure>
+<p>使用相同的配置对两个节点进行配置并启动。</p>
+<h3 id="节点连接"><a href="#节点连接" class="headerlink" title="节点连接"></a>节点连接</h3><p>在其中一个节点的geth控制台中执行：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> admin.nodeInfo</span></span><br></pre></td></tr></table></figure>
+<p>我们得到该节点的信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> admin.nodeInfo</span></span><br><span class="line">&#123;</span><br><span class="line">  enode: "enode://09444457dd475ac1a81948c5066602d23abd49407cae33edef929c9d96374396496f97b1a8fb1c22d36d990e90ed16a2a4faf3fd2ae63c08f4f58ee6249bcec7@[::]:30303",</span><br><span class="line">  id: "09444457dd475ac1a81948c5066602d23abd49407cae33edef929c9d96374396496f97b1a8fb1c22d36d990e90ed16a2a4faf3fd2ae63c08f4f58ee6249bcec7",</span><br><span class="line">  ip: "::",</span><br><span class="line">  listenAddr: "[::]:30303",</span><br><span class="line">  name: "Geth/ETH-MainNode/v1.8.2-stable-b8b9f7f4/linux-amd64/go1.9.4",</span><br><span class="line">  ports: &#123;</span><br><span class="line">    discovery: 30303,</span><br><span class="line">    listener: 30303</span><br><span class="line">  &#125;,</span><br><span class="line">  protocols: &#123;</span><br><span class="line">    eth: &#123;</span><br><span class="line">      config: &#123;</span><br><span class="line">        chainId: 3131,</span><br><span class="line">        eip150Hash: "0x0000000000000000000000000000000000000000000000000000000000000000",</span><br><span class="line">        eip155Block: 0,</span><br><span class="line">        eip158Block: 0,</span><br><span class="line">        homesteadBlock: 0</span><br><span class="line">      &#125;,</span><br><span class="line">      difficulty: 92699744128,</span><br><span class="line">      genesis: "0x54fd3f9117e7d8c5b130af59fed07ddc9eef0826016d4d5b9c07db8db1dfac23",</span><br><span class="line">      head: "0xd67ba0763b4fc50741b33205e486d0113aa182d310ee0225332459d104ed5b58",</span><br><span class="line">      network: 3131</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>得到enode信息：<br>    enode://09444457dd475ac1a81948c5066602d23abd49407cae33edef929c9d96374396496f97b1a8fb1c22d36d990e90ed16a2a4faf3fd2ae63c08f4f58ee6249bcec7@[::]:30303</p>
+<p>我们需要在另一台节点上添加上该节点，使用命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> admin.addPeer(<span class="string">"09444457dd475ac1a81948c5066602d23abd49407cae33edef929c9d96374396496f97b1a8fb1c22d36d990e90ed16a2a4faf3fd2ae63c08f4f58ee6249bcec7@[::]:30303"</span>)</span></span><br><span class="line">true</span><br></pre></td></tr></table></figure>
+<p>我们需要将上述enode信息中的<code>[::]</code>更换为该节点的IP地址。</p>
+<p>使用命令：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> net.peerCount</span></span><br><span class="line">1</span><br></pre></td></tr></table></figure>
+<p>我们看到已经添加了一个节点。</p>
+<h2 id="测试以太坊私有链"><a href="#测试以太坊私有链" class="headerlink" title="测试以太坊私有链"></a>测试以太坊私有链</h2><p>我们可以通过在两个节点分别创建账号构造一笔转账交易来验证多节点的私链是否搭建成功。</p>
+<p><strong>分别在两个节点中创建账号：</strong></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> personal.newAccount()</span></span><br></pre></td></tr></table></figure>
+<p>设置密码后，得到地址：</p>
+<p>节点一：<br>    &gt; “0xa9436991e002986f58d948d79e737df190c4f26b”</p>
+<p>节点二：<br>    &gt; “0xf7be2382f03cf7dd8ed5e59253a7b9321aac20ec”</p>
+<p><strong>开始挖矿：</strong></p>
+<p>由于新创建的账号中是没有以太币的，因此我们需要启用矿工进行挖矿：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> miner.setEtherbase(<span class="string">"0xa9436991e002986f58d948d79e737df190c4f26b"</span>)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> miner.start(1)</span></span><br></pre></td></tr></table></figure>
+<p>另一个节点同样开启挖矿：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> miner.setEtherbase(<span class="string">"0xf7be2382f03cf7dd8ed5e59253a7b9321aac20ec"</span>)</span></span><br><span class="line"><span class="meta">&gt;</span><span class="bash"> miner.start(1)</span></span><br></pre></td></tr></table></figure>
+<p><strong>构造一笔交易：</strong></p>
+<p>在进行转账之前，我们需要对钱包进行解锁：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> personal.unlockAccount(<span class="string">"0xa9436991e002986f58d948d79e737df190c4f26b"</span>)</span></span><br></pre></td></tr></table></figure>
+<p>输入密码对钱包进行解锁后，构造一笔转账交易：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> eth.sendTransaction(&#123;from: <span class="string">"0xa9436991e002986f58d948d79e737df190c4f26b"</span>, to: <span class="string">"0xf7be2382f03cf7dd8ed5e59253a7b9321aac20ec"</span>, value: web3.toWei(10, <span class="string">"ether"</span>)&#125;)</span></span><br></pre></td></tr></table></figure>
+<p>在交易被矿工进行验证与打包至区块之后，我们可以查询一下钱包的余额来验证交易是否完成：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;</span><span class="bash"> eth.getBalance(<span class="string">"0xf7be2382f03cf7dd8ed5e59253a7b9321aac20ec"</span>)</span></span><br></pre></td></tr></table></figure>
+<hr>
+<blockquote>
+<p>本文的版权归作者 <a href="http://blog.luoyuanhang.com">罗远航</a> 所有，采用 <a href="http://creativecommons.org/licenses/by-nc/3.0/" target="_blank" rel="noopener">Attribution-NonCommercial 3.0 License</a>。任何人可以进行转载、分享，但不可在未经允许的情况下用于商业用途；转载请注明出处。感谢配合！</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/技术/" rel="tag"># 技术</a>
+          
+            <a href="/tags/Ethereum/" rel="tag"># Ethereum</a>
+          
+            <a href="/tags/以太坊/" rel="tag"># 以太坊</a>
+          
+            <a href="/tags/ETH/" rel="tag"># ETH</a>
+          
+            <a href="/tags/区块链/" rel="tag"># 区块链</a>
+          
+        </div>
+      
+
+      
+        
+          <div class="social-like">
+            
+
+            
+              <div class="fb_like">
+                <div class="fb-like" data-layout="button_count" data-share="true"></div>
+              </div>
+            
+          </div>
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/17/eth-basis-accounts-address-pubkey-prikey/" rel="next" title="【Ethereum基础】：账户、地址、私钥和公钥">
+                <i class="fa fa-chevron-left"></i> 【Ethereum基础】：账户、地址、私钥和公钥
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/20/eth-basis-transaction-and-message/" rel="prev" title="【Ethereum基础】：交易和消息">
+                【Ethereum基础】：交易和消息 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="fb-comments"
+           data-href="http://blog.luoyuanhang.com/2018/04/18/set-up-eth-private-chain-for-development/"
+           data-numposts="10"
+           data-width="100%"
+           data-colorscheme="light">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ww4.sinaimg.cn/mw690/4858d6a8jw1fabsq6kyp6j20hs0hs76x.jpg"
+               alt="远航" />
+          <p class="site-author-name" itemprop="name">远航</p>
+           
+              <p class="site-description motion-element" itemprop="description">Aim high.</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">74</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              
+                <span class="site-state-item-count">3</span>
+                <span class="site-state-item-name">分类</span>
+              
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags">
+                <span class="site-state-item-count">44</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+          <div class="feed-link motion-element">
+            <a href="/rss2.xml" rel="alternate">
+              <i class="fa fa-rss"></i>
+              RSS
+            </a>
+          </div>
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/luoyhang003" target="_blank" title="github">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  github
+                </a>
+              </span>
+            
+              <span class="links-of-author-item">
+                <a href="http://weibo.com/u/1213781672" target="_blank" title="weibo">
+                  
+                    <i class="fa fa-fw fa-globe"></i>
+                  
+                  weibo
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#以太坊测试私链的搭建"><span class="nav-number">1.</span> <span class="nav-text">以太坊测试私链的搭建</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装Geth"><span class="nav-number">1.1.</span> <span class="nav-text">安装Geth</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建私有测试链"><span class="nav-number">1.2.</span> <span class="nav-text">搭建私有测试链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义创世块（Genesis-Block）"><span class="nav-number">1.2.1.</span> <span class="nav-text">自定义创世块（Genesis Block）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#生成创世块"><span class="nav-number">1.2.2.</span> <span class="nav-text">生成创世块</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#启动以太坊私有测试链"><span class="nav-number">1.2.3.</span> <span class="nav-text">启动以太坊私有测试链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#节点连接"><span class="nav-number">1.2.4.</span> <span class="nav-text">节点连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#测试以太坊私有链"><span class="nav-number">1.3.</span> <span class="nav-text">测试以太坊私有链</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy;  2015 - 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">远航</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Mist
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+  
+  
+
+  
+  
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+  <script>AV.initialize("eM9JCEfdHaFVXynCA1Q6bvCl-gzGzoHsz", "eskPwLi7BFotpcQ5FPxgzcgw");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+
+  
+
+</body>
+</html>
