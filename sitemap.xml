@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.luoyuanhang.com/about/index.html</loc>
+    
+    <lastmod>2019-01-03T15:06:34.793Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.luoyuanhang.com/books/index.html</loc>
     
-    <lastmod>2019-01-03T14:37:02.647Z</lastmod>
+    <lastmod>2019-01-03T15:06:31.227Z</lastmod>
     
   </url>
   
@@ -383,13 +390,6 @@
     <loc>http://blog.luoyuanhang.com/2016/01/17/%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%AF%AD%E6%B3%95/</loc>
     
     <lastmod>2016-01-17T09:26:02.000Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://blog.luoyuanhang.com/about/index.html</loc>
-    
-    <lastmod>2016-01-07T08:08:06.000Z</lastmod>
     
   </url>
   
