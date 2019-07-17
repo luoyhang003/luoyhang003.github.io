@@ -638,8 +638,8 @@
     <content type="text"><![CDATA[##准备 Arduino Uno Arduino Mini（Pro） 杜邦线若干 ##接线 首先去掉 Arduino 上的芯片ATMEGA328P 接线 Uno —– Mini0(RX) – 0(RX)1(TX) – 1(TX)VCC —- VCCGND —- GNDRESET – RST ##刷入程序 ###将 Arduino 连接至计算机 在 工具 -&gt; 板 中找到所对应的 Arduino 板子（Arduino Pro or Pro Mini） 在 工具 -&gt; 端口中找到 A4对弄对应端口（Mac 上是/dev/tty.usbmodem 或 /dev/tty.usbserial） ###输入示例 Sketch（blink） 文件 -&gt; 示例 -&gt; 01.Basic -&gt; Blink 然后在 IDE 中点击 『上传』 完成上传后，Arduino Mini(Pro) 灯开始闪烁 版权声明：本文为博主原创文章，未经博主允许不得转载。 文章来源：http://blog.luoyuanhang.com]]></content>
       <tags>
         <tag>技术</tag>
-        <tag>嵌入式</tag>
         <tag>Arduino</tag>
+        <tag>嵌入式</tag>
       </tags>
   </entry>
   <entry>
@@ -648,8 +648,8 @@
     <content type="text"><![CDATA[准备： 一台电脑（笔者使用的是 Mac） Arduino（笔者使用的是 Arduino UNO） ##安装 Arduino IDE 在官网（www.arduino.cc）下载相应的 IDE，解压并安装。 打开IDE。 ##将 Arduino 连接至计算机 在 Mac 上会自动安装好驱动。 在 工具 -&gt; 板 中找到所对应的 Arduino 板子（笔者的是：Arduino UNO） 在 工具 -&gt; 端口中找到 A4对弄对应端口（Mac 上是/dev/tty.usbmodem 或 /dev/tty.usbserial） ##输入示例 Sketch（blink） 文件 -&gt; 示例 -&gt; 01.Basic -&gt; Blink 然后在 IDE 中点击 『上传』 完成上传后，Arduino 灯开始闪烁 ##分析 Blink 代码 1234567891011121314// the setup function runs once when you press reset or power the boardvoid setup() &#123; // initialize digital pin 13 as an output. pinMode(13, OUTPUT);&#125;// the loop function runs over and over again forevervoid loop() &#123; digitalWrite(13, HIGH); // turn the LED on (HIGH is the voltage level) delay(1000); // wait for a second digitalWrite(13, LOW); // turn the LED off by making the voltage LOW delay(1000); // wait for a second&#125; void setup()是两个必须包含在 Arduino 程序中的函数之一，函数是一段执行特殊任务的代码。其中的代码会在每次程序启动时执行一次。 pinMode(13, OUTPUT)设置引脚的工作模式，此代码意思是将13号引脚设置为输出引脚。 void loop()第二个必要的函数，函数内的代码会在 Arduino 工作过程中重复循环执行。 digitalWrite()用于设置一个引脚的状态。 delay()该函数接受一个参数，表示延时时间，以 ms 为单位。]]></content>
       <tags>
         <tag>技术</tag>
-        <tag>嵌入式</tag>
         <tag>Arduino</tag>
+        <tag>嵌入式</tag>
       </tags>
   </entry>
   <entry>
@@ -701,7 +701,7 @@
   <entry>
     <title><![CDATA[反汇编一个简单的C程序并分析]]></title>
     <url>%2F2015%2F07%2F03%2F%E5%8F%8D%E6%B1%87%E7%BC%96%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84C%E7%A8%8B%E5%BA%8F%E5%B9%B6%E5%88%86%E6%9E%90%2F</url>
-    <content type="text"><![CDATA[#反汇编一个简单的C程序并分析 C 源码： int g(int x) { return x+1; } int f(int x) { return g(x); } int main(void) { return f(2) + 3; } 汇编源码： 1 g: 2 pushl %ebp 3 movl %esp, %ebp 4 movl 8(%ebp), %eax 5 addl $1, %eax 6 popl %ebp 7 ret 8 f: 9 pushl %ebp 10 movl %esp, %ebp 11 subl $4, %esp 12 movl 8(%ebp), %eax 13 movl %eax, (%esp) 14 call g 15 leave 16 ret 17 main: 18 pushl %ebp 19 movl %esp, %ebp 20 subl $4, %esp 21 movl $2, (%esp) 22 call f 23 addl $3, %eax 24 leave 25 ret 执行过程：（从 main 开始） 原创作品转载请注明出处 http://blog.luoyuanhang.cn MOOC课程《Linux内核分析》 Created By 罗远航 &#x6c;&#x75;&#x6f;&#121;&#104;&#97;&#110;&#x67;&#48;&#48;&#51;&#x40;&#104;&#111;&#x74;&#109;&#97;&#x69;&#108;&#46;&#x63;&#111;&#x6d; July 03，2015]]></content>
+    <content type="text"><![CDATA[#反汇编一个简单的C程序并分析 C 源码： int g(int x) { return x+1; } int f(int x) { return g(x); } int main(void) { return f(2) + 3; } 汇编源码： 1 g: 2 pushl %ebp 3 movl %esp, %ebp 4 movl 8(%ebp), %eax 5 addl $1, %eax 6 popl %ebp 7 ret 8 f: 9 pushl %ebp 10 movl %esp, %ebp 11 subl $4, %esp 12 movl 8(%ebp), %eax 13 movl %eax, (%esp) 14 call g 15 leave 16 ret 17 main: 18 pushl %ebp 19 movl %esp, %ebp 20 subl $4, %esp 21 movl $2, (%esp) 22 call f 23 addl $3, %eax 24 leave 25 ret 执行过程：（从 main 开始） 原创作品转载请注明出处 http://blog.luoyuanhang.cn MOOC课程《Linux内核分析》 Created By 罗远航 &#x6c;&#117;&#111;&#121;&#x68;&#x61;&#x6e;&#103;&#48;&#x30;&#51;&#64;&#x68;&#x6f;&#x74;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#x6d; July 03，2015]]></content>
       <tags>
         <tag>技术</tag>
         <tag>C</tag>
