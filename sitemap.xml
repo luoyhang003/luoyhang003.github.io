@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://blog.luoyuanhang.com/books/index.html</loc>
+    
+    <lastmod>2019-07-28T14:43:02.982Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://blog.luoyuanhang.com/2019/07/25/fibos-vote-intro/</loc>
     
     <lastmod>2019-07-25T03:35:13.703Z</lastmod>
@@ -12,13 +19,6 @@
     <loc>http://blog.luoyuanhang.com/2019/07/25/fibos-resources-intro/</loc>
     
     <lastmod>2019-07-25T03:34:55.201Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://blog.luoyuanhang.com/books/index.html</loc>
-    
-    <lastmod>2019-07-25T01:41:12.270Z</lastmod>
     
   </url>
   
