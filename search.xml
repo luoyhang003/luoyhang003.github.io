@@ -758,7 +758,7 @@
   <entry>
     <title><![CDATA[反汇编一个简单的C程序并分析]]></title>
     <url>%2F2015%2F07%2F03%2F%E5%8F%8D%E6%B1%87%E7%BC%96%E4%B8%80%E4%B8%AA%E7%AE%80%E5%8D%95%E7%9A%84C%E7%A8%8B%E5%BA%8F%E5%B9%B6%E5%88%86%E6%9E%90%2F</url>
-    <content type="text"><![CDATA[#反汇编一个简单的C程序并分析 C 源码： int g(int x) { return x+1; } int f(int x) { return g(x); } int main(void) { return f(2) + 3; } 汇编源码： 1 g: 2 pushl %ebp 3 movl %esp, %ebp 4 movl 8(%ebp), %eax 5 addl $1, %eax 6 popl %ebp 7 ret 8 f: 9 pushl %ebp 10 movl %esp, %ebp 11 subl $4, %esp 12 movl 8(%ebp), %eax 13 movl %eax, (%esp) 14 call g 15 leave 16 ret 17 main: 18 pushl %ebp 19 movl %esp, %ebp 20 subl $4, %esp 21 movl $2, (%esp) 22 call f 23 addl $3, %eax 24 leave 25 ret 执行过程：（从 main 开始） 原创作品转载请注明出处 http://blog.luoyuanhang.cn MOOC课程《Linux内核分析》 Created By 罗远航 &#x6c;&#117;&#x6f;&#121;&#x68;&#97;&#x6e;&#x67;&#48;&#48;&#51;&#64;&#x68;&#111;&#x74;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;&#x6d; July 03，2015]]></content>
+    <content type="text"><![CDATA[#反汇编一个简单的C程序并分析 C 源码： int g(int x) { return x+1; } int f(int x) { return g(x); } int main(void) { return f(2) + 3; } 汇编源码： 1 g: 2 pushl %ebp 3 movl %esp, %ebp 4 movl 8(%ebp), %eax 5 addl $1, %eax 6 popl %ebp 7 ret 8 f: 9 pushl %ebp 10 movl %esp, %ebp 11 subl $4, %esp 12 movl 8(%ebp), %eax 13 movl %eax, (%esp) 14 call g 15 leave 16 ret 17 main: 18 pushl %ebp 19 movl %esp, %ebp 20 subl $4, %esp 21 movl $2, (%esp) 22 call f 23 addl $3, %eax 24 leave 25 ret 执行过程：（从 main 开始） 原创作品转载请注明出处 http://blog.luoyuanhang.cn MOOC课程《Linux内核分析》 Created By 罗远航 &#x6c;&#117;&#111;&#x79;&#x68;&#x61;&#x6e;&#103;&#48;&#48;&#51;&#64;&#104;&#x6f;&#x74;&#x6d;&#97;&#x69;&#108;&#46;&#99;&#111;&#109; July 03，2015]]></content>
       <tags>
         <tag>技术</tag>
         <tag>C</tag>
